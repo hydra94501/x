@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Pago en méxico</title>
+    <link rel="stylesheet" href="bootstrap-3.4.1-dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="bootstrap-3.4.1-dist/css/custom.css">
+    <link rel="stylesheet" href="wuui-master/static/wu-ui/wu-ui.css">
+    <link rel="stylesheet" href="wuui-master/static/wu-ui/wu-ui.css">
+    <script src="bootstrap-3.4.1-dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="vue/vue.js"></script>
+    <script src="common/js/custom.js"></script>
+    <script src="common/js/vue-clipboard.js"></script>
+    <script src="wuui-master/static/wu-ui/wu-ui.js"></script>
+    <script src="i18/js/i18.js"></script>
+</head>
+<body>
+<div id="app">
+    <template>
+        <div >
+            <div style="text-align: right">
+                <select v-model="language" class="language-select" @change="changeLanguage()">
+                    <option value="Spanish">Spanish</option>
+                    <option value="English">English</option>
+                </select>
+            </div>
+        </div>
+        <div class="show-clabe">
+            <div class="show-type">
+                <span style="font-size: 18px">CLABE:</span>
+            </div>
+            <div class="show-account">
+                <span>{{this.clabe}}</span>
+            </div>
+            <div class="copy-account">
+                <button  class="copy-button"  type="button" v-clipboard:copy="this.clabe" v-clipboard:success="onCopy" v-clipboard:error="onError"> {{$t("message.copy.title")}}
+                </button>
+            </div>
+        </div>
+        <div class="area show">
+            <div class="show-time"></div>
+
+            <div class="show-detail">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-6 show-detail-item">
+                            <span class="item-span">{{$t("message.amount")}}</span>
+                        </div>
+                        <div class="col-xs-6 show-detail-item">
+                            <span class="item-span item-amount" >MXN    {{this.amount}}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 show-detail-item">
+                            <span class="item-span">{{$t("message.orderNo")}}</span>
+                        </div>
+                        <div class="col-xs-6 show-detail-item">
+                            <span class="item-span">{{this.orderId}}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 show-detail-item">
+                            <span class="item-span">{{$t("message.product")}}</span>
+                        </div>
+                        <div class="col-xs-6 show-detail-item">
+                            <span class="item-span">{{this.product}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div >
+            <div class="help-title">
+                <span class="help-title">{{$t("message.help.title")}}</span>
+            </div>
+        </div>
+
+        <div class="area help">
+            <div class="container" style="padding-top: 10px;padding-bottom: 10px">
+                <div class="row help-tip-row">
+                    <div class="col-xs-12 help-text">
+                        <span>{{$t("message.help.step1")}}</span>
+                    </div>
+                    <div class="col-xs-12 help-picture">
+                        <img src="../image/clickCopy.jpg?v=1.0" width="100">
+                    </div>
+                </div>
+                <div class="row help-tip-row">
+                    <div class="col-xs-12 help-text">
+                        <span>{{$t("message.help.step2")}}</span>
+                    </div>
+                    <div class="col-xs-6 help-picture">
+                        <img src="../image/openbank.png" >
+                    </div>
+                    <div class="col-xs-6 help-picture">
+                        <img src="../image/bankexample.jpg?v=2.0" width="100">
+                    </div>
+                </div>
+                <div class="row help-tip-row">
+                    <div class="col-xs-12 help-picture">
+                        <span class="item-span">{{$t("message.help.step3")}}</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div id="image-cover-modal" class="image-cover-modal">
+            <img id="image-cover-image" class="image-cover-modal-content">
+            <div id="image-cover-caption"></div>
+        </div>
+    </template>
+</div>
+</body>
+<script>
+    const messages = {
+        // spanish
+        Spanish: {
+            message: {
+                language: 'Español',
+                copy: {
+                    title: 'Copiar',
+                    success: 'Éxito de la copia'
+                },
+                amount: 'Monto:',
+                orderNo: 'La Orden No:',
+                product: 'Productos:',
+
+                help: {
+                    title: 'Ayuda: pasos de recarga',
+                    step1: '1. En el primer paso, haga clic en \'copiar\' debajo de la cuenta de Clabe en la parte superior y copie la cuenta de Clabe en el tablero de pasta.',
+                    step2: '2. Abra su aplicación de banca móvil y vaya a la interfaz de transferencia de dinero \'STP\'.Pegue la cuenta CLABE copiada en el área correspondiente y rellene otra información relacionada con la transferencia, teniendo en cuenta que el importe de la transferencia debe ser el mismo que el importe del pedido.(el ejemplo más abajo es uno de los bancos, cada uno con una interfaz física diferente.)',
+                    step3: '3. Después de una transferencia exitosa, haga clic en el botón Atrás para verificar el pago.'
+                }
+            }
+        },
+        //英文
+        English: {
+            message: {
+                language: 'English',
+                copy: {
+                    title: 'Copy',
+                    success: 'Copy Success'
+                },
+                amount: 'Amount:',
+                orderNo: 'Order No:',
+                product: 'Product:',
+                help: {
+                    title: 'Recharge Help',
+                    step1: '1. Step one, click \'Copy\' on the top of the Clabe account and copy the Clabe account to the paste board.',
+                    step2: '2. Open your mobile banking APP and enter the "STP" transfer interface.Paste the copy of the Clabe account into the corresponding area and fill in other relevant transfer information. Note that the transfer amount must be the same as the order amount.',
+                    step3: '3. After a successful transfer, please click the back button to verify the payment.'
+                }
+            }
+        }
+    }
+    const i18n = new VueI18n({
+        locale: 'Spanish', // 默认语言
+        messages
+    })
+
+
+    new Vue({
+        el: '#app',
+        i18n,
+        data() {
+            return {
+                language:'Spanish',
+                clabe: this.getQueryVariable('clabe'),
+                amount: number_format(this.getQueryVariable('amount'),2,'.',',','round'),
+                orderId: this.getQueryVariable('orderId'),
+                product: 'productos'
+            }
+        },
+        async created() {
+        },
+        methods: {
+            getQueryVariable(variable) {
+                var query = window.location.search.substring(1);
+                var vars = query.split("&");
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split("=");
+                    if (pair[0] == variable) {
+                        return pair[1];
+                    }
+                }
+                return (false);
+            },
+            onCopy(e) {
+                var wu = new Wu()
+                wu.showToast({
+                    title: this.language === 'Spanish'?'Éxito de la copia':'Copy Success',
+                    mask: false,
+                    icon: 'icon-success',
+                    duration: 3000
+                })
+            },
+            onError(e) {
+                var wu = new Wu()
+                wu.showToast({
+                    title: 'copy fail',
+                    mask: false,
+                    icon: 'icon-success',
+                    duration: 3000
+                })
+            },
+            changeLanguage(){
+                this.$i18n.locale = this.language
+            }
+        }
+    })
+</script>
+<script>
+    // Get the DOM
+    var modal = document.getElementById('image-cover-modal');
+    var modalImg = document.getElementById("image-cover-image");
+    var captionText = document.getElementById("image-cover-caption");
+    var span = document.getElementsByClassName("image-cover-close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    modal.onclick = function() {
+        this.classList.remove("model-shown");
+    }
+
+    var i;
+    for (i = 0; i < document.images.length; i++) {
+
+        // Get the image and insert it inside the modal - use its "alt" text as a caption
+        var img = document.images[i];
+
+        img.onclick = function(){
+            modal.classList.add("model-shown");
+            modalImg.src = this.src;
+            captionText.innerHTML = this.alt;
+        }
+    }
+</script>
+<script>
+
+</script>
+</html>

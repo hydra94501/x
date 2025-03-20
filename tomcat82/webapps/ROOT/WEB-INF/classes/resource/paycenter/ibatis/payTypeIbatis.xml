@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+   <typeAlias alias="payType" type="com.jxt.paycenter.appclient.pojo.PayType"/>
+
+    <select id="PayType.select" resultClass="payType">
+        select * from paytype where Id= #id#
+    </select>
+
+   <select id="PayType.getAll" resultClass="payType">
+       select * from PayType order by sort Desc
+   </select>
+
+</sqlMap>

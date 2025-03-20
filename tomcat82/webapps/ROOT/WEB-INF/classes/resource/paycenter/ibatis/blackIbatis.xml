@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="black" type="com.jxt.paycenter.appclient.pojo.Black"/>
+    <insert id="Black.insert" parameterClass="black">
+        insert into black_list (`country`,type,txt)
+        values (#country#,#type#,#txt#)
+        <selectKey keyProperty="id" resultClass="int">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+    <select id="Black.queryBlack" resultClass="java.lang.String">
+        SELECT txt FROM black_list WHERE ( txt = #mobile# OR txt = #email# OR txt = #ip# OR txt = #bankacount# OR txt = #ifsc#) limit 1
+    </select>
+
+    <select id="Black.getMaxBlackId" resultClass="java.lang.Integer">
+        select max(id) from black_list
+    </select>
+
+    <select id="Black.queryBlackPageList" parameterClass="java.lang.Integer" resultClass="black">
+        SELECT id, txt FROM black_list WHERE 1 = 1 and id > #value# order by id asc limit 4000
+    </select>
+
+    <select id="Black.queryIncrBlackList" parameterClass="java.lang.Integer" resultClass="black">
+        SELECT id, txt FROM black_list WHERE 1 = 1 and id > #value# order by id desc
+    </select>
+
+</sqlMap>

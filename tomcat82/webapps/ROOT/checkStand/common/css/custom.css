@@ -1,0 +1,72 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,
+legend,input,textarea,p,blockquote,th,td,hr,button,article,aside,
+details,figcaption,figure,footer,header,hgroup,menu,nav,section {
+    margin:0;
+    padding:0;
+}
+body{
+    background-size: auto 100%;
+    background-image: linear-gradient(109.6deg, rgb(204, 228, 247) 11.2%, rgb(237, 246, 250) 100.2%);
+}
+.cashier-title {
+    font-size: 14px;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+.show-deal-info{
+    font-family: Georgia;
+    width: 100%;
+    height: 260px;
+    background-image: radial-gradient(circle at -4% -12.9%, rgb(74, 98, 110) 0.3%, rgb(30, 33, 48) 90.2%);border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+.show-info {
+    width: 86%;
+    height: 180px;
+    margin-left: 7%;
+    border-radius: 6px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+    /*考虑浏览器兼容性*/
+    -moz-box-shadow: 10px 10px 10px rgba(0,0,0,.5);
+    -webkit-box-shadow: 10px 10px 10px rgba(0,0,0,.5);
+    background-image: linear-gradient(72.5deg, rgb(0, 175, 255) 27.9%, rgb(0, 224, 254) 84.2%);
+}
+.show-clabe-box{
+
+}
+.show-bank{
+    color: white;
+    font-size: 20px;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+.show-clabe{
+    margin: auto;
+    text-align: center;
+    color: white;
+    font-size: 25px;
+    font-weight: bolder;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+.copy-button {
+    width: 60px;
+    height: 26px;
+    border: 2px solid white;
+    border-radius: 4px;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    background-color: unset;
+}
+.copy-button:active {
+    width: 60px;
+    height: 26px;
+    border: 2px solid white;
+    border-radius: 4px;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    background-color: unset;
+
+}
+.help-step{
+    font-family: Georgia;
+
+}

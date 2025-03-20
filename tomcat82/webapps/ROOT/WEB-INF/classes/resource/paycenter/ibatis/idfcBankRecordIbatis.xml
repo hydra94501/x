@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="idfcBankRecord" type="com.jxt.paycenter.appclient.pojo.IdfcBankRecord"/>
+
+    <select id="IdfcBankRecord.getAll" resultClass="idfcBankRecord">
+        select id,
+               transaction_id as transactionId,
+               payment_type as paymentType,
+               amount,
+               date,
+               from_type as fromType,
+               from_sub as fromSub,
+               `to`,
+               to_sub as toSub,
+               counter_party_name as counterPartyName,
+               remarks,
+               grab_time as grabTime,
+               syncStatus
+        from idfc_public_record
+        where syncStatus = 0
+
+    </select>
+
+    <select id="IdfcBankRecord.listUndeal" resultClass="idfcBankRecord">
+        select id,
+               transaction_id as transactionId,
+               payment_type as paymentType,
+               amount,
+               date,
+               from_type as fromType,
+               from_sub as fromSub,
+               `to`,
+               to_sub as toSub,
+               counter_party_name as counterPartyName,
+               remarks,
+               grab_time as grabTime,
+               syncStatus
+        from idfc_public_record
+        where syncStatus = 0
+    </select>
+
+    <update id="IdfcBankRecord.matchUtrToSuccess" parameterClass="idfcBankRecord">
+        update idfc_public_record
+        set syncStatus = 1
+        where id = #id#
+    </update>
+
+    <update id="IdfcBankRecord.updateSyncStatusSuccess" parameterClass="long">
+        update idfc_public_record
+        set syncStatus = 1
+        where id = #id#
+    </update>
+
+    <update id="IdfcBankRecord.updateSyncStatus" parameterClass="idfcBankRecord">
+        update idfc_public_record
+        set syncStatus = #syncStatus#
+        where id = #id#
+    </update>
+
+    <select id="IdfcBankRecord.queryBankRecordByUtr" parameterClass="String"
+            resultClass="idfcBankRecord">
+        select id,
+               transaction_id as transactionId,
+               payment_type as paymentType,
+               amount,
+               date,
+               from_type as fromType,
+               from_sub as fromSub,
+               `to`,
+               to_sub as toSub,
+               counter_party_name as counterPartyName,
+               remarks,
+               grab_time as grabTime,
+               syncStatus
+        from idfc_public_record
+        where transaction_id = #chequeNumber#
+    </select>
+
+
+</sqlMap>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+    <typeAlias alias="cpInfo" type="com.jxt.paycenter.appclient.pojo.CpInfo"/>
+
+    <select id="CpInfo.getAll" resultClass="cpInfo">
+        select *
+        from CpInfo
+    </select>
+
+    <select id="CpInfo.select" parameterClass="int" resultClass="cpInfo">
+        select *
+        from CpInfo
+        where AppId = #appId#
+    </select>
+
+    <update id="CpInfo.addPayRequest" parameterClass="map">
+        update CpInfo
+        set TotalPayRequest = TotalPayRequest + #amount#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.addPay1" parameterClass="map">
+        update CpInfo
+        set TotalPay     = TotalPay + #amount#,
+            TotalPayFee  = TotalPayFee + #fee#,
+            Remain       = Remain + #remain#,
+            TotalPayNum  = TotalPayNum + 1,
+            ActualRemain = ActualRemain + #remain#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.addPay" parameterClass="map">
+        update CpInfo
+        set TotalPay    = TotalPay + #amount#,
+            TotalPayFee = TotalPayFee + #fee#,
+            Remain      = Remain + #remain#,
+            TotalPayNum = TotalPayNum + 1
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.addWithdraw" parameterClass="map">
+        update CpInfo
+        set TotalWithdraw    = TotalWithdraw + #amount#,
+            TotalWithdrawFee = TotalWithdrawFee + #fee#,
+            Remain           = Remain - #remain#,
+            ActualRemain     = ActualRemain - #remain#
+        where AppId = #appId#
+          and ActualRemain + CreditRemain >= #remain#
+    </update>
+
+    <update id="CpInfo.addWithdraw1" parameterClass="map">
+        update CpInfo
+        set TotalWithdraw    = TotalWithdraw + #amount#,
+            TotalWithdrawFee = TotalWithdrawFee + #fee#,
+            Remain           = Remain - #remain#,
+            ActualRemain     = ActualRemain - #remain#
+        where AppId = #appId#
+    </update>
+    <update id="CpInfo.addWithdrawNum" parameterClass="int">
+        update CpInfo
+        set TotalWithdrawNum = TotalWithdrawNum + 1
+        where AppId = #appId#
+    </update>
+    <update id="CpInfo.subWithdraw" parameterClass="map">
+        update CpInfo
+        set TotalWithdraw    = TotalWithdraw - #amount#,
+            TotalWithdrawFee = TotalWithdrawFee - #fee#,
+            Remain           = Remain + #remain#,
+            ActualRemain     = ActualRemain + #remain#
+        where AppId = #appId#
+    </update>
+    <update id="CpInfo.addCpInfoRemain" parameterClass="map">
+        update cpinfo
+        set remain      = remain + #remain# + #fee#,
+           TotalWithdrawFee = TotalWithdrawFee - #fee#,
+            ActualRemain=ActualRemain + #remain# + #fee#
+        where AppId = #appId#
+    </update>
+
+
+    <update id="CpInfo.updateConfirmMin" parameterClass="com.jxt.paycenter.appclient.dto.CpInfoReqDTO">
+        update cpinfo
+        set confirmMin    = #confirmMin#,
+            confirmStatus = #confirmStatus#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateCpInfoByTempStatus" parameterClass="Long">
+        UPDATE cpinfo a,
+            withdrawlog w,(
+            SELECT
+                id,
+                AppId,
+                Amount AS Amount,
+                PlatformFee AS Fee,
+                Amount + PlatformFee AS Remain
+            FROM
+                withdrawlog
+            WHERE
+                STATUS = - 4
+              AND Id = #id#
+        ) b
+        SET a.TotalWithdraw = a.TotalWithdraw - b.Amount,
+            a.TotalWithdrawFee = a.TotalWithdrawFee - b.Fee,
+            a.Remain = a.Remain + b.Remain,
+            a.ActualRemain = a.ActualRemain + b.Remain,
+            w.`Status` = - 2
+        WHERE
+            a.AppId = b.AppId
+          AND w.Id = #id#;
+    </update>
+</sqlMap>

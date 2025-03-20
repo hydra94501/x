@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="db">
+    <typeAlias alias="WorkOrderReply" type="com.jxt.paycenter.appclient.pojo.WorkOrderReply"/>
+
+    <!--新增所有列-->
+    <insert id="WorkOrderReply.insert" parameterClass="WorkOrderReply">
+        insert into work_order_reply(work_order_id, content, username, create_time, group_id, message_id, order_text)
+        values (#workOrderId#, #content#, #username#, #createTime#, #groupId#, #messageId#, #orderText#)
+    </insert>
+
+
+</sqlMap>
+
+

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="MoneyLog" type="com.jxt.paycenter.appclient.pojo.MoneyLog"/>
+    <typeAlias alias="WithdrawLog" type="com.jxt.paycenter.appclient.pojo.WithdrawLog"/>
+    <insert id="MoneyLog.insert" parameterClass="MoneyLog">
+        INSERT INTO moneylog ( AppId, Type, SceneInfo, FrontMoney, Money, QueenMoney, Details, CreateTime, Notes,
+        OrderId , LogId )
+        VALUES
+        (#appId#,#type#,#sceneInfo#,#frontMoney#,#money#,#queenMoney#,#details#,#createTime#,#notes#,#orderId#,#logId#)
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+    <select id="MoneyLog.selectByOrderId" parameterClass="WithdrawLog" resultClass="MoneyLog">
+        select *
+        from moneylog
+        where UPPER(logId) = UPPER(#id#) and UPPER(orderId) = UPPER(#orderId#)
+    </select>
+</sqlMap>

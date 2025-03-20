@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+   <typeAlias alias="withdrawLogAdmin" type="com.jxt.paycenter.appclient.pojo.WithdrawLogAdmin"/>
+
+
+
+   <select id="WithdrawLogAdmin.listUndeal" resultClass="withdrawLogAdmin">
+   	select * from withdrawlogadmin
+   	where Status = 0
+   	order by Id asc limit 100
+   </select>
+
+   <select id="WithdrawLogAdmin.listQuery" resultClass="withdrawLogAdmin">
+   	select * from withdrawlogadmin
+   	where Status = 1
+   	order by Id asc limit 100
+   </select>
+
+   <update id="WithdrawLogAdmin.updateStatus" parameterClass="withdrawLogAdmin">
+   	update withdrawlogadmin
+   	set Status = #status#
+   	where Id = #id#
+   </update>
+
+   <update id="WithdrawLogAdmin.updateWithdrawType" parameterClass="withdrawLogAdmin">
+   	update withdrawlogadmin
+   	set Status = #status#, WithdrawTypeId = #withdrawTypeId#, ThirdFee = #thirdFee#
+   	<isNotEmpty property="transactionNum">
+   	,TransactionNum=#transactionNum#
+   	</isNotEmpty>
+   	where Id = #id#
+   </update>
+
+   <update id="WithdrawLogAdmin.updateSucc" parameterClass="withdrawLogAdmin">
+   	update withdrawlogadmin
+   	set Status = #status#, TransactionNum = #transactionNum#,WithdrawTime = #withdrawTime#,
+   		WithdrawDay = #withdrawDay#
+   	where Id = #id# and Status = 1
+   </update>
+
+   <select id="WithdrawLogAdmin.listNeedSync" resultClass="withdrawLogAdmin">
+   	<![CDATA[
+   	select * from withdrawlogadmin
+   	where status in (2, -2) and ((SyncCnt <= -1 and NextSyncTime <= now()) or SyncCnt = 0)
+   	order by Id asc limit 100
+   	]]>
+   </select>
+
+   <update id="WithdrawLogAdmin.updateSync" parameterClass="withdrawLogAdmin">
+   	update withdrawlogadmin
+   	set SyncCnt = #syncCnt#, NextSyncTime = #nextSyncTime#
+   	where Id = #id#
+   </update>
+</sqlMap>

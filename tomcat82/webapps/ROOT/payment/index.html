@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html lang="en" style="font-size: 23.9375px;">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Upi Payment Gateway</title>
+    <link rel="stylesheet" href="./files/layui.css">
+    <script src="./files/jquery.min.js"></script>
+    <script src="./files/layui.js"></script>
+
+    <link id="layuicss-layer" rel="stylesheet" href="./files/layer.css" media="all">
+    <link id="layuicss-skincodecss" rel="stylesheet" href="./files/code.css" media="all">
+    <script src="./files/clipboard.min.js"></script>
+    <script src="./files/qrcode.min.js"></script>
+    <style>
+        body {
+            background: #F8F8F8;
+        }
+
+        header {
+            background: url("./static/imgs/bg.png");
+            height: 6.5rem;
+            background-size: 100% 100%;
+            position: relative;
+        }
+
+        header nav {
+            padding-top: env(safe-area-inset-top, 24);
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header nav .title {
+            text-align: center;
+            font-size: 20px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #FFFFFF;
+        }
+
+        .amount-card {
+            border-radius: 16px;
+            background-color: #fff;
+            box-shadow: 0px 4px 9px 0px rgba(86, 106, 255, 0.13);
+        }
+
+        .amount-card {
+            margin: 0 .6rem;
+            margin-top: .5rem;
+            border-radius: .6rem;
+            padding: .7rem 1rem;
+            box-shadow: 0px 4px 9px 0px rgba(86, 106, 255, 0.13);
+        }
+
+        .amount-card .tip {
+            font-size: .9rem;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.1rem;
+        }
+
+        .amount-card .count {
+            font-size: 1.4rem;
+            font-family: DINAlternate-Bold, DINAlternate;
+            font-weight: bold;
+            color: #566AFF;
+            line-height: 1.6rem;
+            margin-top: .5rem;
+        }
+
+        main {
+            margin-top: .9rem;
+            background: #FFFFFF;
+            border-radius: .7rem .7rem 0px 0px;
+        }
+
+        .steps {
+            padding: 12px 16px;
+            padding-top: 0;
+        }
+
+        .step-item {
+            padding-bottom: .5rem;
+            border-left: 1px dashed #B9B3B3;
+            padding-left: 1rem;
+        }
+
+        .step-item .title {
+            font-size: .4rem;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: #566AFF;
+            line-height: .8rem;
+        }
+
+        .step-item:first-child .step-card {
+            flex-wrap: nowrap;
+        }
+
+        .step-item .step-card {
+            background: #FFFFFF;
+            box-shadow: 0px 4px 9px 0px rgba(86, 106, 255, 0.13);
+            border-radius: .7rem;
+            padding: .5rem .7rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .step-card1 {
+            background: #FFFFFF;
+            box-shadow: 0px 4px 9px 0px rgba(86, 106, 255, 0.13);
+            border-radius: .7rem;
+            padding: .5rem .7rem;
+        }
+        .step-card1-div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            margin-bottom: .3rem;
+        }
+
+        .step-item:last-child .step-card {
+            padding: .4rem .7rem;
+            border: 1px solid #566AFF;
+            margin-top: 10px;
+        }
+
+        .upi-address {
+            font-size: .6rem;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.1rem;
+            word-break: break-all;
+            margin-right: 5px;
+        }
+
+        .copy-btn {
+            border: none;
+            width: 2.9rem;
+            height: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: .8rem;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: 500;
+            color: #FFFFFF;
+            background: url("./static/imgs/btn-bg.png");
+            background-size: 100% 100%;
+        }
+
+        .pay-methods {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .pay-method {
+            padding-left: .7rem;
+            box-sizing: border-box;
+            width: 5.9rem;
+            height: 1.8rem;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.09);
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .pay-methods + .tip {
+            font-size: .5rem;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #333;
+            line-height: .8rem;
+
+        }
+
+        .pay-methods + .tip span {
+            color: #FF3844;
+        }
+
+        .pay-method .step-card .label {
+            font-size: .7rem;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #333333;
+            line-height: 1.1rem;
+        }
+
+        .step-card .utr {
+            border: 0;
+            height: 1.1rem;
+            font-size: .6rem;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #333333;
+            line-height: 1.1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .submit-btn {
+            position: fixed;
+            left: 1.792rem;
+            bottom: 10px;
+            bottom: calc(10px + env(safe-area-inset-bottom));
+            bottom: calc(10px + constant(safe-area-inset-bottom));
+            width: 12.228rem;
+            height: 1.9rem;
+            background: url("./static/imgs/btn-large-bg.png");
+            background-size: 100% 100%;
+            display: flex;
+            justify-content: center;
+            border-radius: 1.9rem;
+            align-items: center;
+            font-size: .8rem;
+            font-family: PingFangSC-Semibold, PingFang SC;
+            font-weight: 600;
+            color: #F2F2F2;
+        }
+
+        .disabled {
+            background: #666;
+        }
+
+
+        #layui-layer1 .layui-layer-content {
+            height: 46vh;
+        }
+
+        .title-box-title-color {
+            color: red;
+        }
+
+        #qrcode {
+
+            display: flex;
+            justify-content: center;
+        }
+
+        .amount-card {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .amount-card img {
+            width: 2.7rem;
+            height: 2.7rem;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body style="">
+<header>
+    <nav>
+        <div class="title">Payment</div>
+    </nav>
+    <div class="amount-card">
+        <img src="./files/tspay.png" alt="">
+        <div class="amount">
+            <div class="tip">Amount Payable</div>
+            <div class="count"></div>
+        </div>
+        <div class="video"></div>
+    </div>
+</header>
+<main>
+    <div class="steps" style="padding-bottom: 50px;">
+        <div class="step-item">
+            <div class="title">1. Copy bank Information</div>
+            <div class="step-card1">
+                <div class="step-card1-div">
+                    <span>Amount: </span>
+                    <div id="amount" class="upi-address"></div>
+                    <button id="copyBtn1" class="copy-btn" onclick='copy("amount")'>copy</button>
+                </div>
+                <div class="step-card1-div">
+                    <span>CardNo: </span>
+                    <div id="cardNo" class="upi-address"></div>
+                    <button id="copyBtn2" class="copy-btn" onclick='copy("cardNo")'>copy</button>
+                </div>
+                <div class="step-card1-div">
+                    <span>Name: </span>
+                    <div id="name" class="upi-address"></div>
+                    <button id="copyBtn3" class="copy-btn" onclick='copy("name")'>copy</button>
+                </div>
+                <div class="step-card1-div">
+                    <span>IFSC: </span>
+                    <div id="branchCode" class="upi-address"></div>
+                    <button id="copyBtn4" class="copy-btn" onclick='copy("branchCode")'>copy</button>
+                </div>
+            </div>
+<!--            <div class="step-card">-->
+<!--                <span>CardNo: </span>-->
+<!--                <div id="cardNo" class="upi-address"></div>-->
+<!--                <button id="copyBtn2" class="copy-btn" onclick='copy("cardNo")'>copy</button>-->
+<!--            </div>-->
+<!--            <div class="step-card">-->
+<!--                <span>BankCode: </span>-->
+<!--                <div id="bankCode" class="upi-address"></div>-->
+<!--                <button id="copyBtn3" class="copy-btn" onclick='copy("bankCode")'>copy</button>-->
+<!--            </div>-->
+<!--            <div class="step-card">-->
+<!--                <span>BranchCode: </span>-->
+<!--                <div id="branchCode" class="upi-address"></div>-->
+<!--                <button id="copyBtn4" class="copy-btn" onclick='copy("branchCode")'>copy</button>-->
+<!--            </div>-->
+        </div>
+        <div class="step-item">
+            <div class="title">2.Choose upi app for payment</div>
+            <div class="step-card">
+                <div class="pay-methods">
+                    <div class="pay-method" data-uri="paytmmp://upi">
+                        <img src="./files/paytm.png" alt="" style="width: 3.45rem; height: 1.23rem">
+                    </div>
+                    <div class="pay-method" data-uri="phonepe://upi">
+                        <img src="./files/phonepe.png" alt="" style="width: 4.05rem; height: 1.49rem">
+                    </div>
+                    <div class="pay-method" data-uri="gpay://upi">
+                        <img src="./files/gpay.png" alt="" style="width: 2.21rem; height: 1rem">
+                    </div>
+                    <div class="pay-method" data-uri="upi://pay">
+                        <img src="./files/upi.png" alt="" style="width: 2.21rem; height: .8rem">
+                    </div>
+                </div>
+                <div class="tip"><span>Tip: </span>If you can't open the app, go to the app yourself and transfer
+                    money.After copying the UPI id
+                </div>
+            </div>
+        </div>
+        <div class="step-item">
+            <div class="title">Enter ref No. and submit order</div>
+            <div class="step-card">
+                <div class="label">Ref No</div>
+                <input type="text" class="utr" placeholder="Please enter the UTR!">
+            </div>
+        </div>
+    </div>
+    <div class="submit-btn disabled">submit order</div>
+</main>
+<script>
+    (function (doc, win) {
+        var docE1 = doc.documentElement,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+            recalc = function () {
+                var clientWidth = docE1.clientWidth;
+                if (!clientWidth) return;
+                docE1.style.fontSize = 20 * (clientWidth / 320) + 'px';
+            };
+
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+        doc.addEventListener('DOMContentLoaded', recalc, false);
+    })(document, window);
+</script>
+<script>
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+
+    function copy(clsName) {
+      var $clipboard = new Clipboard(".copy-btn", {
+          target: function () {
+              return document.querySelector('#' + clsName);
+          }
+      })
+      $clipboard.on("success", function () {
+        $("#logImg").attr("src", "log.jsp?param=tspay_copy_success_"+orderId);
+        layer.msg("copy success", {
+          maxHeight: '50px',
+        });
+      })
+      $clipboard.on('error', function(e) {
+        $("#logImg").attr("src", "log.jsp?param=tspay_copy_error_"+orderId);
+      });
+    }
+</script>
+<script>
+    var orderId = 0
+    var name = ''
+    var branchCode = ''
+    var callbackUrl = ''
+
+    $(function () {
+        orderId = getUrlParam('orderId')
+        $("#logImg").attr("src", "log.jsp?param=tspay_start_" + orderId);
+        $.post("/upi/getPayment", {orderId: orderId}, function (res) {
+            if (res.code === 1) {
+                $(".count").html("&#x20B9; " + Number(res.data.amount * 0.01).toFixed(2))
+                $("#amount").html(Number(res.data.amount * 0.01).toFixed(2))
+                $("#cardNo").html(res.data.cardNum)
+
+                name = getUrlParam('name')
+                branchCode = getUrlParam('branchCode')
+
+                $("#name").html(name)
+                $("#branchCode").html(branchCode)
+                callbackUrl = res.data.callbackUrl
+                $("#logImg").attr("src", "log.jsp?param=tspay_loaded_" + orderId);
+            } else {
+                layer.msg("load data fail");
+            }
+        }, 'json')
+    })
+
+
+    layer.open({
+        id: "dialog",
+        title: "Confirm",
+        content: `<div data-v-d3b2922e="" class="title-box-title">*After the payment is successful, you <b data-v-d3b2922e="" class="title-box-title-color">must</b> coming back here to <b data-v-d3b2922e="" class="title-box-title-color">submit</b> the Ref/UTR No.(<b data-v-d3b2922e="" class="title-box-title-color">12 digits</b>) Only then your money be reached to the account.</div><img src="./static/imgs/screenshoot.png" style="width: 80vw" />`,
+        btn: ["confirm"],
+        maxHeight: "70vh",
+    })
+    $(".utr").on("focus", function () {
+        $("#logImg").attr("src", "log.jsp?param=tspay_utr_focus_" + orderId);
+        var target = this;
+        $(this).parents(".step-card").css("position", "fixed").css("bottom", "90px").css("right", "10%").css("left", "10%")
+    }).on("blur", function () {
+        $(this).parents(".step-card").css("position", "static")
+    })
+    $(".pay-method").click(function () {
+        $("#logImg").attr("src", "log.jsp?param=tspay_pay_method_" + orderId);
+        var url = $(this).data("uri")
+        location.href = url;
+    })
+    $(".utr").on("input", function () {
+        var val = $(".utr").val();
+        if (!val || val.length < 12) $(".submit-btn").addClass("disabled")
+        else $(".submit-btn").removeClass("disabled")
+    })
+    $(".submit-btn").click(function () {
+        $("#logImg").attr("src", "log.jsp?param=tspay_submit_" + orderId);
+        var $this = $(this)
+        if ($this.hasClass("disabled")) {
+            return layer.msg("Please enter utr!");
+        }
+        $.post("/paylog/updatePayLogUTR", {
+            rastreo: $(".utr").val(),
+            id: getUrlParam('orderId')
+        }).then((resp) => {
+            $("#logImg").attr("src", "log.jsp?param=tspay_submit_done_" + orderId);
+            console.log(resp)
+            const code = resp.code
+            const data = resp.data
+            if (code === 0) {
+                location.href = callbackUrl
+            }
+        })
+    })
+</script>
+<div class="layui-layer-move" id="layui-layer-move"></div>
+<img id='logImg' style='width:1px; height:1px'/>
+</body>
+</html>

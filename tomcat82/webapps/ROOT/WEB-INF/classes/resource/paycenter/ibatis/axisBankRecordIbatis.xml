@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="axisBankRecord" type="com.jxt.paycenter.appclient.pojo.AxisBankRecord"/>
+
+    <select id="AxisBankRecord.getAll" resultClass="axisBankRecord">
+        select id,
+               transaction_id as transactionId,
+               payment_type as paymentType,
+               amount,
+               date,
+               `desc` ,
+               grab_time as grabTime,
+               syncStatus
+        from axis_bank_record
+        where syncStatus = 0
+    </select>
+
+    <select id="AxisBankRecord.listUndeal" resultClass="axisBankRecord">
+        select id,
+               transaction_id as transactionId,
+               payment_type as paymentType,
+               amount,
+               date,
+               `desc`,
+               grab_time as grabTime,
+               syncStatus
+        from axis_bank_record
+        where syncStatus = 0
+    </select>
+
+    <update id="AxisBankRecord.matchUtrToSuccess" parameterClass="axisBankRecord">
+        update axis_bank_record
+        set syncStatus = 1
+        where id = #id#
+    </update>
+
+    <update id="AxisBankRecord.updateSyncStatusSuccess" parameterClass="long">
+        update axis_bank_record
+        set syncStatus = 1
+        where id = #id#
+    </update>
+
+    <update id="AxisBankRecord.updateSyncStatus" parameterClass="axisBankRecord">
+        update axis_bank_record
+        set syncStatus = #syncStatus#
+        where id = #id#
+    </update>
+
+    <select id="AxisBankRecord.queryBankRecordByUtr" parameterClass="String"
+            resultClass="axisBankRecord">
+        select id,
+               transaction_id as transactionId,
+               payment_type as paymentType,
+               amount,
+               date,
+               `desc`,
+               grab_time as grabTime,
+               syncStatus
+        from axis_bank_record
+        where transaction_id = #chequeNumber#
+    </select>
+
+
+</sqlMap>

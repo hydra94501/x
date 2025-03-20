@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<!--    <bean id="paycenter_dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+<!--        &lt;!&ndash;		<property name="url" value="jdbc:mysql://rm-a2dm9e44shj66q6ifco.mysql.ap-south-1.rds.aliyuncs.com:3306/paycenter?useUnicode=true&amp;characterEncoding=GBK"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="username" value="geepay_user"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="password" value="IvM@ck#z9$Eqy3KGBA"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="url" value="jdbc:mysql://10.0.0.52:3306/paycenter?useUnicode=true&amp;characterEncoding=GBK"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="username" value="root"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="password" value="123456"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="url" value="jdbc:mysql://localhost:3306/paycenter?useUnicode=true&amp;characterEncoding=GBK"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="username" value="root"/>&ndash;&gt;-->
+<!--        &lt;!&ndash;		<property name="password" value="Aa123$%^"/>&ndash;&gt;-->
+
+<!--        &lt;!&ndash; 线上 &ndash;&gt;-->
+<!--        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>-->
+<!--        <property name="url" value="jdbc:mysql://localhost:3306/paycenter?useUnicode=true&amp;characterEncoding=GBK"/>-->
+<!--        <property name="username" value="paycenter"/>-->
+<!--        <property name="password" value="Aa123$%^"/>-->
+
+<!--        &lt;!&ndash; mysql8本地 &ndash;&gt;-->
+<!--        &lt;!&ndash;<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>-->
+<!--        <property name="url" value="jdbc:mysql://localhost:3306/paycenter?useSSL=false&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>-->
+<!--        <property name="username" value="root"/>-->
+<!--        <property name="password" value="root"/>&ndash;&gt;-->
+<!--    </bean>-->
+
+    <bean id="paycenter_dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=GBK"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+
+<!--        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>-->
+<!--        <property name="url" value="jdbc:mysql://localhost:3306/paycenter?useSSL=false&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>-->
+<!--        <property name="username" value="root"/>-->
+
+<!--        password: Xw%N0wd2e@7F.V-->
+        <!--        type: com.zaxxer.hikari.HikariDataSource-->
+<!--        url: jdbc:mysql://34.150.92.75:3306/shortVideo?useUnicode=true&characterEncoding=utf8&useSSL=false-->
+<!--        username: root-->
+<!--        -->
+        <!--连接池中保留的最小连接数。-->
+        <property name="minIdle" value="10"/>
+        <!--初始连接池中的连接数，该值应在minPoolSie与maxPoolSize之间 -->
+        <property name="initialSize" value="20"/>
+        <!--连接池中保留的最大连接数。Default: 15 -->
+        <property name="maxActive" value="100"/>
+        <!-- 配置获取连接等待超时的时间，单位是毫秒 -->
+        <property name="maxWait" value="60000"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="2000"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="600000"/>
+        <!-- 配置一个连接在池中最大生存的时间，单位是毫秒 -->
+        <property name="maxEvictableIdleTimeMillis" value="900000"/>
+        <!-- 用来检测连接是否有效的sql，要求是一个查询语句。-->
+        <!-- ## 如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会其作用 -->
+        <property name="validationQuery" value="select 1 from dual"/>
+        <!--建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，-->
+        <!-- ##如果空闲时间大于 timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有 -->
+        <property name="testWhileIdle" value="true"/>
+        <!-- 申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能 -->
+        <property name="testOnBorrow" value="false"/>
+        <!-- 归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能 -->
+        <property name="testOnReturn" value="false"/>
+        <!-- 后续再做补充 -->
+        <property name="keepAlive" value="true"/>
+        <property name="phyMaxUseCount" value="100000"/>
+        <!-- 拦截器 配置日志监控 -->
+        <property name="filters" value="stat"/>
+        <!-- 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭 -->
+        <property name="poolPreparedStatements" value="true"/>
+        <!-- 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。-->
+        <!-- 在Druid中，不会存在Oracle下PSCache占用内存过多的问题 -->
+        <property name="maxOpenPreparedStatements" value="100"/>
+    </bean>
+
+
+</beans>

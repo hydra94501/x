@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+    <bean id="blackService" class="com.jxt.paycenter.appclient.service.BlackService">
+        <property name="blackHandler" ref="blackHandler"/>
+    </bean>
+
+    <bean id="withdrawService" class="com.jxt.paycenter.appclient.service.WithdrawService">
+        <property name="withdrawFactory" ref="withdrawFactory"/>
+        <property name="withdrawLogHandler" ref="withdrawLogHandler"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="moneyLogHandler" ref="moneyLogHandler"/>
+        <property name="withdrawLogConfimHelper" ref="withdrawLogConfimHelper"/>
+        <property name="limitDailyAmountService" ref="limitDailyAmountService"/>
+    </bean>
+
+    <bean id="cpService" class="com.jxt.paycenter.appclient.service.CpService">
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="agentHelper" ref="agentHelper"/>
+        <property name="agentHandler" ref="agentHandler"/>
+    </bean>
+    <bean id="statisticsService" class="com.jxt.paycenter.appclient.service.StatisticsService">
+        <property name="payTypeHelper" ref="payTypeHelper"/>
+    </bean>
+
+    <bean id="upiOrderService" class="com.jxt.paycenter.appclient.service.UpiOrderService">
+        <property name="upiOrderHandler" ref="upiOrderHandler"/>
+    </bean>
+
+    <bean id="limitDailyAmountService" class="com.jxt.paycenter.appclient.service.LimitDailyAmountService">
+        <property name="payLogHandler" ref="payLogHandler"/>
+        <property name="withdrawLogHandler" ref="withdrawLogHandler"/>
+    </bean>
+
+    <bean id="notifyService" class="com.jxt.paycenter.appclient.service.NotifyService">
+        <property name="payFactory" ref="payFactory"/>
+        <property name="payLogHandler" ref="payLogHandler"/>
+        <property name="payTypeHelper" ref="payTypeHelper"/>
+        <property name="cpService" ref="cpService"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+        <property name="statisticsService" ref="statisticsService"/>
+        <property name="limitDailyAmountService" ref="limitDailyAmountService"/>
+    </bean>
+    <bean id="payService" class="com.jxt.paycenter.appclient.service.PayService">
+        <property name="payFactory" ref="payFactory"/>
+        <property name="payLogHandler" ref="payLogHandler"/>
+        <property name="payTypeHelper" ref="payTypeHelper"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="orderLogHandler" ref="orderLogHandler"/>
+        <property name="bankRecordHandler" ref="bankRecordHandler"/>
+        <property name="notifyService" ref="notifyService"/>
+        <property name="limitDailyAmountService" ref="limitDailyAmountService"/>
+        <property name="blackService" ref="blackService"/>
+    </bean>
+
+
+</beans>

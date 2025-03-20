@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="uPICopyRecord" type="com.jxt.paycenter.appclient.pojo.UPICopyRecord"/>
+
+    <select id="UPICopyRecord.getAll" resultClass="uPICopyRecord">
+        select *
+        from yesbankrecord1 where syncStatus = 0
+
+    </select>
+
+    <select id="UPICopyRecord.listUndeal" resultClass="uPICopyRecord">
+        select *
+        from yesbankrecord1
+        where syncStatus = 0
+    </select>
+
+    <update id="UPICopyRecord.matchUtrToSuccess" parameterClass="com.jxt.paycenter.appclient.pojo.UPICopyRecord" >
+        update yesbankrecord1
+        set description = #description#,
+            syncStatus  = 1
+        where id = #id#
+    </update>
+
+    <update id="UPICopyRecord.updateSyncStatusSuccess" parameterClass="long" >
+        update yesbankrecord1
+        set   syncStatus  = 1
+        where id = #id#
+    </update>
+
+	<update id="UPICopyRecord.updateSyncStatus" parameterClass="uPICopyRecord" >
+        update yesbankrecord1
+        set   syncStatus  = #syncStatus#
+        where id = #id#
+    </update>
+
+    <select id="UPICopyRecord.queryYesBankRecordByUtr" parameterClass="String"
+            resultClass="uPICopyRecord">
+        select id, TransactionDate, ChequeNumber, Description, Type, FromAccount, Amount, Account, syncStatus
+        from yesbankrecord1
+        where ChequeNumber = #chequeNumber#
+    </select>
+
+
+</sqlMap>

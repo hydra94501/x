@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+   <typeAlias alias="agent" type="com.jxt.paycenter.appclient.pojo.Agent"/>
+
+   <select id="Agent.getAll" resultClass="agent">
+       select * from Agent
+   </select>
+
+   <update id="Agent.addPay" parameterClass="agent">
+   	update Agent
+   	set TotalPay = TotalPay + #totalPay#, TotalPayFee = TotalPayFee + #totalPayFee#,
+   		Remain = Remain + #remain#,
+   		  TotalPayNum = TotalPayNum + 1
+   	where Id = #id#
+   </update>
+
+   <update id="Agent.addWithdraw" parameterClass="agent">
+   	update Agent
+   	set TotalWithdraw = TotalWithdraw + #totalWithdraw#, TotalWithdrawFee = TotalWithdrawFee + #totalWithdrawfee#,
+   		Remain = Remain + #remain#,
+   		TotalWIthdrawNum = TotalWIthdrawNum + 1
+   	where Id = #id#
+   </update>
+</sqlMap>

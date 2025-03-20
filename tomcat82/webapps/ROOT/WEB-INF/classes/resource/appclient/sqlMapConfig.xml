@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+    <!--settings
+        cacheModelsEnabled="true"
+        enhancementEnabled="true"
+        lazyLoadingEnabled="true"
+        maxRequests="512"
+        maxSessions="128"
+        maxTransactions="32"
+        useStatementNamespaces="false"
+    /-->
+
+
+	<sqlMap resource="resource/paycenter/ibatis/cpInfoIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/agentIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/payTypeIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/payLogIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/withdrawTypeIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/withdrawLogIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/bankInfoIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/withdrawLogAdminIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/orderLogIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/moneylogIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/upiOrderIbatis.xml"/>
+	<!--<sqlMap resource="resource/paycenter/ibatis/icIcBankRecordIbatis.xml"/>-->
+	<!--<sqlMap resource="resource/paycenter/ibatis/yesBankRecordIbatis.xml"/>-->
+	<!--<sqlMap resource="resource/paycenter/ibatis/idfcBankRecordIbatis.xml"/>-->
+	<!--<sqlMap resource="resource/paycenter/ibatis/indusindBankRecordIbatis.xml"/>-->
+	<sqlMap resource="resource/paycenter/ibatis/bankRecordIbatis.xml"/>
+	<!--<sqlMap resource="resource/paycenter/ibatis/tagpayAccountIbatis.xml"/>-->
+	<sqlMap resource="resource/paycenter/ibatis/workOrderIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/workOrderReplyIbatis.xml"/>
+	<sqlMap resource="resource/paycenter/ibatis/blackIbatis.xml"/>
+
+
+</sqlMapConfig>

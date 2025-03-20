@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="bankRecord" type="com.jxt.paycenter.appclient.pojo.BankRecord"/>
+
+    <select id="BankRecord.getAll" resultClass="bankRecord">
+        select id,
+               transaction_id as transactionId,
+               bank_type as bankType,
+               payment_type as paymentType,
+               amount,
+               date,
+               `desc` ,
+               grab_time as grabTime,
+               syncStatus
+        from bank_record
+        where syncStatus = 0
+    </select>
+
+    <select id="BankRecord.listUndeal" resultClass="bankRecord">
+        select id,
+               transaction_id as transactionId,
+               bank_type as bankType,
+               payment_type as paymentType,
+               amount,
+               date,
+               `desc`,
+               grab_time as grabTime,
+               syncStatus
+        from bank_record
+        where syncStatus = 0
+    </select>
+
+    <select id="BankRecord.listWarn" resultClass="bankRecord">
+        SELECT
+            id,
+            amount,
+            `desc`,
+            date,
+            grab_time as grabTime
+        FROM
+            bank_record
+        WHERE
+            type = 0
+          AND notify_flag = 0
+    </select>
+
+    <update id="BankRecord.matchUtrToSuccess" parameterClass="bankRecord">
+        update bank_record
+        set syncStatus = 1
+        where id = #id#
+    </update>
+
+    <update id="BankRecord.updateSyncStatusSuccess" parameterClass="long">
+        update bank_record
+        set syncStatus = 1
+        where id = #id#
+    </update>
+
+    <update id="BankRecord.updateNotifyFlag" parameterClass="long">
+        update bank_record
+        set notify_flag = 1
+        where id = #id#
+    </update>
+
+    <update id="BankRecord.updateSyncStatus" parameterClass="bankRecord">
+        update bank_record
+        set syncStatus = #syncStatus#
+        where id = #id# AND syncStatus = 0
+    </update>
+
+    <update id="BankRecord.updateRepairSyncStatus" parameterClass="bankRecord">
+        update bank_record
+        set syncStatus = #syncStatus#
+        where id = #id#
+    </update>
+
+    <select id="BankRecord.queryBankRecordByUtr" parameterClass="String"
+            resultClass="bankRecord">
+        select id,
+               transaction_id as transactionId,
+               bank_type as bankType,
+               payment_type as paymentType,
+               amount,
+               date,
+               `desc`,
+               grab_time as grabTime,
+               syncStatus
+        from bank_record
+        where transaction_id = #chequeNumber#
+    </select>
+
+    <!--查询最近的一条转入记录-->
+    <select id="BankRecord.queryLast" resultClass="bankRecord">
+        SELECT Id, grab_time as grabTime, payTypeId FROM bank_record where type = 1 ORDER BY grab_time DESC LIMIT 1
+    </select>
+
+    <select id="BankRecord.getSyncStatusByUtr" parameterClass="String" resultClass="java.lang.Integer">
+        SELECT syncStatus FROM bank_record where transaction_id = #utr# and type = 1 LIMIT 1
+    </select>
+
+</sqlMap>

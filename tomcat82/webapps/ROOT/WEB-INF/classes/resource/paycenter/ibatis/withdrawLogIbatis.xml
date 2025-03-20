@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+    <typeAlias alias="withdrawLog" type="com.jxt.paycenter.appclient.pojo.WithdrawLog"/>
+
+    <insert id="WithdrawLog.insert" parameterClass="withdrawLog">
+        insert into WithdrawLog (AppId, OrderId, Amount, Type, BankCardNo, BankCode, BankAccountName, BranchCode, Email,
+        Mobile, Status, CreateTime,createOrderTime ,PlatformFee, CreateDay, NotifyUrl,
+        Currency,AgentId,AgentFee,AccountType,AccountDigit,DocumentType,DocumentId,PixType,PixKey,country, Ip,
+        ConfirmStatus)
+        values (#appId#, #orderId#, #amount#, #type#, #bankCardNo#, #bankCode#, #bankAccountName#, #branchCode#,
+        #email#, #mobile#, #status#, #createTime#, #createOrderTime# ,#platformFee#, #createDay#, #notifyUrl#,
+        #currency#,#agentId#,#agentFee#,#accountType#,#accountDigit#,#documentType#,#documentId#,#pixType#,#pixKey#,#country#,
+        #ip#,#confirmStatus#)
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <update id="WithdrawLog.updateStatus" parameterClass="withdrawLog">
+        update WithdrawLog
+        set Status         = #status#
+        <isNotEmpty property="transactionNum">
+            ,TransactionNum=#transactionNum#
+        </isNotEmpty>
+        where Id = #id#
+          and Status = 1
+    </update>
+
+    <update id="WithdrawLog.updateStatusChangeSuccToFailed" parameterClass="withdrawLog">
+        update WithdrawLog
+        set Status = -1
+        where Id = #id#
+          and Status != -2
+          and Status != -1
+
+    </update>
+
+    <update id="WithdrawLog.updateStatusAvoidNotifyTwice" parameterClass="withdrawLog">
+        update WithdrawLog
+        set Status         = #status#
+          , TransactionNum = #transactionNum#
+        where Id = #id#
+          and Status = 1
+    </update>
+
+    <update id="WithdrawLog.updateWithdrawType" parameterClass="withdrawLog">
+        update WithdrawLog
+        set Status = #status#, WithdrawTypeId = #withdrawTypeId#, ThirdFee = #thirdFee#
+        <isNotEmpty property="transactionNum">
+            ,TransactionNum=#transactionNum#
+        </isNotEmpty>
+        where Id = #id#
+    </update>
+
+    <update id="WithdrawLog.updateSucc" parameterClass="withdrawLog">
+        update WithdrawLog
+        set Status = #status#,WithdrawTime = #withdrawTime#,WithdrawDay = #withdrawDay#
+        <isNotEmpty property="transactionNum">
+            ,TransactionNum=#transactionNum#
+        </isNotEmpty>
+        where Id = #id# and Status = 1
+    </update>
+
+    <update id="WithdrawLog.updateSync" parameterClass="withdrawLog">
+        update WithdrawLog
+        set SyncCnt      = #syncCnt#,
+            NextSyncTime = #nextSyncTime#,
+            NotifyTime = #notifyTime#
+        where Id = #id#
+    </update>
+
+    <update id="WithdrawLog.updateSyncCp" parameterClass="withdrawLog">
+        update WithdrawLog
+        set SyncCp = #syncCp#
+        where Id = #id# and SyncCp = 0
+    </update>
+
+    <update id="WithdrawLog.updateStatusToTemp">
+        UPDATE withdrawlog a,
+            cpinfo b
+        SET a.STATUS = - 3
+        WHERE (
+                    a.STATUS = - 1
+                OR (a.`Status` = 0 AND a.WithdrawTypeId = 0))
+          AND a.CreateTime &lt;= DATE_ADD(now(), INTERVAL +130 MINUTE)
+          AND b.appId = a.appId;
+    </update>
+
+    <update id="WithdrawLog.updateStatusToNormal">
+        update withdrawlog
+        set Status= -2
+        where Status = -4;
+    </update>
+
+    <update id="WithdrawLog.updateStatusById" parameterClass="Long">
+        update withdrawlog
+        set Status= -4
+        where Id = #id#;
+    </update>
+
+    <update id="WithdrawLog.updateTransactionNum" parameterClass="com.jxt.paycenter.appclient.pojo.WithdrawLog">
+        update withdrawlog
+        set TransactionNum = #transactionNum#
+        where Id = #id#;
+    </update>
+
+    <update id="WithdrawLog.updateNotifyData" parameterClass="com.jxt.paycenter.appclient.pojo.WithdrawLog">
+        update withdrawlog
+        set notifyData = #notifyData#
+        where Id = #id#;
+    </update>
+
+
+    <update id="WithdrawLog.updateCreateOrderTime" parameterClass="com.jxt.paycenter.appclient.pojo.WithdrawLog">
+        update withdrawlog
+        set createOrderTime = #createOrderTime#
+        where Id = #id#
+    </update>
+
+    <update id="WithdrawLog.updateChannelOrderTime" parameterClass="com.jxt.paycenter.appclient.pojo.WithdrawLog">
+        update withdrawlog
+        set ChannelOrderTime = #channelOrderTime#
+        where Id = #id#
+    </update>
+
+    <update id="WithdrawLog.updateByChannelOrderCreate" parameterClass="com.jxt.paycenter.appclient.pojo.WithdrawLog">
+        update withdrawlog
+        set TransactionNum = #transactionNum#,
+            createOrderTime = #createOrderTime#,
+            ChannelOrderTime = #channelOrderTime#
+        where Id = #id#
+    </update>
+
+    <select id="WithdrawLog.select" parameterClass="long" resultClass="withdrawLog">
+        select *
+        from WithdrawLog
+        where Id = #id#
+    </select>
+
+    <select id="WithdrawLog.selectByTransactionNum" parameterClass="String" resultClass="withdrawLog">
+        select * from withdrawlog
+        where TransactionNum = #transactionNum#
+    </select>
+
+    <select id="WithdrawLog.listUndeal" resultClass="withdrawLog">
+        select a.*
+        from WithdrawLog a,
+             CpInfo b
+        where b.CanWithdraw = 1
+          and a.AppId = b.AppId
+          and a.Status = 0
+          and a.ConfirmStatus > 0
+        order by a.Id asc
+        limit 100
+    </select>
+
+    <select id="WithdrawLog.listQuery" resultClass="withdrawLog">
+        select *
+        from WithdrawLog
+        where Status = 1
+        order by Id DESC
+        limit 300
+    </select>
+
+    <select id="WithdrawLog.listNeedSync" resultClass="withdrawLog">
+   	<![CDATA[
+        SELECT *
+        FROM WithdrawLog
+                 LEFT JOIN cpinfo ON withdrawlog.AppId = cpinfo.AppId
+        WHERE withdrawlog.STATUS IN (2, - 1, - 2)
+          AND ((SyncCnt BETWEEN - 5 AND - 1 AND NextSyncTime <= date_add(now(), interval +330 minute)) OR SyncCnt = 0)
+          AND cpinfo.AppId IS NOT NULL
+          and NotifyUrl != 'https://'
+          and NotifyUrl != 'http://'
+        ORDER BY Id ASC
+        LIMIT 1000
+        ]]>
+   </select>
+
+    <select id="WithdrawLog.selectByApp" parameterClass="withdrawLog" resultClass="withdrawLog">
+        select *
+        from WithdrawLog
+        where AppId = #appId#
+          and OrderId = #orderId#
+    </select>
+    <select id="WithdrawLog.listNeedSyncCp" resultClass="withdrawLog">
+   <![CDATA[
+        select *
+        from WithdrawLog w
+                 left join cpinfo c on w.AppId = c.AppId
+        where w.status = 2
+          and SyncCp = 0
+          and c.AppId is not null
+        order by Id asc
+        limit 100
+        ]]>
+   </select>
+
+    <select id="WithdrawLog.queryWithdrawLogListByTempStatus" resultClass="withdrawLog">
+        select id,
+               appid,
+               orderid,
+               amount,
+               PlatformFee,
+               type,
+               status,
+               synccp
+        from WithdrawLog
+        where Status = -3
+    </select>
+
+    <select id="WithdrawLog.queryWithdrawLogListIn24Hours" resultClass="withdrawLog">
+        select BankCardNo, PixKey
+        from withdrawlog
+        where CreateTime >= date_add(now(), interval -24 hour)
+          and Status != -2
+    </select>
+
+    <update id="WithdrawLog.updateFailReason" parameterClass="withdrawLog">
+        update withdrawlog
+        set FailReason = #failReason#
+        where Id = #id#
+    </update>
+
+    <select id="WithdrawLog.dailyCpAmount" parameterClass="java.util.HashMap" resultClass="withdrawLog">
+        <![CDATA[
+        SELECT
+            AppId, SUM(Amount) AS Amount
+        FROM withdrawlog
+        WHERE `Status` = 2
+          AND WithdrawTime >= #beginTime#
+          AND WithdrawTime <= #endTime#
+        GROUP BY AppId
+        ]]>
+    </select>
+
+    <select id="WithdrawLog.getMaxWithdrawLogId" resultClass="java.lang.Long">
+        select max(Id) from withdrawlog
+    </select>
+
+</sqlMap>

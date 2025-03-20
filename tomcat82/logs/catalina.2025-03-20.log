@@ -1,0 +1,34 @@
+20-Mar-2025 16:33:00.511 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log Server.服务器版本: Apache Tomcat/9.0.100
+20-Mar-2025 16:33:00.518 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 服务器构建:        Feb 13 2025 11:29:56 UTC
+20-Mar-2025 16:33:00.518 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 服务器版本号:      9.0.100.0
+20-Mar-2025 16:33:00.519 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 操作系统名称:      Windows 10
+20-Mar-2025 16:33:00.519 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log OS.版本:           10.0
+20-Mar-2025 16:33:00.519 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 架构:              amd64
+20-Mar-2025 16:33:00.519 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log Java 环境变量:     E:\devsoft\jdk1.8.0_73\jdk1.8.0_73\jre
+20-Mar-2025 16:33:00.519 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log Java虚拟机版本:    1.8.0_73-b02
+20-Mar-2025 16:33:00.519 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log JVM.供应商:        Oracle Corporation
+20-Mar-2025 16:33:00.519 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_BASE:     E:\tomcat82
+20-Mar-2025 16:33:00.520 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log CATALINA_HOME:     E:\tomcat82
+20-Mar-2025 16:33:00.520 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Djava.util.logging.config.file=E:\tomcat82\conf\logging.properties
+20-Mar-2025 16:33:00.520 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+20-Mar-2025 16:33:00.520 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Djdk.tls.ephemeralDHKeySize=2048
+20-Mar-2025 16:33:00.520 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+20-Mar-2025 16:33:00.521 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Dsun.io.useCanonCaches=false
+20-Mar-2025 16:33:00.521 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Dignore.endorsed.dirs=
+20-Mar-2025 16:33:00.522 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Dcatalina.base=E:\tomcat82
+20-Mar-2025 16:33:00.522 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Dcatalina.home=E:\tomcat82
+20-Mar-2025 16:33:00.522 信息 [main] org.apache.catalina.startup.VersionLoggerListener.log 命令行参数：       -Djava.io.tmpdir=E:\tomcat82\temp
+20-Mar-2025 16:33:00.527 信息 [main] org.apache.catalina.core.AprLifecycleListener.lifecycleEvent 在java.library.path:[E:\devsoft\jdk1.8.0_73\jdk1.8.0_73\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NetSarang\Xftp 8\;E:\devsoft\jdk1.8.0_73\jdk1.8.0_73\BIN;C:\Users\Laptop\AppData\Local\nvm;C:\nvm4w\nodejs;C:\Program Files\Git\cmd;C:\Users\Laptop\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\Laptop\AppData\Local\Programs\Python\Python313\;C:\Users\Laptop\AppData\Local\Microsoft\WindowsApps;C:\Users\Laptop\AppData\Local\Microsoft\WinGet\Packages\Schniz.fnm_Microsoft.Winget.Source_8wekyb3d8bbwe;C:\Users\Laptop\AppData\Roaming\npm;C:\Users\Laptop\AppData\Local\nvm;C:\nvm4w\nodejs;C:\Users\Laptop\AppData\Local\GitHubDesktop\bin;.]上找不到基于APR的Apache Tomcat本机库，该库允许在生产环境中获得最佳性能
+20-Mar-2025 16:33:00.744 信息 [main] org.apache.coyote.AbstractProtocol.init 初始化协议处理器 ["http-nio-8082"]
+20-Mar-2025 16:33:00.761 信息 [main] org.apache.catalina.startup.Catalina.load 服务器在[411]毫秒内初始化
+20-Mar-2025 16:33:00.898 信息 [main] org.apache.catalina.core.StandardService.startInternal 正在启动服务[Catalina]
+20-Mar-2025 16:33:00.976 信息 [main] org.apache.catalina.core.StandardEngine.startInternal 正在启动 Servlet 引擎：[Apache Tomcat/9.0.100]
+20-Mar-2025 16:33:00.984 信息 [main] org.apache.catalina.startup.HostConfig.deployDirectory 把web 应用程序部署到目录 [E:\tomcat82\webapps\ROOT]
+20-Mar-2025 16:33:05.377 信息 [main] org.apache.catalina.core.StandardContext.checkUnusualURLPattern 可疑的URL模式：[/checkStand/**]在上下文[]中，请参阅Servlet规范的第12.1节和第12.2节
+20-Mar-2025 16:33:05.378 信息 [main] org.apache.catalina.core.StandardContext.checkUnusualURLPattern 可疑的URL模式：[/UPICopyCheckStand1.0/**]在上下文[]中，请参阅Servlet规范的第12.1节和第12.2节
+20-Mar-2025 16:33:05.380 信息 [main] org.apache.catalina.core.StandardContext.checkUnusualURLPattern 可疑的URL模式：[/checkStandCol/**]在上下文[]中，请参阅Servlet规范的第12.1节和第12.2节
+20-Mar-2025 16:33:05.566 信息 [main] java.util.ArrayList.forEach Name = Service_Mysql_paycenter Ignoring unknown property: value of "netpay_db_connection" for "description" property
+20-Mar-2025 16:33:05.966 信息 [main] org.apache.jasper.servlet.TldScanner.scanJars 至少有一个JAR被扫描用于TLD但尚未包含TLD。 为此记录器启用调试日志记录，以获取已扫描但未在其中找到TLD的完整JAR列表。 在扫描期间跳过不需要的JAR可以缩短启动时间和JSP编译时间。
+20-Mar-2025 16:33:55.903 信息 [main] org.apache.catalina.startup.HostConfig.deployDirectory Web应用程序目录[E:\tomcat82\webapps\ROOT]的部署已在[54,919]毫秒内完成
+20-Mar-2025 16:33:55.906 信息 [main] org.apache.coyote.AbstractProtocol.start 开始协议处理句柄["http-nio-8082"]
+20-Mar-2025 16:33:55.923 信息 [main] org.apache.catalina.startup.Catalina.start [55061]毫秒后服务器启动

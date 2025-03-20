@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="syncPayThread" class="com.jxt.paycenter.appclient.thread.SyncPayThread">
+        <property name="payLogHandler" ref="payLogHandler"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+    </bean>
+
+    <bean id="withdrawThread" class="com.jxt.paycenter.appclient.thread.WithdrawThread">
+        <property name="withdrawFactory" ref="withdrawFactory"/>
+        <property name="withdrawTypeHelper" ref="withdrawTypeHelper"/>
+        <property name="withdrawLogHandler" ref="withdrawLogHandler"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+        <property name="moneyLogHandler" ref="moneyLogHandler"/>
+    </bean>
+
+    <bean id="withdrawAdminThread" class="com.jxt.paycenter.appclient.thread.WithdrawAdminThread">
+        <property name="withdrawFactory" ref="withdrawFactory"/>
+        <property name="withdrawTypeHelper" ref="withdrawTypeHelper"/>
+        <property name="withdrawLogAdminHandler" ref="withdrawLogAdminHandler"/>
+    </bean>
+
+    <bean id="withdrawQueryThread" class="com.jxt.paycenter.appclient.thread.WithdrawQueryThread">
+        <property name="withdrawFactory" ref="withdrawFactory"/>
+        <property name="withdrawTypeHelper" ref="withdrawTypeHelper"/>
+        <property name="withdrawLogHandler" ref="withdrawLogHandler"/>
+        <property name="cpService" ref="cpService"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+        <property name="moneyLogHandler" ref="moneyLogHandler"/>
+    </bean>
+
+    <bean id="withdrawQueryAdminThread" class="com.jxt.paycenter.appclient.thread.WithdrawQueryAdminThread">
+        <property name="withdrawFactory" ref="withdrawFactory"/>
+        <property name="withdrawTypeHelper" ref="withdrawTypeHelper"/>
+        <property name="withdrawLogAdminHandler" ref="withdrawLogAdminHandler"/>
+        <property name="cpService" ref="cpService"/>
+    </bean>
+
+    <bean id="syncWithdrawThread" class="com.jxt.paycenter.appclient.thread.SyncWithdrawThread">
+        <property name="withdrawLogHandler" ref="withdrawLogHandler"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+    </bean>
+
+    <bean id="syncCpThread" class="com.jxt.paycenter.appclient.thread.SyncCpThread">
+        <property name="payLogHandler" ref="payLogHandler"/>
+        <property name="withdrawLogHandler" ref="withdrawLogHandler"/>
+        <property name="cpService" ref="cpService"/>
+        <property name="moneyLogHandler" ref="moneyLogHandler"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+    </bean>
+
+    <!--    <bean id="payThread" class="com.jxt.paycenter.appclient.thread.PayThread">-->
+    <!--        <property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--        <property name="payFactory" ref="payFactory"/>-->
+    <!--        <property name="payTypeHelper" ref="payTypeHelper"/>-->
+    <!--        <property name="cpInfoHelper" ref="cpInfoHelper"/>-->
+    <!--    </bean>-->
+
+    <!--    <bean id="payCurDayThread" class="com.jxt.paycenter.appclient.thread.PayCurDayThread">-->
+    <!--        <property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--        <property name="payFactory" ref="payFactory"/>-->
+    <!--        <property name="payTypeHelper" ref="payTypeHelper"/>-->
+    <!--        <property name="cpInfoHelper" ref="cpInfoHelper"/>-->
+    <!--        <property name="runHour" value="23"/>-->
+    <!--    </bean>-->
+
+    <!--废弃-->
+    <!--<bean id="icicBankRecordThread" class="com.jxt.paycenter.appclient.thread.IcicBankRecordThread">-->
+    <!--<property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--<property name="cpInfoHelper" ref="cpInfoHelper"/>-->
+    <!--<property name="icIcBankRecordHandler" ref="icIcBankRecordHandler"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="uPICopyRecordThread" class="com.jxt.paycenter.appclient.thread.UPICopyRecordThread">-->
+    <!--<property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--<property name="cpInfoHelper" ref="cpInfoHelper"/>-->
+    <!--<property name="yesBankRecordHandler" ref="yesBankRecordHandler"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="uPICopyIdfcRecordThread" class="com.jxt.paycenter.appclient.thread.UPICopyIdfcRecordThread">-->
+    <!--<property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--<property name="cpInfoHelper" ref="cpInfoHelper"/>-->
+    <!--<property name="idfcBankRecordHandler" ref="idfcBankRecordHandler"/>-->
+    <!--<property name="notifyService" ref="notifyService"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="uPICopyIndusindRecordThread" class="com.jxt.paycenter.appclient.thread.UPICopyIndusindRecordThread">-->
+    <!--<property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--<property name="cpInfoHelper" ref="cpInfoHelper"/>-->
+    <!--<property name="indusindBankRecordHandler" ref="indusindBankRecordHandler"/>-->
+    <!--<property name="notifyService" ref="notifyService"/>-->
+    <!-- </bean> -->
+
+    <!--    <bean id="uPIRecordThread" class="com.jxt.paycenter.appclient.thread.UPIRecordThread">-->
+    <!--        <property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--        <property name="cpInfoHelper" ref="cpInfoHelper"/>-->
+    <!--        <property name="bankRecordHandler" ref="bankRecordHandler"/>-->
+    <!--        <property name="notifyService" ref="notifyService"/>-->
+    <!--    </bean>-->
+
+    <!--    <bean id="transferWarnThread" class="com.jxt.paycenter.appclient.thread.TransferWarnThread">-->
+    <!--        <property name="bankRecordHandler" ref="bankRecordHandler"/>-->
+    <!--    </bean>-->
+
+    <!--<bean id="collectRateWarnThread" class="com.jxt.paycenter.appclient.thread.CollectRateWarnThread">-->
+    <!--<property name="bankRecordHandler" ref="bankRecordHandler"/>-->
+    <!--<property name="systemConfHandler" ref="systemConfHandler"/>-->
+    <!--<property name="payTypeHandler" ref="payTypeHandler"/>-->
+    <!--</bean>-->
+
+<!--    <bean id="workOrderReplyThread" class="com.jxt.paycenter.appclient.thread.WorkOrderReplyThread">-->
+    <!--        <property name="workOrderHandler" ref="workOrderHandler"/>-->
+    <!--        <property name="payLogHandler" ref="payLogHandler"/>-->
+    <!--        <property name="workOrderReplyHandler" ref="workOrderReplyHandler"/>-->
+    <!--        <property name="bankRecordHandler" ref="bankRecordHandler"/>-->
+    <!--    </bean>-->
+
+<!--    <bean id="workOrderPushThread" class="com.jxt.paycenter.appclient.thread.WorkOrderPushThread">-->
+<!--        <property name="workOrderHandler" ref="workOrderHandler"/>-->
+<!--        <property name="payLogHandler" ref="payLogHandler"/>-->
+<!--        <property name="workOrderReplyHandler" ref="workOrderReplyHandler"/>-->
+<!--        <property name="bankRecordHandler" ref="bankRecordHandler"/>-->
+<!--    </bean>-->
+
+
+</beans>

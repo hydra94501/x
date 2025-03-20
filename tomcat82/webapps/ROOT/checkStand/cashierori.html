@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>El cajero</title>
+
+    <link rel="stylesheet" href="el/index.css">
+    <link rel="stylesheet" href="common/css/custom.css">
+    <link rel="stylesheet" href="wuui-master/static/wu-ui/wu-ui.css">
+</head>
+<body>
+<div id="app">
+    <template>
+        <div ref="homePage" class="container">
+            <el-row>
+                <div ref="sdi" class="show-deal-info">
+                   <el-row>
+                       <div >
+                           <el-col :span="12">
+<!--                               <i class="el-icon-back" style="color: white;font-size: 26px;margin-left: 10px;margin-top: 2px" @click="goBack()"></i>-->
+                           </el-col>
+                           <el-col :span="24">
+                               <div style="text-align: right;margin-right: 5%">
+                                   <el-select v-model="language" placeholder="请选择"  size="mini" popper-class='selectFrom'  @change="changeLanguage()" >
+                                       <el-option
+                                               v-for="item in languages"
+                                               :key="item.value"
+                                               :label="item.label"
+                                               :value="item.value">
+                                       </el-option>
+                                   </el-select>
+                               </div>
+                           </el-col>
+                       </div>
+                   </el-row>
+                    <div style="text-align: center">
+                        <el-row>
+                            <div style="margin-top: 15px">
+                                <span style="color: white;font-size: 16px;">{{$t("message.amount")}}</span>
+                            </div>
+                            <div style="margin-top: 20px">
+                                <span style="color: white;font-size: 22px;">MXN:　200.00</span>
+                            </div>
+                            <div style="margin-top: 30px">
+                                <el-col :span="12">
+                                    <span style="color: white">{{$t("message.orderNo")}}</span>
+                                </el-col>
+                                <el-col :span="12">
+                                    <span style="color: white">123456</span>
+                                </el-col>
+                            </div>
+                        </el-row>
+                    </div>
+                </div>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <div class="show-info">
+                        <el-row>
+                            <span class="show-bank"><i>STP</i></span>
+                        </el-row>
+                        <el-row >
+                            <div class="show-clabe">
+                                <span>{{clabe}}</span>
+                            </div>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: right;margin-right: 10px">
+                                <button  class="copy-button"  type="button" v-clipboard:copy="this.clabe" v-clipboard:success="onCopy" v-clipboard:error="onError"> {{$t("message.copy.title")}}
+                                </button>
+                            </div>
+                        </el-row>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row>
+                <div style="margin-left: 10%">
+                    <el-button round @click="openHelpSwitch()">{{$t("message.help.title")}}</el-button>
+                </div>
+            </el-row>
+            <div>
+                <el-drawer
+                        :visible.sync="helpSwitch"
+                        direction="btt"
+                        :show-close="false"
+                        :size="helpDrawerHeight"
+                >
+                    <div>
+                        <div style="height: 300px;margin-left: 20px;overflow-y: scroll">
+                            <el-row>
+                                <span class="help-step">{{$t("message.help.step1")}}</span>
+                            </el-row>
+                            <el-row>
+                                <span class="help-step">{{$t("message.help.step2")}}</span>
+                            </el-row>
+                            <el-row>
+                                <span class="help-step">{{$t("message.help.step3")}}</span>
+                            </el-row>
+                        </div>
+                    </div>
+                </el-drawer>
+            </div>
+        </div>
+    </template>
+</div>
+</body>
+<script src="vue/vue.js"></script>
+<script src="common/js/custom.js"></script>
+<script src="i18/js/i18.js"></script>
+<script src="el/index.js"></script>
+<script src="common/js/vue-clipboard.js"></script>
+<script src="wuui-master/static/wu-ui/wu-ui.js"></script>
+<script>
+    const messages = {
+        // spanish
+        Spanish: {
+            message: {
+                language: 'Español',
+                copy: {
+                    title: 'Copiar',
+                    success: 'Éxito de la copiar'
+                },
+                amount: 'El importe total',
+                orderNo: 'pedido número:',
+                product: 'Productos:',
+
+                help: {
+                    title: 'Ver ayuda',
+                    step1: '1. Haga clic en el botón Copiar en la página de pago para copiar el número de cuenta Clabe proporcionado por nosotros.',
+                    step2: '2. Abra su aplicación bancaria, busque la entrada de transferencia y pegue la cuenta bancaria copiada en el paso anterior para realizar la operación de transferencia. (Nota:¡El monto debe ser el mismo que el monto del pedido!' +
+                        '¡El monto debe ser el mismo que el monto del pedido!'+
+                        '¡El monto debe ser el mismo que el monto del pedido!)',
+                    step3: '3. Una vez completada la operación de transferencia, haga clic en el botón Atrás del dispositivo para regresar a nuestro producto, puede esperar a que llegue la cantidad o puede continuar experimentando otro contenido.'
+                }
+            }
+        },
+        //英文
+        English: {
+            message: {
+                language: 'English',
+                copy: {
+                    title: 'Copy',
+                    success: 'Copy Success'
+                },
+                amount: 'Amount:',
+                orderNo: 'Order No:',
+                product: 'Product:',
+                help: {
+                    title: 'Help',
+                    step1: '1. Click the "Copy" button on the payment page to copy the CLABE account provided by us.',
+                    step2: '2. Open your bank app, find the Clabe transfer portal, and paste the Clabe account copied in the previous step into it to conduct the transfer operation.(note:\n' +
+                        'Transfer amount should be consistent with the order amount!\n' +
+                        'Transfer amount should be consistent with the order amount!\n' +
+                        'Transfer amount should be consistent with the order amount!)',
+                    step3: '3. After the transfer operation, click the back button of the device to return to our product. You can wait for the amount to arrive, or continue to experience other content.'
+                }
+            }
+        }
+    }
+    const i18n = new VueI18n({
+        locale: 'Spanish', // 默认语言
+        messages
+    })
+
+
+    new Vue({
+        el: '#app',
+        i18n,
+        data() {
+            return {
+                language: 'Spanish',
+                languages: [
+                    {
+                        label: 'Spanish',
+                        value: 'Spanish'
+                    },
+                    {
+                        label: 'English',
+                        value: 'English'
+                    }
+                ],
+                amount: number_format(this.getQueryVariable('amount'), 2, '.', ',', 'round'),
+                orderId: this.getQueryVariable('orderId'),
+                product: 'productos',
+                helpSwitch: false,
+                helpDrawerHeight: '',
+                clabe: 646190247917365266
+            }
+        },
+        async created() {
+            //this.getTime()
+        },
+        methods: {
+            getQueryVariable(variable) {
+                var query = window.location.search.substring(1);
+                var vars = query.split("&");
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split("=");
+                    if (pair[0] == variable) {
+                        return pair[1];
+                    }
+                }
+                return (false);
+            },
+            onCopy(e) {
+                var wu = new Wu()
+                wu.showToast({
+                    title: this.language === 'Spanish' ? 'Éxito de la copia' : 'Copy Success',
+                    mask: false,
+                    icon: 'icon-success',
+                    duration: 3000
+                })
+            },
+            onError(e) {
+                var wu = new Wu()
+                wu.showToast({
+                    title: 'copy fail',
+                    mask: false,
+                    icon: 'icon-success',
+                    duration: 3000
+                })
+            },
+            changeLanguage() {
+                this.$i18n.locale = this.language
+            },
+            getTime() {
+                var timezone = -5; //目标时区时间，东八区   东时区正数 西市区负数
+                var offset_GMT = new Date().getTimezoneOffset(); // 本地时间和格林威治的时间差，单位为分钟
+                var nowDate = new Date().getTime(); // 本地时间距 1970 年 1 月 1 日午夜（GMT 时间）之间的毫秒数
+                var targetDate = new Date(nowDate + offset_GMT * 60 * 1000 + timezone * 60 * 60 * 1000);
+                console.log("墨西哥城现在是：" + targetDate);
+            },
+            openHelpSwitch(){
+                this.helpSwitch = !this.helpSwitch
+                this.helpDrawerHeight = document.documentElement.clientHeight-this.$refs.sdi.offsetHeight+24 + 'px'
+            },
+            goBack(){
+                window.history.back()
+            }
+        }
+    })
+</script>
+<style lang="less">
+    .el-row {
+        margin-bottom: 20px;
+    }
+
+    .el-col {
+        border-radius: 4px;
+    }
+
+    .bg-purple-dark {
+        background: #99a9bf;
+    }
+
+    .bg-purple {
+        background: #d3dce6;
+    }
+
+    .bg-purple-light {
+        background: #e5e9f2;
+    }
+
+    .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
+    }
+
+    .row-bg {
+        padding: 10px 0;
+        background-color: #f9fafc;
+    }
+
+    .el-input--mini .el-input__inner {
+        height: 28px;
+        line-height: 28px;
+        width: 100px;
+    }
+
+
+</style>
+</html>

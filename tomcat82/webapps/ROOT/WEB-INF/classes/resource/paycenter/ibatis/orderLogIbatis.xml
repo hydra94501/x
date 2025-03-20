@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="orderLog" type="com.jxt.paycenter.appclient.pojo.Orderlog"/>
+
+    <insert id="Orderlog.insert" parameterClass="com.jxt.paycenter.appclient.pojo.Orderlog">
+        insert into orderlog (id, orderId, merchantOrderId, requestParam, responseParam, platformParam, thirdParam) VALUES (null, #orderId#, #merchantOrderId#, #requestParam#, #responseParam#, #platformParam#, #thirdParam#)
+    </insert>
+
+    <update id="Orderlog.updateByOrderId" parameterClass="com.jxt.paycenter.appclient.pojo.Orderlog">
+        UPDATE orderlog
+        SET responseParam = ''
+        <dynamic>
+            <isNotEmpty property="responseParam" prepend=",">
+                responseParam = #responseParam#
+            </isNotEmpty>
+            <isNotEmpty property="platformParam" prepend=",">
+                platformParam = #platformParam#
+            </isNotEmpty>
+            <isNotEmpty property="thirdParam" prepend=",">
+                thirdParam = #thirdParam#
+            </isNotEmpty>
+        </dynamic>
+        WHERE orderId = #orderId#
+    </update>
+</sqlMap>

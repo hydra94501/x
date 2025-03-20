@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="db">
+    <typeAlias alias="workOrder" type="com.jxt.paycenter.appclient.pojo.WorkOrder"/>
+
+    <!--初始状态的工单-->
+    <select id="WorkOrder.listStatusInit" resultClass="WorkOrder">
+        select id, type, country, appid, group_id as groupId, group_name as groupName, message_id as messageId, nickname, order_text as orderText, create_time as createTime, status, handler, update_time as updateTime, comment,
+               order_id as orderId, rastreo, reply_cnt as replyCnt from work_order where status = '0' order by create_time asc limit 2000
+    </select>
+
+    <!--等待完成的工单-->
+    <select id="WorkOrder.listStatusWait" resultClass="WorkOrder">
+        select id, type, country, appid, group_id as groupId, group_name as groupName, message_id as messageId, nickname, order_text as orderText, create_time as createTime, status, handler, update_time as updateTime, comment,
+               order_id as orderId, rastreo, reply_cnt as replyCnt from work_order where status = '1' order by create_time asc limit 2000
+    </select>
+
+
+    <!--查询单个-->
+    <select id="WorkOrder.queryById" resultClass="WorkOrder">
+        select
+            id, type, country, appid, group_id as groupId, group_name as groupName, message_id as messageId, nickname, order_text as orderText, create_time as createTime, status, handler, update_time as updateTime, comment,
+            order_id as orderId, rastreo, reply_cnt as replyCnt
+        from work_order
+        where id = #id#
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="WorkOrder.insert" parameterClass="WorkOrder">
+        insert into work_order(type, country, appid, group_id, group_name, message_id, nickname, order_text, create_time, status, handler, update_time, comment, order_id, rastreo, reply_cnt)
+        values (#type#, #country#, #appid#, #groupId#, #groupName#, #messageId#, #nickname#, #orderText#, #createTime#, #status#, #handler#, #updateTime#, #comment#, #orderId#, #rastreo#, #replyCnt#)
+    </insert>
+
+    <update id="WorkOrder.updateStatus" parameterClass="WorkOrder">
+        update work_order set status = #status#, update_time = #updateTime# where id = #id#
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="WorkOrder.deleteById">
+        delete from work_order where id = #id#
+    </delete>
+
+</sqlMap>
+
+

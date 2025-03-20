@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+    <typeAlias alias="payLog" type="com.jxt.paycenter.appclient.pojo.PayLog"/>
+
+    <insert id="PayLog.insert" parameterClass="payLog">
+        insert into PayLog (AppId, OrderId, Amount, Type, CallbackUrl, NotifyUrl, Status,Status1, CreateTime,PayTime,
+        PlatformFee,
+        CreateDay,PayDay, Currency, CardHolder, Email, Mobile,TransactionNum,
+        ValidDay,AgentId,AgentFee,country,Description,clabe,rastreo,bankCode,userType,cardType,cardNum,address,Ip)
+        values (#appId#, #orderId#, #amount#, #type#, #callbackUrl#, #notifyUrl#, #status#,#status1#,
+        #createTime#,#payTime#,
+        #platformFee#,
+        #createDay#,#payDay#, #currency#, #cardHolder#, #email#, #mobile#,#transactionNum#,
+        #validDay#,#agentId#,#agentFee#,#country#,#description#,#clabe#,#rastreo#,#bankCode#,#userType#,#cardType#,#cardNumber#,#address#,#Ip#)
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <select id="PayLog.listUndeal" resultClass="payLog">
+          <![CDATA[
+        select a.*
+        from PayLog a,
+             PayType b
+        where b.CanQuery = 1
+          and a.PayTypeId = b.Id
+          and a.Status = 0
+          and a.Status1 = 0
+          and a.CreateTime > date_add(now(), interval +120 minute)
+        order by a.Id
+        ]]>
+    </select>
+
+    <select id="PayLog.listUndealToday" resultClass="payLog">
+   <![CDATA[
+        select a.*
+        from PayLog a,
+             PayType b
+        where b.CanQuery = 1
+          and a.PayTypeId = b.Id
+          and a.Status = 0
+          and a.Status1 = 0
+          and a.CreateDay >= DATE_FORMAT(CURRENT_TIMESTAMP - INTERVAL 1 DAY, '%Y%m%d')
+          and a.CreateTime < CURRENT_TIMESTAMP - INTERVAL 30 MINUTE
+        order by a.Id asc
+        ]]>
+   </select>
+
+    <update id="PayLog.updatePayType" parameterClass="payLog">
+        update PayLog
+        set PayTypeId = #payTypeId#,
+            ThirdFee  = #thirdFee#
+            <isNotEmpty property="transactionNum">
+                ,TransactionNum=#transactionNum#
+            </isNotEmpty>
+        where Id = #id#
+    </update>
+
+    <update id="PayLog.updateTransactionNum" parameterClass="payLog">
+        update PayLog
+        set TransactionNum = #transactionNum#
+        where Id = #id#
+    </update>
+
+
+    <update id="PayLog.updateClabe" parameterClass="payLog">
+        update PayLog
+        set clabe = #clabe#
+        where Id = #id#
+    </update>
+
+    <update id="PayLog.updatePayLogRastreo" parameterClass="payLog">
+        update PayLog
+        set rastreo = #rastreo#
+        where Id = #id#
+    </update>
+
+
+    <update id="PayLog.updatePayLogCheckoutUrl" parameterClass="payLog">
+        update PayLog
+        set checkoutUrl = #checkoutUrl#
+        where Id = #id#
+    </update>
+
+
+    <update id="PayLog.updateNotify" parameterClass="payLog">
+   	<![CDATA[
+        update PayLog
+        set NotifyData     = #notifyData#,
+            PayTime        = #payTime#,
+            PayDay         = #payDay#,
+            ValidDay=#validDay#,
+            Status         = #status#,
+            TransactionNum = #transactionNum#,
+            Status1        = #status1#
+        where Id = #id#
+          and Status1 <> #status1#
+        ]]>
+   </update>
+
+    <update id="PayLog.updateSync" parameterClass="payLog">
+        update PayLog
+        set SyncCnt      = #syncCnt#,
+            NextSyncTime = #nextSyncTime#
+        where Id = #id#
+    </update>
+
+    <update id="PayLog.updateSyncCp" parameterClass="payLog">
+        update PayLog
+        set SyncCp = #syncCp#
+        where Id = #id#
+          and SyncCp = 0
+    </update>
+
+    <update id="PayLog.updateSyncCp1" parameterClass="payLog">
+        update PayLog
+        set SyncCp      = #syncCp#,
+            ValidStatus = #validStatus#
+        where Id = #id#
+          and SyncCp = 0
+    </update>
+
+    <select id="PayLog.listNeedSync" resultClass="payLog">
+   <![CDATA[
+        select *
+        from PayLog
+                 LEFT JOIN cpinfo c ON paylog.AppId = c.AppId
+        where paylog.status in (-1, 1)
+          and ((SyncCnt between -4 and -1
+            and NextSyncTime <= date_add(now(), interval +330 minute)) or SyncCnt = 0)
+          AND c.AppId IS NOT NULL
+          and NotifyUrl != 'https://'
+          and NotifyUrl != 'http://'
+        order by Id asc
+            limit 1000
+        ]]>
+   </select>
+
+    <select id="PayLog.listNeedSyncCp" resultClass="payLog">
+   <![CDATA[
+        select *
+        from PayLog p
+                 left join cpinfo c on p.AppId = c.AppId
+        where p.status = 1
+          and SyncCp = 0
+          and c.AppId is not null
+        order by Id asc limit 100
+        ]]>
+   </select>
+
+    <select id="PayLog.selectByRastreo" parameterClass="String" resultClass="payLog">
+        select *
+        from paylog
+        where rastreo = #rastreo#
+        order by `Status` desc
+    </select>
+
+    <select id="PayLog.selectByUpperRastreo" parameterClass="String" resultClass="payLog">
+        select *
+        from paylog
+        where UPPER(rastreo) = UPPER(#rastreo#)
+    </select>
+
+    <select id="PayLog.selectByOrderIdAndRastreo" parameterClass="payLog" resultClass="payLog">
+        select *
+        from paylog
+        where UPPER(rastreo) = UPPER(#rastreo#)
+          and OrderId = #orderId#
+    </select>
+
+    <select id="PayLog.selectSuccCountPaylogByRastreo" parameterClass="String" resultClass="java.lang.Integer">
+        select count(id)
+        from paylog
+        where UPPER(rastreo) = UPPER(#rastreo#)
+          and Status = 1
+    </select>
+
+    <!--验证UTR是否被使用过-->
+    <select id="PayLog.checkRastreoUsed" parameterClass="String" resultClass="int">
+        select count(1)
+        from paylog
+        where rastreo = #rastreo#
+          AND `Status` = 1
+    </select>
+
+    <select id="PayLog.queryPayLogByOrderId" parameterClass="String" resultClass="payLog">
+        select *
+        from paylog
+        where OrderId = #orderId#
+        order by Id desc
+    </select>
+
+    <select id="PayLog.select" parameterClass="long" resultClass="payLog">
+        select *
+        from PayLog
+        where Id = #id#
+    </select>
+
+    <select id="PayLog.selectByApp" parameterClass="payLog" resultClass="payLog">
+        select *
+        from PayLog
+        where AppId = #appId#
+          and OrderId = #orderId#
+    </select>
+
+    <select id="PayLog.selectByTransNo" parameterClass="payLog" resultClass="payLog">
+        select *
+        from PayLog
+        where AppId = #appId#
+          and TransactionNum = #transactionNum#
+    </select>
+
+    <select id="PayLog.selectByPayTypeIdAndTransNo" parameterClass="payLog" resultClass="payLog">
+        select *
+        from PayLog
+        where PayTypeId = #payTypeId#
+          and TransactionNum = #transactionNum#
+    </select>
+
+    <select id="PayLog.queryPayList" resultClass="payLog" parameterClass="int">
+	<![CDATA[
+        select *
+        from PayLog
+        where Status = #status#
+        order by Id asc limit 100
+        ]]>
+	</select>
+    <select id="PayLog.selectByPayTimeAndAmount" parameterClass="paylog" resultClass="paylog">
+        select *
+        from PayLog
+        where PayTime = #payTime#
+          and Amount = #amount#
+    </select>
+
+    <update id="PayLog.changeStatus" parameterClass="com.jxt.paycenter.appclient.dto.PayLogReqDTO">
+        update paylog
+        set Status=1,
+            Status1=1,
+            Description=#description#,
+            PayTime = date_add(now(), interval 150 minute),
+            PayDay=#payDay#,
+            ValidDay=#validDay#
+        where Id = #id#
+          and Status = 0
+    </update>
+
+    <select id="PayLog.selectByOrderId" parameterClass="payLog" resultClass="payLog">
+        select p.*, p.cardNum as cardNumber
+        from PayLog p
+        where OrderId = #orderId#
+    </select>
+
+    <select id="PayLog.getPayLogByTagPayClabe" parameterClass="java.util.HashMap" resultClass="payLog">
+        select *
+        from PayLog
+        where clabe = #clabe#
+          and Amount = #amount#
+          and bankCode = 'Visual ICT'
+          and Status = 0
+    </select>
+
+    <select id="PayLog.queryTayPayStatus" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+        select Status
+        from PayLog
+        where id = #payLogId#
+    </select>
+
+    <select id="PayLog.queryUserPayInfo" parameterClass="com.jxt.paycenter.appclient.dto.PayLogUserPayInfoDTO"
+            resultClass="java.lang.Integer">
+        select COUNT(*)
+        from PayLog
+        where
+        1=1
+        <isNotEmpty prepend="and" property="Mobile">
+            Mobile = #Mobile#
+        </isNotEmpty>
+
+        <isNotEmpty prepend="and" property="status">
+            Status = #status#
+        </isNotEmpty>
+    </select>
+
+
+    <update id="PayLog.updateRepairPayLogByRastreo" parameterClass="payLog">
+        update PayLog
+        set rastreo = #rastreo#
+        where OrderId = #orderId#
+          and (rastreo is null or rastreo = '')
+          and Status != 1
+    </update>
+
+    <select id="PayLog.dailyCpAmount" parameterClass="java.util.HashMap" resultClass="payLog">
+        <![CDATA[
+        SELECT AppId,
+               SUM(Amount) AS Amount
+        FROM paylog
+        WHERE `Status` = 1
+          AND PayTime >= #beginTime#
+          AND PayTime <= #endTime#
+        GROUP BY AppId
+        ]]>
+    </select>
+
+    <select id="PayLog.getMaxPayLogId" resultClass="java.lang.Long">
+        select max(Id)
+        from paylog
+    </select>
+
+    <select id="PayLog.queryPayLogPageListStatistics"
+            resultClass="com.jxt.paycenter.appclient.vo.PayLogStatisticsVO"
+            parameterClass="com.jxt.paycenter.appclient.dto.PayLogMessageReqDTO">
+        SELECT
+        IFNULL( sum( Amount ), 0 ) AS needPayAmount,
+        IFNULL( SUM( IF ( `Status` = 1, Amount, 0 )), 0 ) AS payAmount,
+        IFNULL( SUM( IF ( `Status` = 1, PlatformFee, 0 )), 0 ) AS payFee,
+        COUNT(
+        IF
+        ( `Status` = 1, Id, NULL )) AS payNum,
+        count(*) AS allPayNum
+        FROM
+        paylog
+        WHERE
+       1=1
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+
+        <isNotEmpty prepend="and" property="status">
+            Status = #status#
+        </isNotEmpty>
+        and ThirdFee > 0
+        <isNotEmpty prepend="and" property="startCreateTime">
+            CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+    </select>
+
+    <select id="PayLog.queryPayLogInfoPageList"
+            resultClass="com.jxt.paycenter.appclient.vo.PayLogStatisticsVO"
+            parameterClass="com.jxt.paycenter.appclient.dto.PayLogMessageReqDTO">
+        select
+            pg.id,
+            pg.AppId,
+            pg.Status,
+            pg.Amount,
+            pg.PlatformFee,
+            pg.Currency,
+            pg.PayTypeId,
+            pe.Name as payTypeName
+        from
+            paylog pg
+            left join paytype pe on pg.PayTypeId = pe.Id
+        where
+            pg.ThirdFee > 0
+            <isNotEmpty prepend="and" property="appId">
+                pg.AppId = #appId#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="status">
+                pg.Status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="startCreateTime">
+                pg.CreateTime &gt;= #startCreateTime#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endCreateTime">
+                pg.CreateTime &lt;= #endCreateTime#
+            </isNotEmpty>
+        group by pg.id
+    </select>
+
+
+    <select id="PayLog.queryAmountStatistics"
+            parameterClass="com.jxt.paycenter.appclient.dto.WithdrawStatDTO"
+            resultClass="com.jxt.paycenter.appclient.vo.WithdrawVo">
+        SELECT
+            wg.id,
+            wg.AppId,
+            wg.WithdrawTypeId,
+            wg.Amount,
+            wg.Currency,
+            we.Name as withdrawTypeName
+        FROM
+            withdrawlog wg
+            left join withdrawtype we on wg.WithdrawTypeId = we.Id
+        WHERE
+            wg.`Status` = 2
+        <isNotEmpty prepend="and" property="appId">
+            wg.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startPayTime">
+            wg.CreateTime &gt;= #startPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endPayTime">
+            wg.CreateTime &lt;= #endPayTime#
+        </isNotEmpty>
+        group by wg.id
+    </select>
+
+    <!--<select id="PayLog.queryAmountStatistics" parameterClass="com.jxt.paycenter.appclient.dto.WithdrawStatDTO"
+            resultClass="com.jxt.paycenter.appclient.vo.WithdrawVo">
+        SELECT COUNT(*) AS count,
+        CASE
+        WHEN Amount &lt;= 100000 THEN '(0-1000)'
+        WHEN Amount &gt; 100000 THEN '(1000-20000)'
+        ELSE 'OTHER'
+        END AS amount_group
+        FROM withdrawlog
+        WHERE `Status` = 2
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startPayTime">
+            CreateTime &gt;= #startPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endPayTime">
+            CreateTime &lt;= #endPayTime#
+        </isNotEmpty>
+        GROUP BY amount_group
+    </select>-->
+
+    <select id="PayLog.queryWithdrawLogStatictics" parameterClass="com.jxt.paycenter.appclient.dto.WithdrawLogReqDTO"
+            resultClass="com.jxt.paycenter.appclient.vo.WithdrawLogStaticticsVO">
+        SELECT
+        IFNULL(sum(Amount),0) as totalWithdrawAmount,
+        IFNULL( count(w.Id),0) as totalWithdrawNum,
+        IFNULL(sum(if(w.Status = 2, Amount , 0) ),0) as totalWithdrawSuccessAmount,
+        IFNULL( sum(if(w.Status = 2 , PlatformFee , 0)) ,0) as totalWithdrawSuccessFee,
+        IFNULL(count(if(w.Status = 2 , w.Id , null) ),0) as totalWithdrawSuccessNum,
+        IFNULL(count(if(w.Status = 0 OR w.Status = 1 , w.Id , null) ),0) as totalWithdrawProcessAmount,
+        IFNULL(sum(if(w.Status = -2 , Amount , 0) ),0) as totalWithdrawFailAmount
+        FROM withdrawlog w
+        LEFT JOIN withdrawtype wt ON w.WithdrawTypeId = wt.Id
+        WHERE
+        1=1
+        <isNotEmpty prepend="and" property="appId">
+            w.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            w.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            w.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            w.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+    </select>
+
+    <select id="PayLog.queryWithdrawLogStaticticsClog" parameterClass="com.jxt.paycenter.appclient.dto.WithdrawLogReqDTO"
+            resultClass="com.jxt.paycenter.appclient.vo.WithdrawLogStaticticsVO">
+        select
+            wg.id,
+            wg.AppId,
+            wg.ConfirmStatus,
+            ifnull(wg.Amount, 0) as Amount,
+            ifnull(wg.PlatformFee,0) as PlatformFee,
+            we.Name as withdrawTypeName,
+            wg.TransactionNum,
+            wg.Status,
+            ROUND((UNIX_TIMESTAMP(wg.createOrderTime) - UNIX_TIMESTAMP(ifnull(wg.ChannelOrderTime,wg.CreateTime))) / 60) as differentialMinute
+        from
+            withdrawlog wg
+            left join withdrawtype we on wg.WithdrawTypeId = we.id
+        WHERE
+            wg.Status in (0,1)
+        AND wg.ConfirmStatus >= 0
+        <isNotEmpty prepend="and" property="appId">
+            wg.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            wg.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            wg.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            wg.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        group by wg.id
+    </select>
+
+</sqlMap>

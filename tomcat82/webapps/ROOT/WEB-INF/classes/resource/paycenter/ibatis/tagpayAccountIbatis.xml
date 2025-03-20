@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+    <typeAlias alias="tagpayAccount" type="com.jxt.paycenter.appclient.pojo.TagpayAccount"/>
+
+    <select id="TagpayAccount.getAccountTotal" resultClass="java.lang.Integer">
+        select count(id) as total from tagpay_account
+    </select>
+
+    <select id="TagpayAccount.getAvailableAccount" resultClass="java.lang.String">
+        select account_no from tagpay_account where status = '1' order by use_time asc limit 1
+    </select>
+
+    <select id="TagpayAccount.isExistence" resultClass="java.lang.Integer">
+        select count(id) from tagpay_account where account_no = #accountNO#
+    </select>
+
+    <select id="TagpayAccount.getNeedReleaseAccounts" resultClass="java.lang.String">
+        select account_no from tagpay_account where status = '0' and now() > DATE_ADD(use_time, INTERVAL +120 MINUTE)
+    </select>
+
+    <!-- 将子钱包状态改为可用  -->
+    <update id="TagpayAccount.updateAccountStatus1" parameterClass="java.util.HashMap">
+        update tagpay_account
+        set status = #status#
+        where account_no = #accountNo# and status = '0'
+    </update>
+
+
+    <!-- 将子钱包状态改为不可用   -->
+    <update id="TagpayAccount.updateAccountStatus0" parameterClass="java.util.HashMap">
+        update tagpay_account
+        set status = #status#, use_time = now()
+        where account_no = #accountNo# and status = '1'
+    </update>
+
+    <insert id="TagpayAccount.addAccount" parameterClass="java.lang.String">
+        insert into tagpay_account(account_no, status, use_time) values(#accountNo#, '0', now())
+    </insert>
+
+</sqlMap>

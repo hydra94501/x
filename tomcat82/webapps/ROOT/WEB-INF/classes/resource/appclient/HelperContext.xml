@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="payFactory" class="com.jxt.paycenter.appclient.service.PayFactory">
+
+	</bean>
+
+	<bean id="withdrawFactory" class="com.jxt.paycenter.appclient.service.WithdrawFactory">
+
+	</bean>
+
+
+	<bean id="cpInfoHelper" class="com.jxt.paycenter.appclient.helper.CpInfoHelper">
+		<property name="cpInfoHandler" ref="cpInfoHandler"/>
+		<property name="sleepSeconds" value="60"/>
+	</bean>
+
+	<bean id="agentHelper" class="com.jxt.paycenter.appclient.helper.AgentHelper">
+		<property name="agentHandler" ref="agentHandler"/>
+		<property name="sleepSeconds" value="60"/>
+	</bean>
+
+	<bean id="payTypeHelper" class="com.jxt.paycenter.appclient.helper.PayTypeHelper">
+		<property name="payTypeHandler" ref="payTypeHandler"/>
+		<property name="sleepSeconds" value="10"/>
+	</bean>
+
+	<bean id="withdrawTypeHelper" class="com.jxt.paycenter.appclient.helper.WithdrawTypeHelper">
+		<property name="withdrawTypeHandler" ref="withdrawTypeHandler"/>
+		<property name="sleepSeconds" value="10"/>
+	</bean>
+	<bean id="bankInfoHelper" class="com.jxt.paycenter.appclient.helper.BankInfoHelper">
+		<property name="bankInfoHandler" ref="bankInfoHandler"/>
+		<property name="sleepSeconds" value="60"/>
+	</bean>
+	<bean id="withdrawLogConfimHelper" class="com.jxt.paycenter.appclient.helper.WithdrawLogConfimHelper">
+		<property name="withdrawLogHandler" ref="withdrawLogHandler"/>
+		<property name="sleepSeconds" value="1800"/>
+	</bean>
+
+	<!--<bean id="icIcBankRecordHelper" class="com.jxt.paycenter.appclient.helper.IcIcBankRecordHelper">-->
+		<!--<property name="icIcBankRecordHandler" ref="icIcBankRecordHandler"/>-->
+		<!--<property name="sleepSeconds" value="60"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="yesBankRecordHelper" class="com.jxt.paycenter.appclient.helper.YesBankRecordHelper">-->
+		<!--<property name="yesBankRecordHandler" ref="yesBankRecordHandler"/>-->
+		<!--<property name="sleepSeconds" value="60"/>-->
+	<!--</bean>-->
+</beans>

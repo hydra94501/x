@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>pay</display-name>
+
+	<resource-ref>
+      <description>netpay_db_connection</description>
+      <res-ref-name>jdbc/Service_Mysql_paycenter</res-ref-name>
+      <res-type>javax.sql.DataSource</res-type>
+      <res-auth>Container</res-auth>
+    </resource-ref>
+
+	<!-- 此处添加 log4j 的加载服务 -->
+	<servlet>
+		<servlet-name>log4j-init</servlet-name>
+		<servlet-class>com.qlzf.commons.servlet.Log4jInit</servlet-class>
+		<init-param>
+			<param-name>log4j-init-file</param-name>
+			<param-value>WEB-INF/classes/log4j.properties</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<context-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:ApplicationContext.xml</param-value>
+	</context-param>
+	<listener>
+			<listener-class>
+					org.springframework.web.context.ContextLoaderListener
+			</listener-class>
+	</listener>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/checkStand/**</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/checkStandCol/**</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/UPICopyCheckStand1.0/**</url-pattern>
+	</servlet-mapping>
+	<!--spring mvc配置-->
+	<!-- 配置Sping MVC的DispatcherServlet,也可以配置为继承了DispatcherServlet的自定义类,这里配置spring mvc的配置(扫描controller) -->
+	<servlet>
+		<servlet-name>springmvcservlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+
+		<!-- spring MVC的配置文件 -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:resource/appclient/spring-mvc.xml</param-value>
+		</init-param>
+		<!--其他参数-->
+		<init-param>
+			<param-name>appName</param-name>
+			<param-value>authplatform</param-value>
+		</init-param>
+		<!-- 下面值小一点比较合适，会优先加载 -->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springmvcservlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<!-- 配置请求过滤器，编码格式设为UTF-8，避免中文乱码 -->
+	<filter>
+		<filter-name>charsetfilter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>charsetfilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 此监听器主要用于解决java.beans.Introspector导致的内存泄漏的问题 -->
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.jxt.paycenter.appclient.controller.DriverMangerListener</listener-class>
+	</listener>
+<!--	<filter>-->
+<!--		<filter-name>UrlRewriteFilter</filter-name>-->
+<!--		<filter-class>-->
+<!--			 org.tuckey.web.filters.urlrewrite.UrlRewriteFilter-->
+<!--		</filter-class>-->
+<!--		<init-param>-->
+<!--			<param-name>logLevel</param-name>-->
+<!--			<param-value>WARN</param-value>-->
+<!--		</init-param>-->
+<!--	</filter>-->
+<!--	<filter-mapping>-->
+<!--		<filter-name>UrlRewriteFilter</filter-name>-->
+<!--		<url-pattern>/*</url-pattern>-->
+<!--	</filter-mapping>-->
+
+	<!--
+	<filter>
+		<filter-name>struts2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+       <dispatcher>FORWARD</dispatcher>
+       <dispatcher>INCLUDE</dispatcher>
+	</filter-mapping>
+	 -->
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+		<welcome-file>justapay.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

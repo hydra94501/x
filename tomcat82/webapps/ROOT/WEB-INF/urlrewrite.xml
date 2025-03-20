@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 3.1//EN"
+        "http://tuckey.org/res/dtds/urlrewrite3.1.dtd">
+
+<!--
+
+    Configuration file for UrlRewriteFilter
+    http://tuckey.org/urlrewrite/
+
+-->
+<urlrewrite>
+
+    <rule>
+        <from>^/appclient/([0-9a-zA-Z]+).do</from>
+		<to type="forward">/appclient/$1</to>
+    </rule>
+
+	<rule>
+        <from>^/appclient/([0-9a-zA-Z]+).do?(.*)</from>
+		<to type="forward">/appclient/$1?$1</to>
+    </rule>
+
+    <rule>
+        <from>^/appclient/callBack/([0-9a-zA-Z]+)?(.*)</from>
+		<to type="forward">/appclient/callBack?_payLogId=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/appclient/notify/([0-9a-zA-Z]+)?(.*)</from>
+		<to type="forward">/appclient/notify?_payLogId=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/appclient/withdrawNotify/([0-9a-zA-Z]+)</from>
+		<to type="forward">/appclient/withdrawNotify?_withdrawLogId=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/appclient/notify1/([0-9a-zA-Z]+)?(.*)</from>
+		<to type="forward">/appclient/notify1?_payName=$1&amp;$2</to>
+    </rule>
+    <rule>
+        <from>^/appclient/withdrawNotify1/([0-9a-zA-Z]+)?(.*)</from>
+		<to type="forward">/appclient/withdrawNotify1?_withdrawName=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/upi/([0-9a-zA-Z]+).do</from>
+        <to type="forward">/upi/$1</to>
+    </rule>
+
+    <rule>
+        <from>^/paylog/([0-9a-zA-Z]+).do</from>
+        <to type="forward">/upi/$1</to>
+    </rule>
+
+
+</urlrewrite>
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="upiOrder" type="com.jxt.paycenter.appclient.pojo.UpiOrder"/>
+
+    <insert id="UpiOrder.batchAddUpiOrder" parameterClass="java.util.List">
+        insert into upiorder (id, orderid, amount, upiaccount, utr, time, payaccount)
+        VALUES
+        <iterate conjunction="," open="" close="">
+            null,#upiOrderList[].orderid#,#upiOrderList[].amount#,#upiOrderList[].upiAccount#,#list[].utr#,#list[].time#,#list[].payAccount#
+            )
+        </iterate>
+    </insert>
+</sqlMap>

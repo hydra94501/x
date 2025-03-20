@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+    <typeAlias alias="channel" type="com.jxt.paycenter.appclient.pojo.Channel"/>
+
+
+    <insert id="Channel.insert" parameterClass="channel">
+        insert into channel (channelno, sort, status, isshow, createtime, updatetime, updateuser, country, comment)
+        values (#channelNo#, #sort#, #status#, #isShow#, #createTime#, #updateTime#, #updateUser#, #country#, #comment#)
+    </insert>
+
+    <delete id="Channel.delete" parameterClass="Long">
+        delete
+        from channel
+        where id = #id#
+    </delete>
+
+    <update id="Channel.updateShow" parameterClass="com.jxt.paycenter.appclient.dto.ChannelUpdateReqDTO">
+        update channel
+        set isshow = #isShow#
+        where id = #id#
+    </update>
+
+    <update id="Channel.updateStatus" parameterClass="com.jxt.paycenter.appclient.dto.ChannelUpdateReqDTO">
+        update channel
+        set isshow = #status#
+        where id = #id#
+    </update>
+
+    <update id="Channel.updateSort" parameterClass="com.jxt.paycenter.appclient.dto.ChannelUpdateReqDTO">
+        update channel
+        set isshow = #sort#
+        where id = #id#
+    </update>
+
+    <select id="Channel.queryChannelPageList" parameterClass="com.jxt.paycenter.appclient.dto.ChannelSelectReqDTO"
+            resultClass="com.jxt.paycenter.appclient.vo.ChannelVO">
+
+
+    </select>
+
+</sqlMap>

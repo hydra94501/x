@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="paycenter_SqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation" value="classpath:resource/appclient/sqlMapConfig.xml"/>
+		<property name="dataSource" ref="paycenter_dataSource"/>
+	</bean>
+
+	<bean id="paycenter_SqlMapClientTemplate" class="com.qlzf.commons.factory.SqlMapClientTemplate">
+		<property name="sqlMapClient" ref="paycenter_SqlMapClient"/>
+	</bean>
+
+	<!-- handler -->
+	<bean id="payLogHandler" class="com.jxt.paycenter.appclient.handler.PayLogHandler">
+	    <property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="cpInfoHandler" class="com.jxt.paycenter.appclient.handler.CpInfoHandler">
+	    <property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="agentHandler" class="com.jxt.paycenter.appclient.handler.AgentHandler">
+	    <property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="payTypeHandler" class="com.jxt.paycenter.appclient.handler.PayTypeHandler">
+	    <property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="withdrawTypeHandler" class="com.jxt.paycenter.appclient.handler.WithdrawTypeHandler">
+	    <property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="withdrawLogHandler" class="com.jxt.paycenter.appclient.handler.WithdrawLogHandler">
+	    <property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="withdrawLogAdminHandler" class="com.jxt.paycenter.appclient.handler.WithdrawLogAdminHandler">
+	    <property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+	<bean id="bankInfoHandler" class="com.jxt.paycenter.appclient.handler.BankInfoHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+	<bean id="orderLogHandler" class="com.jxt.paycenter.appclient.handler.OrderLogHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+	<bean id="moneyLogHandler" class="com.jxt.paycenter.appclient.handler.MoneyLogHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="upiOrderHandler" class="com.jxt.paycenter.appclient.handler.UpiOrderHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<!--<bean id="icIcBankRecordHandler" class="com.jxt.paycenter.appclient.handler.IcIcBankRecordHandler">-->
+		<!--<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="yesBankRecordHandler" class="com.jxt.paycenter.appclient.handler.YesBankRecordHandler">-->
+		<!--<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="idfcBankRecordHandler" class="com.jxt.paycenter.appclient.handler.IdfcBankRecordHandler">-->
+		<!--<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="indusindBankRecordHandler" class="com.jxt.paycenter.appclient.handler.IndusindBankRecordHandler">-->
+		<!--<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>-->
+	<!--</bean>-->
+
+	<!--<bean id="axisBankRecordHandler" class="com.jxt.paycenter.appclient.handler.AxisBankRecordHandler">-->
+		<!--<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>-->
+	<!--</bean>-->
+
+	<bean id="bankRecordHandler" class="com.jxt.paycenter.appclient.handler.BankRecordHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<!--<bean id="tagpayAccountHandler" class="com.jxt.paycenter.appclient.handler.TagpayAccountHandler">-->
+		<!--<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>-->
+	<!--</bean>-->
+
+	<bean id="workOrderHandler" class="com.jxt.paycenter.appclient.handler.WorkOrderHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="workOrderReplyHandler" class="com.jxt.paycenter.appclient.handler.WorkOrderReplyHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+	<bean id="blackHandler" class="com.jxt.paycenter.appclient.handler.BlackHandler">
+		<property name="sqlMapClientTemplate" ref="paycenter_SqlMapClientTemplate"/>
+	</bean>
+
+</beans>
