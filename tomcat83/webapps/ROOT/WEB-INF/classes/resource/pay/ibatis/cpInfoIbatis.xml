@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="cpInfo" type="com.lxtx.pay.pojo.CpInfo"/>
+    <update id="CpInfo.updateCpInfoDefaultType" parameterClass="com.lxtx.pay.dto.CpInfoUpdateReqDTO">
+        update cpinfo
+        set DefaultWithdrawTypeId=#defaultWithdrawTypeId#,
+            DefaultPayTypeId=#defaultPayTypeId#
+        where AppId = #appId#
+    </update>
+
+    <insert id="CpInfo.insert" parameterClass="cpInfo">
+        insert into cpinfo ( `Key` ,UserNo,UserName,UserPass,Remain,PayFeeFix , PayFeeRate , WithdrawFeeFix ,
+        WithdrawFeeRate
+        , Status , TotalPay ,
+        TotalWithdraw,AgentId,SubRatio,RemainDelayDay,AgentPayFeeFix,AgentPayFeeRate,AgentWithdrawFeeFix,AgentWithdrawFeeRate,PayRange,WithdrawRange,country,type,payDailyLimit,withdrawDailyLimit,frozenActualRemain)
+
+        values (#key# ,#userNo#,#UserName#,#UserPass#,#remain#,#payFeeFix# , #payFeeRate# , #withdrawFeeFix#
+        , #withdrawFeeRate# , #status# , #totalPay# ,
+        #totalWithdraw#,#AgentId#,#SubRatio#,#RemainDelayDay#,#AgentpayFeeFix#,#AgentpayFeeRate#,#AgentwithdrawFeeFix#,#AgentwithdrawFeeRate#,#payRange#,#withdrawRange#,#country#,#type#,#payDailyLimit#,#withdrawDailyLimit#,#frozenActualRemain#)
+
+        <selectKey keyProperty="appId" resultClass="int">
+            select LAST_INSERT_ID() as AppId
+        </selectKey>
+    </insert>
+    <select id="CpInfo.select" parameterClass="int" resultClass="cpInfo">
+        select *
+        from cpinfo
+        where AppId = #appId#
+    </select>
+    <select id="CpInfo.selectByName" parameterClass="String" resultClass="CpInfo">
+        select *
+        from cpinfo
+        where UserName = #UserName#
+    </select>
+
+    <update id="CpInfo.addCpInfoRemain" parameterClass="com.lxtx.pay.dto.CpInfoUpdateRemainReqDTO">
+        update cpinfo
+        set remain      = remain + #remain#,
+            ActualRemain=ActualRemain + #remain#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.subtractCpInfoRemain" parameterClass="com.lxtx.pay.dto.CpInfoUpdateRemainReqDTO">
+        update cpinfo
+        set remain      = remain - #remain#,
+            ActualRemain=ActualRemain - #remain#
+        where AppId = #appId#
+          and Remain - FrozenRemain >= #remain#
+    </update>
+
+    <update id="CpInfo.adminWithdrawSubtractCpInfoRemain" parameterClass="com.lxtx.pay.dto.CpInfoUpdateRemainReqDTO">
+        update cpinfo
+        set remain      = remain - #remain#,
+            ActualRemain=ActualRemain - #remain#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.subtractCpInfoRemainOperate" parameterClass="com.lxtx.pay.dto.CpInfoSubtractRemainOperateReqDTO">
+        update cpinfo
+        set remain           = remain - #amount#,
+            ActualRemain=ActualRemain - #amount#,
+            TotalWithdraw    = TotalWithdraw + #amount#,
+            TotalWithdrawFee = TotalWithdrawFee + #fee#,
+            TotalWithdrawNum = TotalWithdrawNum + 1
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateStatus" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO">
+        update cpinfo
+        set Status = #status#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateConfirmStatus" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO">
+        update cpinfo
+        set confirmStatus = #confirmStatus#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateConfirmMin" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO">
+        update cpinfo
+        set confirmMin    = #confirmRange#,
+            confirmStatus = #confirmStatus#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateCanOver" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO">
+        update cpinfo
+        set CanOver=#canOver#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateCanWithdraw" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO">
+        update cpinfo
+        set CanWithdraw = #canWithdraw#
+        where AppId = #appId#
+    </update>
+    <update id="CpInfo.updateAgentId" parameterClass="com.lxtx.pay.dto.CpInfoUpdateReqDTO">
+        update cpinfo
+        set AgentId = #agentId#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateCpInfoIp" parameterClass="com.lxtx.pay.dto.CpInfoUpdateReqDTO">
+        update cpinfo
+        set WhiteIps = #ip#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateDailyAmount" parameterClass="java.util.HashMap">
+        update cpinfo
+        set PayDailyLimit = #payAmount#, WithdrawDailyLimit = #withdrawAmount#
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.settlementActualRemain" parameterClass="com.lxtx.pay.dto.PayLogReqDTO">
+        update cpinfo a,
+            (select AppId, Sum(Amount - PlatformFee) as addRemain
+             from paylog
+             where ValidDay = #validDay#
+               and ValidStatus = 0
+               and Status = 1) b
+        set a.ActualRemain = a.ActualRemain + b.addRemain
+        where a.AppId = #appId#
+          and b.AppId = #appId#;
+    </update>
+
+    <!--结算成功，扣除实际结算金额，返还未结算金额-->
+    <update id="CpInfo.settlementSuccessReduceRemain" parameterClass="java.util.HashMap">
+        UPDATE cpinfo SET Remain = Remain - #actualSettlementAmount#,
+                          FrozenRemain = FrozenRemain - #settlementAmount#,
+                          ActualRemain = ActualRemain + #notSettlementAmount# WHERE AppId = #appId#
+    </update>
+
+
+
+
+
+
+    <!--结算拒绝，要把冻结的商户金额减掉结算单金额，可用余额加上结算单金额-->
+    <update id="CpInfo.settlementRejectIncrAmount" parameterClass="java.util.HashMap">
+        UPDATE cpinfo SET FrozenRemain = FrozenRemain - #settlementAmount#,
+                          ActualRemain = ActualRemain + #settlementAmount# WHERE AppId = #appId#
+    </update>
+
+
+
+
+    <update id="CpInfo.updateCpInfo" parameterClass="com.lxtx.pay.dto.CpInfoUpdateReqDTO">
+        update cpinfo
+        set UserName=#userName#
+          , UserPass=#userPass#
+          , PayFeeFix=#payFeeFix#
+          , PayFeeRate=#payFeeRate#
+          , WithdrawFeeRate=#withdrawFeeRate#
+          , WithdrawFeeFix=#withdrawFeeFix#
+          , AgentPayFeeFix=#agentPayFeeFix#
+          , AgentPayFeeRate=#agentPayFeeRate#
+          , AgentWithdrawFeeFix=#agentWithdrawFeeFix#
+          , AgentWithdrawFeeRate=#agentWithdrawFeeRate#
+          , SubRatio=#subRatio#
+          , RemainDelayDay=#remainDelayDay#
+          , PayRange=#payRange#
+          , WithdrawRange=#withdrawRange#
+          , type=#type#
+        where AppId = #appId#
+    </update>
+
+    <delete id="CpInfo.deleteByPrimaryKey" parameterClass="int">
+        delete
+        from cpinfo
+        where AppId = #appId#
+    </delete>
+
+    <select id="CpInfo.queryCpInfoByUserName" parameterClass="String" resultClass="int">
+        select count(*)
+        from cpinfo
+        where UserName = #userName#
+    </select>
+
+    <update id="CpInfo.updateCpInfoCredit" parameterClass="com.lxtx.pay.dto.CpInfoUpdateCreditReqDTO">
+        update cpinfo
+        set CreditRemain = #remain#
+        where appId = #appId#
+    </update>
+
+    <select id="CpInfo.findWarnInfo" resultClass="CpInfo">
+        select *
+        from cpinfo
+        where CreditRemain > 0
+    </select>
+
+    <select id="CpInfo.statisticPayByCountry" parameterClass="com.lxtx.pay.dto.HomeStatisticsReqDTO"
+            resultClass="com.lxtx.pay.vo.HomeDataVo">
+        SELECT
+        SUM(a.Amount) AS 'totalPay',SUM(a.PlatformFee) AS 'totalPayFee',COUNT(a.id) AS 'totalPayNum',
+
+        SUM(IF(a.PayTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL + 150 MINUTE),'%Y-%m-%d'),'
+        00:00:00'),a.Amount,0)) AS 'todayPay',
+        SUM(IF(a.PayTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL + 150 MINUTE),'%Y-%m-%d'),'
+        00:00:00'),a.PlatformFee,0)) AS 'todayPayFee',
+        (SELECT COUNT(p.Id) FROM paylog p left join cpinfo c on p.AppId = c.AppId
+        WHERE p.`Status` = 1 AND c.AppId != 10000
+        <isNotEmpty property="appId" prepend="and">
+            p.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.Country = #country#
+        </isNotEmpty>
+        AND PayTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL + 150 MINUTE),'%Y-%m-%d'),' 00:00:00')) as
+        'todayPayNum',
+
+        SUM(IF(a.PayTime >=CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1290 MINUTE),'%Y-%m-%d'),' 00:00:00') AND
+        a.PayTime &lt; CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL +150 MINUTE),'%Y-%m-%d'),' 00:00:00'),a.Amount,0)) AS
+        'yesterdayPay',
+        SUM(IF(a.PayTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1290 MINUTE),'%Y-%m-%d'),' 00:00:00') AND
+        a.PayTime &lt; CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL +150 MINUTE),'%Y-%m-%d'),'
+        00:00:00'),a.PlatformFee,0)) AS 'yesterdayPayFee',
+        (SELECT COUNT(p.Id) FROM paylog p left join cpinfo c on p.AppId = c.AppId WHERE p.`Status` = 1 AND c.AppId !=
+        10000
+        <isNotEmpty property="appId" prepend="and">
+            p.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.Country = #country#
+        </isNotEmpty>
+        AND PayTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1290 MINUTE),'%Y-%m-%d'),' 00:00:00') AND PayTime
+        &lt; CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL +150 MINUTE),'%Y-%m-%d'),' 00:00:00')) as 'yesterdayPayNum'
+
+        FROM (SELECT id, p.appid, amount, paytime, platformfee, p.status, c.country
+        FROM paylog p left join cpinfo c on p.AppId = c.AppId
+        WHERE p.`Status` = 1 AND c.AppId != 10000
+        <isNotEmpty property="appId" prepend="and">
+            c.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.Country = #country#
+        </isNotEmpty>
+        ) a ;
+    </select>
+
+    <select id="CpInfo.statisticWithdrawByCountry" parameterClass="com.lxtx.pay.dto.HomeStatisticsReqDTO"
+            resultClass="com.lxtx.pay.vo.HomeDataVo">
+        SELECT
+        SUM(b.Amount) AS 'totalWithdraw',SUM(b.PlatformFee) AS 'totalWithdrawFee',COUNT(b.id) AS 'totalWithdrawNum',
+
+        SUM(IF(b.WithdrawTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL + 150 MINUTE),'%Y-%m-%d'),'
+        00:00:00'),b.Amount,0)) AS 'todayWithdraw',
+        SUM(IF(b.WithdrawTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL + 150 MINUTE),'%Y-%m-%d'),'
+        00:00:00'),b.PlatformFee,0)) AS 'todayWithdrawFee',
+        (SELECT COUNT(w.id) FROM withdrawlog w left join cpinfo c on w.AppId = c.AppId WHERE w.`Status` !=-2 AND c.AppId
+        !=10000
+        <isNotEmpty property="appId" prepend="and">
+            c.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.Country = #country#
+        </isNotEmpty>
+        AND WithdrawTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL + 150 MINUTE),'%Y-%m-%d'),' 00:00:00')) as
+        'todayWithdrawNum',
+
+        SUM(IF(b.WithdrawTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1290 MINUTE),'%Y-%m-%d'),' 00:00:00') AND
+        b.WithdrawTime &lt; CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL +150 MINUTE),'%Y-%m-%d'),' 00:00:00'),b.Amount,0))
+        AS 'yesterdayWithdraw',
+        SUM(IF(b.WithdrawTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1290 MINUTE),'%Y-%m-%d'),' 00:00:00') AND
+        b.WithdrawTime &lt; CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL +150 MINUTE),'%Y-%m-%d'),'
+        00:00:00'),b.PlatformFee,0)) AS 'yesterdayWithdrawFee',
+        (SELECT COUNT(w.Id) FROM withdrawlog w left join cpinfo c on w.AppId = c.AppId WHERE w.`Status` !=-2 AND c.AppId
+        !=10000
+        <isNotEmpty property="appId" prepend="and">
+            c.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.Country = #country#
+        </isNotEmpty>
+        AND WithdrawTime >= CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL -1290 MINUTE),'%Y-%m-%d'),' 00:00:00') AND
+        WithdrawTime &lt; CONCAT(DATE_FORMAT(DATE_ADD(NOW(),INTERVAL +150 MINUTE),'%Y-%m-%d'),' 00:00:00')) as
+        'yesterdayWithdrawNum'
+
+        FROM (SELECT id, w.amount,w.status, w.platformfee,w.WithdrawTime, c.AppId, c.country
+        FROM withdrawlog w left join cpinfo c on w.AppId =c.AppId WHERE w.`Status` !=-2 AND c.AppId !=10000
+        <isNotEmpty property="appId" prepend="and">
+            c.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.Country = #country#
+        </isNotEmpty>
+        ) b
+    </select>
+
+    <update id="CpInfo.updateCountry" parameterClass="java.util.Map">
+        UPDATE cpinfo c
+        SET country = (SELECT country FROM paylog p WHERE AppId = #appid# order by WithdrawTime desc LIMIT 0,1)
+        WHERE c.AppId = #appid#
+    </update>
+
+    <update id="CpInfo.resetGoogleSecret" parameterClass="String">
+        update cpinfo
+        set googleSecret = ''
+        where AppId = #appId#
+    </update>
+
+    <update id="CpInfo.updateCpInfoWhiteIps" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO">
+        update cpinfo
+        set WhiteIps = #whiteIps#
+        where AppId = #appId#
+    </update>
+
+    <select id="CpInfo.selectByUserNo" parameterClass="String" resultClass="List">
+        select AppId, UserNo
+        from cpinfo
+        where UserNo = #userNo#
+    </select>
+
+    <select id="CpInfo.exportExcelCpInfoList" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="com.lxtx.pay.vo.CpInfoVo">
+        SELECT
+        c.appid,
+        c.Remain,
+        c.actualremain
+        FROM
+        cpinfo c
+        LEFT JOIN agent a ON c.AgentId = a.Id
+        LEFT JOIN paytype p ON c.DefaultPayTypeId = p.Id
+        LEFT JOIN withdrawtype wd ON c.DefaultWithdrawTypeId = wd.Id
+        WHERE
+        1 =1
+        <isNotEmpty property="userNames" prepend="and">
+            c.AppId in
+            <iterate property="userNames" conjunction="," open="(" close=")">
+                #userNames[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty property="agentId" prepend="and">
+            c.AgentId = #agentId#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            c.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="canOver" prepend="and">
+            c.CanOver = #canOver#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.country = #country#
+        </isNotEmpty>
+        order by c.AppId asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+
+    <select id="CpInfo.queryCpInfoPageList" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="com.lxtx.pay.vo.CpInfoVo">
+        SELECT
+        c.appid,
+        c.userNo,
+        c.`key`,
+        c.googleSecret,
+        c.STATUS,
+        c.canover,
+        c.confirmStatus,
+        c.confirmMin,
+        c.agentid,
+        c.username,
+        c.userpass,
+        c.canwithdraw,
+        c.defaultpaytypeid,
+        c.defaultwithdrawtypeid,
+        c.PayFeeFix,
+        c.PayFeeRate,
+        c.WithdrawFeeFix,
+        c.WithdrawFeeRate,
+        c.AgentPayFeeFix,
+        c.AgentPayFeeRate,
+        c.AgentWithdrawFeeFix,
+        c.AgentWithdrawFeeRate,
+        c.payDailyLimit,
+        c.WithdrawDailyLimit,
+        c.subratio,
+        c.remaindelayday,
+        c.Remain,
+        c.actualremain,
+        c.FrozenActualRemain,
+        c.frozenremain,
+        c.creditremain,
+        c.payrange,
+        c.withdrawrange,
+        c.mustdefaulttype,
+        c.country,
+        c.WhiteIps,
+        c.type,
+        a.UserName AS AgentUserName,
+        p.NAME AS PaytypeName,
+        wd.NAME AS WithdrawtypeName
+        FROM
+        cpinfo c
+        LEFT JOIN agent a ON c.AgentId = a.Id
+        LEFT JOIN paytype p ON c.DefaultPayTypeId = p.Id
+        LEFT JOIN withdrawtype wd ON c.DefaultWithdrawTypeId = wd.Id
+        WHERE
+        1 =1
+        <isNotEmpty property="userNames" prepend="and">
+            c.AppId in
+            <iterate property="userNames" conjunction="," open="(" close=")">
+                #userNames[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty property="agentId" prepend="and">
+            c.AgentId = #agentId#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            c.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="canOver" prepend="and">
+            c.CanOver = #canOver#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            c.type = #type#
+        </isNotEmpty>
+        order by c.AppId asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="CpInfo.queryCpInfoPageListCount" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="int">
+        SELECT
+        count(c.AppId)
+        FROM
+        cpinfo c
+        LEFT JOIN agent a ON c.AgentId = a.Id
+        LEFT JOIN paytype p ON c.DefaultPayTypeId = p.Id
+        LEFT JOIN withdrawtype wd ON c.DefaultWithdrawTypeId = wd.Id
+        WHERE
+        1 =1
+        <isNotEmpty property="userNames" prepend="and">
+            c.AppId in
+            <iterate property="userNames" conjunction="," close=")" open="(">
+                #userNames[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty property="agentId" prepend="and">
+            c.AgentId = #agentId#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            c.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="canOver" prepend="and">
+            c.CanOver = #canOver#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            c.type = #type#
+        </isNotEmpty>
+    </select>
+
+    <select id="CpInfo.queryCpInfoStats" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO" resultClass="com.lxtx.pay.vo.CpInfoVo">
+        SELECT SUM(c.Remain) as Remain, SUM(c.actualremain) as actualremain FROM
+        cpinfo c
+        WHERE
+        1 =1
+        <isNotEmpty property="userNames" prepend="and">
+            c.AppId in
+            <iterate property="userNames" conjunction="," open="(" close=")">
+                #userNames[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty property="agentId" prepend="and">
+            c.AgentId = #agentId#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            c.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="canOver" prepend="and">
+            c.CanOver = #canOver#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            c.country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            c.type = #type#
+        </isNotEmpty>
+    </select>
+
+    <select id="CpInfo.queryByUserNameAndPassword" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO" resultClass="com.lxtx.pay.vo.CpInfoVo">
+        SELECT * from cpinfo t WHERE t.UserName = #username# AND t.userpass = #password#
+    </select>
+
+
+    <update id="CpInfo.setPassword" parameterClass="com.lxtx.pay.vo.LoginVo" >
+        update cpinfo set userpass = #password# WHERE  AppId = #id#
+    </update>
+
+
+    <select id="CpInfo.getLoginVoById" parameterClass="java.lang.Integer" resultClass="com.lxtx.pay.vo.LoginVo">
+         SELECT AppId as id, UserName as username, userpass as password from cpinfo t WHERE t.AppId = #id#
+    </select>
+
+
+    <select id="CpInfo.queryCpInfoSelectList" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="com.lxtx.pay.vo.CpInfoSelectVO">
+        select AppId, UserName
+        from cpinfo
+    </select>
+
+    <select id="CpInfo.queryCpInfoStatisticsPageList" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="com.lxtx.pay.vo.CpInfoStatisticsVO">
+        SELECT
+        c.appid,
+        c.totalPay,
+        c.TotalPayFee,
+        c.TotalPayNum,
+        c.TotalWithdraw,
+        c.TotalWithdrawFee,
+        c.TotalWithdrawNum
+        FROM
+        cpinfo c
+        WHERE
+        1 =1
+        <isNotEmpty property="appId" prepend="and">
+            c.AppId = #appId#
+        </isNotEmpty>
+        order by c.AppId asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="CpInfo.queryCpInfoStatisticsPageListCount" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="int">
+        SELECT
+        count(c.AppId)
+        FROM
+        cpinfo c
+        WHERE
+        1 =1
+        <isNotEmpty property="appId" prepend="and">
+            c.AppId = #appId#
+        </isNotEmpty>
+    </select>
+
+    <select id="CpInfo.getAll" resultClass="CpInfo">
+        select *
+        from cpinfo
+    </select>
+
+    <select id="CpInfo.queryCpInfoByIds" parameterClass="java.util.HashMap" resultClass="com.lxtx.pay.pojo.CpInfo">
+        SELECT AppId, ActualRemain FROM cpinfo WHERE 1 = 1
+        <isNotEmpty prepend="and" property="appIdList">
+            AppId IN
+            <iterate property="appIdList" open="(" close=")" conjunction=",">
+                #appIdList[]#
+            </iterate>
+        </isNotEmpty>
+    </select>
+
+    <select id="CpInfo.queryCpIdsByCountry" parameterClass="com.lxtx.pay.dto.CpIdsDTO" resultClass="java.lang.String">
+        select appid
+        from cpinfo where 1 = 1
+        and country in
+        <iterate property="countrys" open="(" close=")" conjunction=",">
+            #countrys[]#
+        </iterate>
+        <isNotEmpty prepend="and" property="types">
+            type in
+            <iterate  property="types" conjunction="," close=")" open="(" >
+                #types[]#
+            </iterate>
+        </isNotEmpty>
+    </select>
+
+    <select id="CpInfo.queryCpInfoSettlementList" parameterClass="java.util.HashMap" resultClass="com.lxtx.pay.vo.SettlementRemainVO">
+        select
+            appId, Sum(Amount - PlatformFee) as remain
+        from paylog where
+            PayTime <![CDATA[ <= ]]> #endSettlementTime# AND
+            country = #country#
+            <isNotEmpty prepend="and" property="checkedCpInfo">
+                AppId IN
+                <iterate property="checkedCpInfo" open="(" close=")" conjunction=",">
+                    #checkedCpInfo[]#
+                </iterate>
+            </isNotEmpty>
+            AND ValidStatus = 0 AND Status = 1
+        group by AppId
+    </select>
+
+    <update id="CpInfo.updateSettlement" parameterClass="java.util.HashMap">
+        update cpinfo a, (
+            select
+            AppId, Sum(Amount - PlatformFee) as addRemain
+            from paylog where
+             PayTime <![CDATA[ <= ]]> #endSettlementTime# and country = #country#
+            <isNotEmpty prepend="and" property="checkedCpInfo">
+                AppId IN
+                <iterate property="checkedCpInfo" open="(" close=")" conjunction=",">
+                    #checkedCpInfo[]#
+                </iterate>
+            </isNotEmpty>
+            and ValidStatus = 0 and Status = 1 group by AppId
+        ) b
+        set a.ActualRemain = a.ActualRemain + b.addRemain
+        where a.AppId = b.AppId
+    </update>
+
+    <update id="CpInfo.frozenActualRemain" parameterClass="java.util.HashMap">
+        UPDATE cpinfo
+        SET ActualRemain = ActualRemain - #amount#,
+            FrozenActualRemain = FrozenActualRemain + #amount#
+        WHERE AppId = #appId# AND ActualRemain >= #amount#
+    </update>
+
+    <update id="CpInfo.frozenRemain" parameterClass="java.util.HashMap">
+        UPDATE cpinfo
+        SET ActualRemain = ActualRemain - #amount#,
+            FrozenRemain = FrozenRemain + #amount#
+        WHERE AppId = #appId# AND ActualRemain >= #amount#
+    </update>
+
+
+    <update id="CpInfo.unFrozenActualRemain" parameterClass="java.util.HashMap">
+        UPDATE cpinfo
+        SET ActualRemain = ActualRemain + #amount#,
+            FrozenActualRemain = FrozenActualRemain - #amount#
+        WHERE AppId = #appId# AND FrozenActualRemain >= #amount#
+    </update>
+
+    <select id="CpInfo.selectActualRemain" parameterClass="int" resultClass="java.lang.String">
+        select ActualRemain as actualRemain
+        from cpinfo
+        where AppId = #appId# AND `Status` = 1
+    </select>
+</sqlMap>

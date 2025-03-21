@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+    <typeAlias alias="channelPayType" type="com.lxtx.pay.pojo.ChannelPayType"/>
+
+    <insert id="ChannelPayType.insert" parameterClass="channelPayType">
+        insert into channelpaytype (channelid, paytypeid) values (#channelId#,#payTypeId#)
+    </insert>
+
+    <delete id="ChannelPayType.deleteByChannelId" parameterClass="Long">
+        delete from channelpaytype where channelid = #channelId#
+    </delete>
+
+
+</sqlMap>

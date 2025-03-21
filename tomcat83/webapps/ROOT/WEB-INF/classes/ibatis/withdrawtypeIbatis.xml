@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="withdrawtype" type="com.lxtx.pay.pojo.WithdrawType"/>
+
+
+    <update id="WithdrawType.updateWithdrawTypeStatus" parameterClass="com.lxtx.pay.dto.WithdrawTypeReqDTO">
+        update withdrawtype
+        set Status = #status#
+        where Id = #id#
+    </update>
+
+    <select id="WithdrawType.selectByStatus" parameterClass="java.util.Map" resultClass="WithdrawType">
+        select * from withdrawtype
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="Status">
+                Status = #Status#
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    <select id="WithdrawType.select" parameterClass="int" resultClass="WithdrawType">
+        select *
+        from withdrawtype
+        where Id = #Id#
+    </select>
+    <select id="WithdrawType.getAll" resultClass="withdrawtype">
+        select *
+        from withdrawtype
+    </select>
+    <insert id="WithdrawType.insert" parameterClass="withdrawtype">
+        insert into withdrawtype(Name, OutName, Params, Status, FeeFix, FeeRate, TotalWithdraw, TotalFee, Sort, Types,
+                                 WorkTime, `Range`, CreateTime, Currency, ThirdRange, country)
+        values (#name#, #outname#, #params#, #status#, #feefix#, #feerate#, 0, 0, #sort#, #types#, #worktime#, #range#,
+                #createtime#, #currency#, #ThirdRange#, #country#)
+    </insert>
+    <select id="WithdrawType.findByPage" parameterClass="java.util.Map" resultClass="withdrawtype">
+        select * from withdrawtype where 1=1
+        <isNotEmpty property="name" prepend="and">
+            (Id like concat('%',#name#,'%') or Name like concat('%',#name#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="types" prepend="and">
+            Types like concat('%',#types#,'%')
+        </isNotEmpty>
+        order by Sort desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="WithdrawType.countTotal" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+        select count(*) from withdrawtype where 1=1
+        <isNotEmpty property="name" prepend="and">
+            (Id like concat('%',#name#,'%') or Name like concat('%',#name#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="types" prepend="and">
+            Types like concat('%',#types#,'%')
+        </isNotEmpty>
+    </select>
+    <delete id="WithdrawType.deleteByPrimaryKey" parameterClass="int">
+        delete
+        from withdrawtype
+        where Id = #id#
+    </delete>
+
+    <update id="WithdrawType.update" parameterClass="WithdrawType">
+        update withdrawtype
+        <dynamic prepend="set">
+            <isNotEmpty prepend="," property="name">
+                Name=#name#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="outname">
+                OutName=#outname#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="params">
+                Params=#params#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="feefix">
+                FeeFix=#feefix#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="feerate">
+                FeeRate=#feerate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="sort">
+                Sort=#sort#
+            </isNotEmpty>
+        </dynamic>
+        ,Types=#types#,WorkTime=#worktime#
+        ,`Range`=#range#,Currency=#currency#
+
+        where Id=#id#
+    </update>
+
+    <select id="WithdrawType.queryWithdrawTypeSelectList" parameterClass="com.lxtx.pay.dto.WithdrawTypeReqDTO"
+            resultClass="com.lxtx.pay.vo.WithdrawTypeSelectVO">
+        select Id, Name
+        from withdrawtype
+        order by Status desc,Sort desc
+    </select>
+    <select id="WithdrawType.queryWithdrawTypePageList" parameterClass="com.lxtx.pay.dto.WithdrawTypeReqDTO"
+            resultClass="com.lxtx.pay.vo.WithdrawTypeVO">
+        select id, name, outname, params, status, feefix, feerate, sort, types, worktime, `range`, createtime, currency,
+        thirdrange, country
+        from withdrawtype where 1=1
+        <isNotEmpty property="name" prepend="and">
+            (Id like concat('%',#name#,'%') or Name like concat('%',#name#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            Country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="types" prepend="and">
+            Types like concat('%',#types#,'%')
+        </isNotEmpty>
+        order by Status desc,Sort desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="WithdrawType.queryWithdrawTypePageListCount" parameterClass="com.lxtx.pay.dto.WithdrawTypeReqDTO"
+            resultClass="int">
+        select count(Id)
+        from withdrawtype where 1=1
+        <isNotEmpty property="name" prepend="and">
+            (Id like concat('%',#name#,'%') or Name like concat('%',#name#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            Country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="types" prepend="and">
+            Types like concat('%',#types#,'%')
+        </isNotEmpty>
+    </select>
+</sqlMap>

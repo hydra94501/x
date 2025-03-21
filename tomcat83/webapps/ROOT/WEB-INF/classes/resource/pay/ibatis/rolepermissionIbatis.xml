@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="rolepermission" type="com.lxtx.pay.pojo.RolePermission"/>
+
+    <delete id="RolePermission.deleteRelationByRoleNo" parameterClass="java.lang.String">
+        delete
+        from rolepermission
+        where RoleNo = #roleNo#
+    </delete>
+    <insert id="RolePermission.insert" parameterClass="rolepermission">
+        insert into rolepermission(RoleNo, PermissionId)
+        values (#roleNo#, #permissionId#)
+    </insert>
+
+    <insert id="RolePermission.addRolePermission" parameterClass="com.lxtx.pay.dto.RolePermissionUpdateReqDTO">
+        insert into rolepermission (id, roleno, permissionid)
+        VALUES (null, #roleNo#, #permissionId#)
+    </insert>
+</sqlMap>

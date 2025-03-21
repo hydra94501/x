@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="settlementLog" type="com.lxtx.pay.pojo.SettlementLog"/>
+
+    <select id="SettlementLog.select" parameterClass="long" resultClass="com.lxtx.pay.pojo.SettlementLog">
+        select *
+        from settlementlog
+        where id = #id#
+    </select>
+
+    <insert id="SettlementLog.insert" parameterClass="com.lxtx.pay.pojo.SettlementLog">
+            insert into settlementlog(appId, faitAmount,account, status, createTime)
+               values (#appId#, #faitAmount#, #account#, #status#, #createTime#)
+    </insert>
+
+
+    <update id="SettlementLog.settlementSuccess" parameterClass="com.lxtx.pay.dto.SettlementConfirmReqDTO">
+        UPDATE settlementlog
+        SET account    = #account#,
+            faitAmount = #faitAmount#,
+            uAmount    = #uAmount#,
+            status     = #status#,
+            finishTime = #finishTime#,
+            operator   = #operator#,
+            comment    = #comment#,
+            rate       = #rate#
+        WHERE appId = #appId#
+          AND id = #id#
+          AND status = 0
+    </update>
+
+
+    <update id="SettlementLog.settlementAgentSuccess" parameterClass="com.lxtx.pay.dto.SettlementAgentConfirmReqDTO">
+        UPDATE settlementlog
+        SET account    = #account#,
+            faitAmount = #faitAmount#,
+            uAmount    = #uAmount#,
+            status     = #status#,
+            finishTime = #finishTime#,
+            operator   = #operator#,
+            comment    = #comment#,
+            rate       = #rate#
+        WHERE appId = #appId#
+          AND id = #id#
+          AND status = 0
+    </update>
+
+    <update id="SettlementLog.settlementReject" parameterClass="com.lxtx.pay.dto.SettlementConfirmReqDTO">
+        update settlementlog
+        SET status   = #status#,
+            operator = #operator#,
+            comment  = #comment#
+        where appId = #appId#
+          and id = #id#
+          AND status = 0
+    </update>
+
+
+    <update id="SettlementLog.settlementAgentReject" parameterClass="com.lxtx.pay.dto.SettlementAgentConfirmReqDTO">
+        update settlementlog
+        SET status   = #status#,
+            operator = #operator#,
+            comment  = #comment#
+        where appId = #appId#
+          and id = #id#
+          AND status = 0
+    </update>
+
+    <update id="SettlementLog.financeSuccess" parameterClass="com.lxtx.pay.dto.SettlementLogReqDTO">
+        update settlementlog
+        set financestatus = 1
+        where id = #id#
+    </update>
+
+    <select id="SettlementLog.querySettlementLogPageList" parameterClass="com.lxtx.pay.dto.SettlementLogReqDTO"
+            resultClass="com.lxtx.pay.vo.SettlementLogVO">
+        select s.id, s.appId, faitAmount, uAmount,account, proof, s.status,s.financestatus as financeStatus, createTime,
+        finishTime, rate, operator,d.name as country
+        from settlementlog s left join cpinfo c on s.appId = c.AppId left join dictionary d on c.country = d.value
+        where 1=1
+        <isNotEmpty prepend="and" property="appId">
+            s.appId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="account">
+            s.account like concat('%',#account#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            s.status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="financeStatus">
+            s.financestatus = #financeStatus#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            s.createTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            s.createTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startFinishTime">
+            finishTime &gt;= #startFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endFinishTime">
+            finishTime &lt;= #endFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+        order by s.id desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="SettlementLog.querySettlementLogPageListStatistics"
+            parameterClass="com.lxtx.pay.dto.SettlementLogReqDTO"
+            resultClass="com.lxtx.pay.vo.SettlementLogStatisticsVO">
+        select count(if(s.status = 0,s.id,null)) as processedNum,
+        sum(if(s.status = 0,faitAmount,0)) as processedFiatAmount,
+        count(s.id) as totalAllNum,
+        sum(faitAmount) as totalFailAmount,
+        sum(uAmount) as totalUAmount
+        from settlementlog s left join cpinfo c on s.appId = c.AppId left join dictionary d on c.country = d.value
+        where 1=1
+        <isNotEmpty prepend="and" property="appId">
+            s.appId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="account">
+            s.account like concat('%',#account#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            createTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            createTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startFinishTime">
+            finishTime &gt;= #startFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endFinishTime">
+            finishTime &lt;= #endFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

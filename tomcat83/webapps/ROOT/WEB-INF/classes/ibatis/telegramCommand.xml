@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="telegramCommand" type="com.lxtx.pay.pojo.TelegramCommand"/>
+
+    <select id="TelegramCommand.getAllByPage" resultClass="TelegramCommand"
+            parameterClass="com.lxtx.pay.dto.TelegramCommandReqDTO">
+        SELECT  id, botid, command, descr, response, operator, status, create_time as createTime, update_time as updateTime
+        from telegram_command
+        where 1= 1 and status = '1'
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="botid" prepend="and">
+            botid = #botid#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+        order by create_time desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="TelegramCommand.getPageCount" parameterClass="com.lxtx.pay.dto.TelegramCommandReqDTO"
+            resultClass="int">
+        select count(id) from telegram_command where 1= 1  and status = '1'
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="botid" prepend="and">
+            botid = #botid#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+    </select>
+
+    <insert id="TelegramCommand.insert" parameterClass="TelegramCommand">
+        insert into telegram_command(botid, command, descr, response, operator, status, create_time, update_time)
+        values (#botid#, #command#, #descr#, #response#, #operator#, #status#, #createTime#, #updateTime#)
+    </insert>
+
+
+    <update id="TelegramCommand.updateById" parameterClass="TelegramCommand">
+        update telegram_command
+        set update_time = #updateTime#
+        <isNotEmpty property="command" prepend=",">
+            command = #command#
+        </isNotEmpty>
+        <isNotEmpty property="descr" prepend=",">
+            descr = #descr#
+        </isNotEmpty>
+        <isNotEmpty property="response" prepend=",">
+            response = #response#
+        </isNotEmpty>
+        <isNotEmpty property="operator" prepend=",">
+            operator = #operator#
+        </isNotEmpty>
+        where id = #id#
+    </update>
+
+    <update id="TelegramCommand.deleteCommand">
+        update telegram_command set status = '2'
+        where id in
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+    </update>
+
+    <select id="TelegramCommand.getResponse" parameterClass="java.lang.String" resultClass="java.lang.String">
+        select response from telegram_command where command = #command# and status = '1' limit 1
+    </select>
+
+</sqlMap>

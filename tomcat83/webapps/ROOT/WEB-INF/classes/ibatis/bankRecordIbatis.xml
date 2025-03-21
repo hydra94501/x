@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="bankRecord" type="com.jxt.paycenter.pojo.BankRecord"/>
+
+    <select id="BankRecord.getAll" resultClass="com.lxtx.pay.pojo.BankRecord">
+        select *
+        from bank_record
+    </select>
+
+    <select id="BankRecord.queryBankRecordPageList" parameterClass="com.lxtx.pay.dto.BankRecordReqDTO"
+            resultClass="com.lxtx.pay.vo.BankRecordVO">
+        select  b.id, transaction_id, payment_type, amount, date, `desc`, grab_time, syncStatus as sync_status,
+        bank_type,balance,type,concat(payTypeId,'-',p.Name,'-',p.OutName) as payTypeName,notify_flag
+        from bank_record b left join paytype p on b.payTypeId = p.Id
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeId">
+            b.payTypeId = #payTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transaction_id">
+            transaction_id = #transaction_id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="type">
+            type = #type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="sync_status">
+            syncStatus = #sync_status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startGrabTime">
+            grab_time &gt;= #startGrabTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endGrabTime">
+            grab_time &lt;= #endGrabTime#
+        </isNotEmpty>
+        order by id desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="BankRecord.queryBankRecordPageListStatistics"
+            parameterClass="com.lxtx.pay.dto.BankRecordReqDTO"
+            resultClass="com.lxtx.pay.vo.BankRecordStatisticsVO">
+        select count(*) as count
+        from bank_record b left join paytype p on b.payTypeId = p.Id
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeId">
+            b.payTypeId = #payTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transaction_id">
+            transaction_id = #transaction_id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="type">
+            type = #type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="sync_status">
+            syncStatus = #sync_status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startGrabTime">
+            grab_time &gt;= #startGrabTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endGrabTime">
+            grab_time &lt;= #endGrabTime#
+        </isNotEmpty>
+    </select>
+</sqlMap>

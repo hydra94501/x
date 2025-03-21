@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="Moneylog" type="com.lxtx.pay.pojo.Moneylog"/>
+
+    <select id="Moneylog.getAll" resultClass="Moneylog">
+        select *
+        from Moneylog
+    </select>
+
+    <insert id="Moneylog.insert" parameterClass="Moneylog">
+        insert into moneylog
+        ( AppId, Type, SceneInfo, FrontMoney, Money, QueenMoney
+        , Details, CreateTime, Notes, LogId, OrderId)
+        values (#AppId#, #Type#, #SceneInfo#, #FrontMoney#, #Money#, #QueenMoney#, #Details#, #CreateTime#, #Notes#, #logId#, #orderId#)
+    </insert>
+    <select id="Moneylog.queryAllmoneylog" resultClass="Moneylog" parameterClass="java.util.Map">
+        select * from Moneylog m
+        where 1=1
+        <isNotEmpty property="appId" prepend="and">
+            AppId=#appId#
+        </isNotEmpty>
+        <isNotEmpty property="Type" prepend="and">
+            Type=#Type#
+        </isNotEmpty>
+        <isNotEmpty property="SceneInfo" prepend="and">
+            SceneInfo=#SceneInfo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startTime">
+            m.CreateTime &gt;= #startTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endTime">
+            m.CreateTime &lt;= #endTime#
+        </isNotEmpty>
+        order by CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Moneylog.queryAllmoneylogcount" resultClass="int" parameterClass="java.util.Map">
+        select count(Id) from Moneylog m
+        where 1=1
+        <isNotEmpty property="appId" prepend="and">
+            AppId=#appId#
+        </isNotEmpty>
+        <isNotEmpty property="Type" prepend="and">
+            Type=#Type#
+        </isNotEmpty>
+        <isNotEmpty property="SceneInfo" prepend="and">
+            SceneInfo=#SceneInfo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startTime">
+            m.CreateTime &gt;= #startTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endTime">
+            m.CreateTime &lt;= #endTime#
+        </isNotEmpty>
+
+    </select>
+
+    <select id="Moneylog.moneylogcount" parameterClass="java.util.Map" resultClass="int">
+        select count(*) from Moneylog
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="and" property="appId">
+                AppId = #appId#
+            </isNotEmpty>
+        </dynamic>
+
+    </select>
+    <select id="Moneylog.moneycount" parameterClass="java.util.Map" resultClass="int">
+        select count(*) from Moneylog
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="and" property="id">
+                Moneylog.Id = #id#
+            </isNotEmpty>
+
+            <isNotEmpty prepend="and" property="type">
+                Type = #type#
+            </isNotEmpty>
+
+            <isNotEmpty prepend="and" property="scene">
+                Scene = #scene#
+            </isNotEmpty>
+
+            <isNotEmpty prepend="and" property="time">
+                Time = #time#
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    <select id="Moneylog.queryMoneyLogPageList" parameterClass="com.lxtx.pay.dto.MoneyLogReqDTO"
+            resultClass="com.lxtx.pay.vo.MoneyLogVO">
+        select id, type, sceneinfo, frontmoney, money, queenmoney,details,notes, createtime, appid, orderid, logid
+        from Moneylog m
+        where 1=1
+        <isNotEmpty property="id" prepend="and">
+            Id=#id#
+        </isNotEmpty>
+        <isNotEmpty property="appId" prepend="and">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            Type=#type#
+        </isNotEmpty>
+        <isNotEmpty property="sceneInfo" prepend="and">
+            SceneInfo=#sceneInfo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            m.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            m.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty property="orderId" prepend="and">
+            OrderId=#orderId#
+        </isNotEmpty>
+        <isNotEmpty property="money" prepend="and">
+            Money=#money#
+        </isNotEmpty>
+        order by CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Moneylog.queryMoneyLogPageListCount" parameterClass="com.lxtx.pay.dto.MoneyLogReqDTO" resultClass="int">
+        select count(Id) from Moneylog m
+        where 1=1
+        <isNotEmpty property="id" prepend="and">
+            Id=#id#
+        </isNotEmpty>
+        <isNotEmpty property="appId" prepend="and">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            Type=#type#
+        </isNotEmpty>
+        <isNotEmpty property="sceneInfo" prepend="and">
+            SceneInfo=#sceneInfo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            m.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            m.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty property="orderId" prepend="and">
+            OrderId=#orderId#
+        </isNotEmpty>
+        <isNotEmpty property="money" prepend="and">
+            Money=#money#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

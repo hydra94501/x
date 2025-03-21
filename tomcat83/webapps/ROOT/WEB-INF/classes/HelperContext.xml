@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="paylogHelper" class="com.lxtx.pay.helper.PaylogHelper">
+        <property name="paylogHandler" ref="paylogHandler"/>
+    </bean>
+    <bean id="withdrawlogAdminHelper" class="com.lxtx.pay.helper.WithdrawlogAdminHelper">
+        <property name="withdrawlogAdminHandler" ref="withdrawlogAdminHandler"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="moneylogHandler" ref="moneylogHandler"/>
+    </bean>
+    <bean id="dictionaryHelper" class="com.lxtx.pay.helper.DictionaryHelper">
+        <property name="dictionaryHandler" ref="dictionaryHandler"/>
+    </bean>
+
+    <bean id="cpInfoHelper" class="com.lxtx.pay.helper.CpInfoHelper">
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+    </bean>
+
+    <bean id="loadTelegramGroup" class="com.lxtx.pay.thread.LoadTelegramGroup">
+        <property name="telegramGroupHandler" ref="telegramGroupHandler"/>
+        <property name="telegramCommandHandler" ref="telegramCommandHandler"/>
+        <property name="telegramKeywordsHandler" ref="telegramKeywordsHandler"/>
+        <property name="cpInfoHelper" ref="cpInfoHelper"/>
+        <property name="workOrderHandler" ref="workOrderHandler"/>
+        <property name="workOrderChatHandler" ref="workOrderChatHandler"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="paylogHandler" ref="paylogHandler"/>
+        <property name="withdrawlogHandler" ref="withdrawlogHandler"/>
+    </bean>
+
+</beans>

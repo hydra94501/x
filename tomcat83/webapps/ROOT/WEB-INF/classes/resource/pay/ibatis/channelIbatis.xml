@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paycenter">
+    <typeAlias alias="channel" type="com.lxtx.pay.pojo.Channel"/>
+
+
+    <insert id="Channel.insert" parameterClass="channel">
+        insert into channel (channelno, sort, status, isshow, createtime, updatetime, updateuser, country, comment)
+        values (#channelNo#, #sort#, #status#, #isShow#, #createTime#, #updateTime#, #updateUser#, #country#, #comment#)
+    </insert>
+
+    <delete id="Channel.delete" parameterClass="Long">
+        delete
+        from channel
+        where id = #id#
+    </delete>
+
+    <update id="Channel.updateIsShow" parameterClass="com.lxtx.pay.dto.ChannelUpdateReqDTO">
+        update channel
+        set isshow = #isShow#,
+            updatetime = #updateTime#,
+            updateuser = #updateUser#
+        where id = #id#
+    </update>
+
+    <update id="Channel.updateStatus" parameterClass="com.lxtx.pay.dto.ChannelUpdateReqDTO">
+        update channel
+        set status = #status#,
+            updatetime = #updateTime#,
+            updateuser = #updateUser#
+        where id = #id#
+    </update>
+
+    <update id="Channel.updateSort" parameterClass="com.lxtx.pay.dto.ChannelUpdateReqDTO">
+        update channel
+        set sort = #sort#,
+            updatetime = #updateTime#,
+            updateuser = #updateUser#
+        where id = #id#
+    </update>
+
+    <select id="Channel.queryChannelPageList" parameterClass="com.lxtx.pay.dto.ChannelSelectReqDTO"
+            resultClass="com.lxtx.pay.vo.ChannelVO">
+        SELECT id, channelno, sort, status, isshow, createtime, updatetime, updateuser, country, comment
+        FROM channel
+        where isshow = 1
+        <isNotEmpty prepend="and" property="channelNo">
+            channelNo like CONCAT('%',#channelNo#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+        order by sort desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Channel.queryChannelPageListCount" parameterClass="com.lxtx.pay.dto.ChannelSelectReqDTO" resultClass="int"
+            >
+        SELECT count(*)
+        FROM channel
+        where isshow = 1
+        <isNotEmpty prepend="and" property="channelNo">
+            channelNo like CONCAT('%',#channelNo#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="paytype" type="com.lxtx.pay.pojo.PayType"/>
+
+    <update id="PayType.updatePayTypeStatus" parameterClass="com.lxtx.pay.dto.PayTypeReqDTO">
+        update paytype
+        set Status = #status#
+        where Id = #id#
+    </update>
+
+    <select id="PayType.selectByStatus" parameterClass="java.util.Map" resultClass="PayType">
+        select * from paytype
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="Status">
+                Status = #Status#
+            </isNotEmpty>
+        </dynamic>
+    </select>
+    <select id="PayType.getAll" resultClass="paytype">
+        select *
+        from paytype
+    </select>
+    <select id="PayType.select" resultClass="paytype">
+        select *
+        from paytype
+        where Id = #id#
+    </select>
+    <insert id="PayType.insert" parameterClass="PayType">
+        insert into paytype(Name, outName, Params, Status, feeFix, FeeRate, TotalFee, Sort, Types, WorkTime, `Range`,
+                            CreateTime, Currency, ThirdRange, country)
+        values (#name#, #outName#, #params#, #status#, #feeFix#, #feeRate#, #totalFee#, #sort#, #types#, #workTime#,
+                #range#, now(), #currency#, #thirdRange#, #country#)
+    </insert>
+    <delete id="PayType.deleteByPrimaryKey" parameterClass="int">
+        delete
+        from paytype
+        where Id = #id#
+    </delete>
+    <update id="PayType.update" parameterClass="PayType">
+
+        update paytype p
+        set p.outName=#outName#
+          , p.Name=#name#
+          , Params=#params#
+          , feeFix=#feeFix#
+          , FeeRate=#feeRate#
+          , Sort=#sort#
+          , Types=#types#
+          , WorkTime=#workTime#
+          , `Range`=#range#
+          , Currency=#currency#
+        where Id = #id#
+    </update>
+    <select id="PayType.queryPayTypeSelectList" parameterClass="com.lxtx.pay.dto.PayTypeReqDTO"
+            resultClass="com.lxtx.pay.vo.PayTypeSelectVO">
+        select Id, concat(Name, ':', OutName) as Name
+        from paytype where isShow = 1
+        order by Status desc,Sort desc
+    </select>
+    <select id="PayType.queryPayTypePageList" parameterClass="com.lxtx.pay.dto.PayTypeReqDTO"
+            resultClass="com.lxtx.pay.vo.PayTypeVO">
+        select id, name, outName, params, status, feeFix, feeRate, sort, types, workTime, `range`, createTime, currency,
+        daylimit, thirdrange, country
+        from paytype where 1 = 1
+        <isNotEmpty property="name" prepend="and">
+            (Id like concat('%',#name#,'%') or Name like concat('%',#name#,'%') or outName like concat('%',#name#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="types" prepend="and">
+            Types like concat('%',#types#,'%')
+        </isNotEmpty>
+        order by Status desc,Sort desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="PayType.queryPayTypePageListCount" parameterClass="com.lxtx.pay.dto.PayTypeReqDTO" resultClass="int">
+        select count(Id)
+        from paytype where 1 = 1
+        <isNotEmpty property="name" prepend="and">
+            (Id like concat('%',#name#,'%') or Name like concat('%',#name#,'%') or outName like concat('%',#name#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="types" prepend="and">
+            Types like concat('%',#types#,'%')
+        </isNotEmpty>
+    </select>
+</sqlMap>

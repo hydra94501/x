@@ -1,0 +1,744 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="paystat" type="com.lxtx.pay.pojo.Paystat"/>
+    <typeAlias alias="paytype" type="com.lxtx.pay.pojo.PayType"/>
+
+    <resultMap id="PaystatList" class="Paystat">
+        <result property="Id" column="Id"/>
+        <result property="PayTypeId" column="PayTypeId"/>
+        <result property="StatDay" column="StatDay"/>
+        <result property="RequestAmount" column="RequestAmount"/>
+        <result property="PayAmount" column="PayAmount"/>
+        <result property="PayThirdFee" column="ThirdFee"/>
+        <result property="WithdrawAmount" column="WithdrawAmount"/>
+        <result property="WithdrawThirdFee" column="WithdrawThirdFee"/>
+        <result property="RequestCnt" column="RequestCnt"/>
+        <result property="PayCnt" column="PayCnt"/>
+        <result property="name" column="Name"/>
+        <result property="outname" column="OutName"/>
+        <!--        <result property="feefix" column="feefix" />-->
+        <!--        <result property="feerate" column="feerate" />-->
+
+    </resultMap>
+
+    <select id="Paystat.group" parameterClass="java.util.Map" resultClass="paystat">
+        select
+        PayTypeId,Name,OutName,StatDay,RequestAmount,PayAmount,ThirdFee,RequestCnt,PayCnt,WithdrawAmount,WithdrawThirdFee
+        from (
+        (select paytype.OutName as OutName,a.PayTypeId ,a.StatDay,a.PayAmount,a.ThirdFee as ThirdFee
+        ,b.WithdrawAmount,b.ThirdFee as WithdrawThirdFee,a.RequestCnt as RequestCnt,a.PayCnt as PayCnt,a.RequestAmount
+        as RequestAmount,paytype.Name
+        FROM paystat a LEFT JOIN paytype on a.PayTypeId = paytype.Id left join withdrawstat b on a.PayTypeId =
+        b.WithdrawTypeId and a.StatDay=b.StatDay )
+        ) a
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="ids">
+                PayTypeId in $ids$
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="startDay">
+                StatDay &gt;= #startDay#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endDay">
+                StatDay &lt;= #endDay#
+            </isNotEmpty>
+        </dynamic>
+
+        order by StatDay desc,PayTypeId desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+
+    </select>
+    <select id="Paystat.groupcount" parameterClass="java.util.Map" resultClass="int">
+        select count(StatDay) from (
+        (select paytype.OutName as OutName,a.PayTypeId ,a.StatDay,a.PayAmount,a.ThirdFee as ThirdFee
+        ,b.WithdrawAmount,b.ThirdFee as WithdrawThirdFee,a.RequestCnt as RequestCnt,a.PayCnt as PayCnt,a.RequestAmount
+        as RequestAmount,paytype.Name
+        FROM paystat a LEFT JOIN paytype on a.PayTypeId = paytype.Id left join withdrawstat b on a.PayTypeId =
+        b.WithdrawTypeId and a.StatDay=b.StatDay where paytype.Id>0)
+        ) a
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="ids">
+                PayTypeId in $ids$
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="startDay">
+                StatDay &gt;= #startDay#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endDay">
+                StatDay &lt;= #endDay#
+            </isNotEmpty>
+        </dynamic>
+
+    </select>
+
+    <select id="Paystat.statisticsAll" resultClass="com.lxtx.pay.pojo.Paystat">
+        SELECT
+        paystat.OutName AS outname,
+        paystat.PayTypeId,
+        paystat.NAME,
+        paystat.payamount AS PayAmount,
+        paystat.reqcnt AS RequestCnt,
+        paystat.PayCnt AS PayCnt,
+        paystat.reqamount AS RequestAmount,
+        paystat.thirdfee AS ThirdFee,
+        withdrawstat.wdamount AS WithdrawAmount,
+        withdrawstat.wdthirdfee AS WithdrawThirdFee
+        FROM
+        (
+        SELECT
+        paystat.PayTypeId,
+        OutName,
+        `Name`,
+        SUM( PayAmount ) AS payamount,
+        SUM( RequestAmount ) AS reqamount,
+        SUM( RequestCnt ) AS reqcnt,
+        SUM( PayCnt ) AS paycnt,
+        SUM( ThirdFee ) AS thirdfee
+        FROM
+        paystat
+        LEFT JOIN channelmatch ON paystat.PayTypeId = channelmatch.paytypeid
+        LEFT JOIN paytype ON paystat.PayTypeId = paytype.Id
+        GROUP BY
+        paystat.PayTypeId
+        ) paystat,(
+        SELECT
+        withdrawstat.WithdrawTypeId,
+        SUM( WithdrawAmount ) as wdamount,
+        SUM( ThirdFee) as wdthirdfee
+        FROM
+        withdrawstat
+        LEFT JOIN channelmatch ON withdrawstat.WithdrawTypeId = channelmatch.withdrawtypeid
+        GROUP BY
+        withdrawstat.WithdrawTypeId
+        ) withdrawstat,
+        channelmatch cm
+        WHERE
+        paystat.PayTypeId = cm.paytypeid
+        AND withdrawstat.WithdrawTypeId = cm.withdrawtypeid
+
+        GROUP BY
+        paystat.PayTypeId
+        ORDER BY
+        paystat.PayTypeId DESC
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Paystat.statisticsAllcount" resultClass="int" parameterClass="java.util.Map">
+        SELECT count(*)
+        FROM (
+                 SELECT paystat.PayTypeId,
+                        OutName,
+                        `Name`,
+                        SUM(PayAmount)     AS payamount,
+                        SUM(RequestAmount) AS reqamount,
+                        SUM(RequestCnt)    AS reqcnt,
+                        SUM(PayCnt)        AS paycnt,
+                        SUM(ThirdFee)      AS thirdfee
+                 FROM paystat
+                          LEFT JOIN channelmatch ON paystat.PayTypeId = channelmatch.paytypeid
+                          LEFT JOIN paytype ON paystat.PayTypeId = paytype.Id
+                 GROUP BY paystat.PayTypeId
+             ) paystat,
+             (
+                 SELECT withdrawstat.WithdrawTypeId,
+                        SUM(WithdrawAmount) as wdamount,
+                        SUM(ThirdFee)       as wdthirdfee
+                 FROM withdrawstat
+                          LEFT JOIN channelmatch ON withdrawstat.WithdrawTypeId = channelmatch.withdrawtypeid
+                 GROUP BY withdrawstat.WithdrawTypeId
+             ) withdrawstat,
+             channelmatch cm
+        WHERE paystat.PayTypeId = cm.paytypeid
+          AND withdrawstat.WithdrawTypeId = cm.withdrawtypeid
+    </select>
+
+    <!--    <select id="Paystat.queryPayStatStatistics" parameterClass="com.lxtx.pay.dto.PayStatStatisticsReqDTO"-->
+    <!--            resultClass="com.lxtx.pay.vo.CpInfoStatisticsVO">-->
+    <!--        SELECT-->
+    <!--        aa.PayTypeId,-->
+    <!--        aa.NAME,-->
+    <!--        aa.PayAmount,-->
+    <!--        aa.ThirdFee AS payFee,-->
+    <!--        bb.WithdrawAmount,-->
+    <!--        bb.ThirdFee AS withdrawFee-->
+    <!--        FROM-->
+    <!--        (-->
+    <!--        SELECT-->
+    <!--        a.PayTypeId,-->
+    <!--        a.`name`,-->
+    <!--        a.PayAmount,-->
+    <!--        a.ThirdFee,-->
+    <!--        cm.withdrawtypeid-->
+    <!--        FROM-->
+    <!--        (-->
+    <!--        SELECT-->
+    <!--        PayTypeId,-->
+    <!--        pt.NAME AS NAME,-->
+    <!--        SUM( PayAmount ) AS PayAmount,-->
+    <!--        SUM( ThirdFee ) AS ThirdFee-->
+    <!--        FROM-->
+    <!--        paystat-->
+    <!--        LEFT JOIN paytype pt ON paystat.PayTypeId = pt.Id-->
+    <!--        GROUP BY-->
+    <!--        PayTypeId-->
+    <!--        ) a-->
+    <!--        LEFT JOIN channelmatch cm ON a.PayTypeId = cm.paytypeid-->
+    <!--        ) aa,(-->
+    <!--        SELECT-->
+    <!--        WithdrawTypeId,-->
+    <!--        SUM( WithdrawAmount ) AS WithdrawAmount,-->
+    <!--        SUM( ThirdFee ) AS ThirdFee-->
+    <!--        FROM-->
+    <!--        withdrawstat-->
+    <!--        GROUP BY-->
+    <!--        WithdrawTypeId-->
+    <!--        ) bb-->
+    <!--        WHERE-->
+    <!--        aa.withdrawtypeid = bb.WithdrawTypeId-->
+    <!--        <isNotEmpty prepend="and" property="payTypeId">-->
+    <!--            aa.PayTypeId = #payTypeId#-->
+    <!--        </isNotEmpty>-->
+    <!--        <isNotEmpty property="rowIndex">-->
+    <!--            limit $rowIndex$,$limit$-->
+    <!--        </isNotEmpty>-->
+    <!--        GROUP BY-->
+    <!--        aa.withdrawtypeid DESC-->
+    <!--    </select>-->
+
+    <select id="Paystat.queryPayStatPageList" parameterClass="com.lxtx.pay.dto.ChannelReqDTO"
+            resultClass="com.lxtx.pay.vo.ChannelDailyStatisticsVO">
+        ( SELECT
+        PayTypeId AS channelId,
+        pt.`Name` AS `name`,
+        ps.StatDay,
+        IFNULL( ps.PayAmount, 0 ) AS PayAmount,
+        IFNULL( ps.payFee, 0 ) AS payFee,
+        IFNULL( ws.WithdrawAmount, 0 ) AS WithdrawAmount,
+        IFNULL( ws.withdrawFee, 0 ) AS withdrawFee
+        FROM
+        ((
+        SELECT
+        PayTypeId,
+        StatDay,
+        PayAmount,
+        ThirdFee AS payFee
+        FROM
+        paystat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        PayTypeId,
+        PayDay AS StatDay,
+        SUM( Amount ) AS payAmount,
+        SUM( ThirdFee ) AS payFee
+        FROM
+        paylog
+        WHERE
+        `Status` = 1
+        AND PayTypeId != 0
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            PayDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        AND PayDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        GROUP BY
+        PayTypeId,
+        PayDay
+        ORDER BY
+        PayDay DESC,
+        PayTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        PayTypeId DESC
+        ) ps
+        LEFT JOIN paytype pt ON ps.PayTypeId = pt.Id
+        LEFT JOIN ((
+        SELECT
+        WithdrawTypeId,
+        StatDay,
+        WithdrawAmount,
+        ThirdFee AS withdrawFee
+        FROM
+        withdrawstat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        WithdrawTypeId,
+        CreateDay AS StatDay,
+        SUM( Amount ) AS withdrawAmount,
+        SUM( ThirdFee ) AS withdrawFee
+        FROM
+        withdrawlog
+        WHERE
+        `Status` !=- 2
+        AND WithdrawTypeId != 0
+        AND CreateDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            CreateDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        GROUP BY
+        WithdrawTypeId,
+        CreateDay
+        ORDER BY
+        CreateDay DESC,
+        WithdrawTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        WithdrawTypeId DESC
+        ) ws ON ps.PayTypeId = ws.WithdrawTypeId
+        AND ps.StatDay = ws.StatDay
+        WHERE
+        PayTypeId != 0
+        ) UNION
+        (
+        SELECT
+        ws.WithdrawTypeId AS channelId,
+        pt.`Name` AS `Name`,
+        ws.StatDay,
+        IFNULL( ps.PayAmount, 0 ) AS PayAmount,
+        IFNULL( ps.payFee, 0 ) AS payFee,
+        IFNULL( ws.WithdrawAmount, 0 ) AS WithdrawAmount,
+        IFNULL( ws.withdrawFee, 0 ) AS withdrawFee
+        FROM
+        ((
+        SELECT
+        WithdrawTypeId,
+        StatDay,
+        WithdrawAmount,
+        ThirdFee AS withdrawFee
+        FROM
+        withdrawstat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        WithdrawTypeId,
+        CreateDay AS StatDay,
+        SUM( Amount ) AS withdrawAmount,
+        SUM( ThirdFee ) AS withdrawFee
+        FROM
+        withdrawlog
+        WHERE
+        `Status` !=- 2
+        AND WithdrawTypeId != 0
+        AND CreateDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            CreateDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        GROUP BY
+        WithdrawTypeId,
+        CreateDay
+        ORDER BY
+        CreateDay DESC,
+        WithdrawTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        WithdrawTypeId DESC
+        ) ws
+        LEFT JOIN ((
+        SELECT
+        PayTypeId,
+        StatDay,
+        PayAmount,
+        ThirdFee AS payFee
+        FROM
+        paystat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        PayTypeId,
+        PayDay AS StatDay,
+        SUM( Amount ) AS payAmount,
+        SUM( ThirdFee ) AS payFee
+        FROM
+        paylog
+        WHERE
+        `Status` = 1
+        AND PayTypeId != 0
+        AND PayDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            PayDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        GROUP BY
+        PayTypeId,
+        PayDay
+        ORDER BY
+        PayDay DESC,
+        PayTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        PayTypeId DESC
+        ) ps ON ws.WithdrawTypeId = ps.PayTypeId
+        AND ws.StatDay = ps.StatDay
+        LEFT JOIN paytype pt ON ws.WithdrawTypeId = pt.Id
+        WHERE
+        PayTypeId != 0
+        )
+        ORDER BY
+        StatDay DESC,
+        channelId DESC
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Paystat.queryPayStatPageListCount" parameterClass="com.lxtx.pay.dto.ChannelReqDTO" resultClass="int"
+    >
+        SELECT COUNT(*)
+        FROM (
+        ( SELECT
+        PayTypeId AS channelId,
+        pt.`Name` AS `name`,
+        ps.StatDay,
+        IFNULL( ps.PayAmount, 0 ) AS PayAmount,
+        IFNULL( ps.payFee, 0 ) AS payFee,
+        IFNULL( ws.WithdrawAmount, 0 ) AS WithdrawAmount,
+        IFNULL( ws.withdrawFee, 0 ) AS withdrawFee
+        FROM
+        ((
+        SELECT
+        PayTypeId,
+        StatDay,
+        PayAmount,
+        ThirdFee AS payFee
+        FROM
+        paystat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        PayTypeId,
+        PayDay AS StatDay,
+        SUM( Amount ) AS payAmount,
+        SUM( ThirdFee ) AS payFee
+        FROM
+        paylog
+        WHERE
+        `Status` = 1
+        AND PayTypeId != 0
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            PayDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        AND PayDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        GROUP BY
+        PayTypeId,
+        PayDay
+        ORDER BY
+        PayDay DESC,
+        PayTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        PayTypeId DESC
+        ) ps
+        LEFT JOIN paytype pt ON ps.PayTypeId = pt.Id
+        LEFT JOIN ((
+        SELECT
+        WithdrawTypeId,
+        StatDay,
+        WithdrawAmount,
+        ThirdFee AS withdrawFee
+        FROM
+        withdrawstat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        WithdrawTypeId,
+        CreateDay AS StatDay,
+        SUM( Amount ) AS withdrawAmount,
+        SUM( ThirdFee ) AS withdrawFee
+        FROM
+        withdrawlog
+        WHERE
+        `Status` !=- 2
+        AND WithdrawTypeId != 0
+        AND CreateDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            CreateDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        GROUP BY
+        WithdrawTypeId,
+        CreateDay
+        ORDER BY
+        CreateDay DESC,
+        WithdrawTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        WithdrawTypeId DESC
+        ) ws ON ps.PayTypeId = ws.WithdrawTypeId
+        AND ps.StatDay = ws.StatDay
+        WHERE
+        PayTypeId != 0
+        ) UNION
+        (
+        SELECT
+        ws.WithdrawTypeId AS channelId,
+        pt.`Name` AS `Name`,
+        ws.StatDay,
+        IFNULL( ps.PayAmount, 0 ) AS PayAmount,
+        IFNULL( ps.payFee, 0 ) AS payFee,
+        IFNULL( ws.WithdrawAmount, 0 ) AS WithdrawAmount,
+        IFNULL( ws.withdrawFee, 0 ) AS withdrawFee
+        FROM
+        ((
+        SELECT
+        WithdrawTypeId,
+        StatDay,
+        WithdrawAmount,
+        ThirdFee AS withdrawFee
+        FROM
+        withdrawstat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        WithdrawTypeId,
+        CreateDay AS StatDay,
+        SUM( Amount ) AS withdrawAmount,
+        SUM( ThirdFee ) AS withdrawFee
+        FROM
+        withdrawlog
+        WHERE
+        `Status` !=- 2
+        AND WithdrawTypeId != 0
+        AND CreateDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        <isNotEmpty prepend="and" property="payTypeIds">
+            WithdrawTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            CreateDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        GROUP BY
+        WithdrawTypeId,
+        CreateDay
+        ORDER BY
+        CreateDay DESC,
+        WithdrawTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        WithdrawTypeId DESC
+        ) ws
+        LEFT JOIN ((
+        SELECT
+        PayTypeId,
+        StatDay,
+        PayAmount,
+        ThirdFee AS payFee
+        FROM
+        paystat
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        ) UNION
+        (
+        SELECT
+        PayTypeId,
+        PayDay AS StatDay,
+        SUM( Amount ) AS payAmount,
+        SUM( ThirdFee ) AS payFee
+        FROM
+        paylog
+        WHERE
+        `Status` = 1
+        AND PayTypeId != 0
+        AND PayDay = DATE_FORMAT( DATE_ADD( NOW(), INTERVAL + 150 MINUTE ), '%Y%m%d' )
+        <isNotEmpty prepend="and" property="payTypeIds">
+            PayTypeId in
+            <iterate  property="payTypeIds" conjunction="," close=")" open="(" >
+                #payTypeIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            PayDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        GROUP BY
+        PayTypeId,
+        PayDay
+        ORDER BY
+        PayDay DESC,
+        PayTypeId DESC
+        )
+        ORDER BY
+        StatDay DESC,
+        PayTypeId DESC
+        ) ps ON ws.WithdrawTypeId = ps.PayTypeId
+        AND ws.StatDay = ps.StatDay
+        LEFT JOIN paytype pt ON ws.WithdrawTypeId = pt.Id
+        WHERE
+        PayTypeId != 0
+        )
+        ) uu
+    </select>
+
+</sqlMap>

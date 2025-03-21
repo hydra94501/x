@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="paylog" type="com.lxtx.pay.pojo.Paylog"/>
+
+    <select id="Paylog.select" parameterClass="Long" resultClass="paylog">
+        select *
+        from paylog
+        where id = #id#
+    </select>
+
+    <update id="Paylog.changeStatus" parameterClass="com.lxtx.pay.dto.PayLogReqDTO">
+        update paylog
+        set Status=1,
+            Status1=1,
+            Description=#description#,
+            PayTime = date_add(now(), interval 150 minute),
+            PayDay=#payDay#,
+            ValidDay=#validDay#
+        where Id = #id#
+          and Status = 0
+    </update>
+
+    <update id="Paylog.changeNotifyStatus" parameterClass="Long">
+        update paylog
+        set SyncCnt = 0
+        where Id = #Id#
+    </update>
+
+    <update id="Paylog.updatePayLogRastreo" parameterClass="payLog">
+        update PayLog
+        set rastreo = #rastreo#
+        where Id = #id#
+    </update>
+
+    <select id="Paylog.getAll" resultClass="Paylog">
+        select *, paylog.PayTime
+        from Paylog
+    </select>
+
+    <update id="Paylog.rechargePayLogSuccess" parameterClass="paylog">
+        update paylog
+        set Status      = 1,
+            Status1     = 1,
+            PayTime     = #payTime#,
+            PayDay      = #payDay#,
+            Amount      = #amount#,
+            ValidDay    = #validDay#,
+            ValidStatus = 1
+        where id = #id#
+
+    </update>
+
+    <update id="Paylog.updatePayLogValidStatus" parameterClass="com.lxtx.pay.dto.PayLogReqDTO">
+        update paylog
+        set ValidStatus = 1
+        where ValidDay = #validDay#
+          and ValidStatus = 0
+          and Status = 1
+          and AppId = #appId#;
+    </update>
+
+    <update id="Paylog.settlementPayLog" parameterClass="com.lxtx.pay.dto.SettlementPayLogReqDTO">
+        update paylog set ValidDay = DATE_FORMAT(DATE_ADD(NOW(),INTERVAL +150 minute ),'%Y%m%d')
+        where AppId = #appId#
+        and PayDay = #payDay#
+        and Status = 1
+        and ValidStatus = 0
+        <isNotEmpty prepend="and" property="payTypeId">
+            payTypeId = #payTypeId#
+        </isNotEmpty>
+    </update>
+
+    <select id="Paylog.queryPayLogByOrderId" parameterClass="String" resultClass="com.lxtx.pay.pojo.Paylog">
+        select *
+        from paylog
+        where OrderId = #orderId#
+        order by Id desc
+    </select>
+
+    <select id="Paylog.queryPayLogByOrder" parameterClass="String" resultClass="com.lxtx.pay.pojo.Paylog">
+        select *
+        from paylog
+        where OrderId = #orderId#
+        order by Id desc
+        limit 1
+    </select>
+
+    <select id="Paylog.queryValidPayLogList" parameterClass="Long" resultClass="com.lxtx.pay.vo.PayLogSettlementVO">
+        SELECT AppId,
+               PayTypeId,
+               pt.`Name`                      AS payTypeName,
+               PayDay,
+               ValidDay,
+               SUM(Amount) - sum(PlatformFee) AS amount,
+               COUNT(*)                       as payLogNums
+        FROM paylog p
+                 LEFT JOIN paytype pt on p.PayTypeId = pt.Id
+        WHERE p.`Status` = 1
+          AND ValidStatus = 0
+          AND AppId = #appId#
+        GROUP BY AppId,
+                 PayDay,
+                 PayTypeId
+    </select>
+
+    <select id="Paylog.queryPayLogPageList" resultClass="com.lxtx.pay.vo.PayLogVo"
+            parameterClass="com.lxtx.pay.dto.PayLogReqDTO">
+        SELECT
+        p.id,
+        appid,
+        orderid,
+        amount,
+        type,
+        callbackurl,
+        notifyurl,
+        p.STATUS,
+        p.createtime,
+        paytime,
+        transactionnum,
+        synccnt,
+        paytypeid,
+        pt.Name as payTypeName,
+        platformfee,
+        thirdfee,
+        createday,
+        payday,
+        p.currency,
+        cardholder,
+        email,
+        mobile,
+        status1,
+        Ip,
+        description,
+        synccp,
+        validday,
+        validstatus,
+        p.country,
+        clabe,
+        rastreo
+        FROM
+        paylog p
+        left join paytype pt on p.PayTypeId = pt.Id
+        WHERE
+        1 =1
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="id">
+            p.Id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transactionNum">
+            TransactionNum like concat('%', #transactionNum#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            OrderId like concat('%', #orderId#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="amount">
+            Amount = #amount#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="type">
+            Type = #type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="payTypeId">
+            PayTypeId = #payTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncCnt">
+            ((SyncCnt >0 AND SyncCnt = #syncCnt#) OR (SyncCnt = 0 AND SyncCnt = #syncCnt#) OR (SyncCnt &lt; 0 AND
+            SyncCnt = #syncCnt#))
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            p.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="clabe">
+            clabe like concat('%', #clabe#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            p.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            p.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startPayTime">
+            p.PayTime >= #startPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endPayTime">
+            p.PayTime &lt;= #endPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            p.country = #country#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="rastreo">
+            rastreo like concat('%', #rastreo#, '%')
+        </isNotEmpty>
+        order by CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+
+    </select>
+    <select id="Paylog.queryPayLogPageListStatistics" resultClass="com.lxtx.pay.vo.PayLogStatisticsVO"
+            parameterClass="com.lxtx.pay.dto.PayLogReqDTO">
+        SELECT
+        IFNULL( sum( Amount ), 0 ) AS needPayAmount,
+        IFNULL( SUM( IF ( `Status` = 1, Amount, 0 )), 0 ) AS payAmount,
+        IFNULL( SUM( IF ( `Status` = 1, PlatformFee, 0 )), 0 ) AS payFee,
+        COUNT(
+        IF
+        ( `Status` = 1, Id, NULL )) AS payNum,
+        count(*) AS allPayNum
+        FROM
+        paylog
+        WHERE
+        AppId != 10000
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="id">
+            Id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transactionNum">
+            TransactionNum like concat('%', #transactionNum#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            OrderId like concat('%', #orderId#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="amount">
+            Amount = #amount#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="type">
+            Type = #type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="payTypeId">
+            PayTypeId = #payTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncCnt">
+            ((SyncCnt >0 AND SyncCnt = #syncCnt#) OR (SyncCnt = 0 AND SyncCnt = #syncCnt#) OR (SyncCnt &lt; 0 AND
+            SyncCnt = #syncCnt#))
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="clabe">
+            clabe like concat('%', #clabe#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startPayTime">
+            PayTime &gt;= #startPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endPayTime">
+            PayTime &lt;= #endPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="Mobile">
+            Mobile = #Mobile#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="rastreo">
+            rastreo like concat('%', #rastreo#, '%')
+        </isNotEmpty>
+    </select>
+    <select id="Paylog.querypaylogStatictics" resultClass="com.lxtx.pay.vo.PayLogVo"
+            parameterClass="com.lxtx.pay.dto.PayLogReqDTO">
+        SELECT
+        SUM( Amount ) AS needPayAmount,
+        SUM(
+        IF
+        ( `Status` = 1, Amount, 0 )) AS PayAmount,
+        COUNT(
+        IF
+        ( `Status` = 1, Id, NULL ))
+        FROM
+        paylog
+        WHERE
+        1 =1
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="id">
+            Id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transactionNum">
+            TransactionNum like concat('%', #transactionNum#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            OrderId like concat('%', #orderId#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="amount">
+            Amount = #amount#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="type">
+            Type = #type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="payTypeId">
+            PayTypeId = #payTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncCnt">
+            ((SyncCnt >0 AND SyncCnt = #syncCnt#) OR (SyncCnt = 0 AND SyncCnt = #syncCnt#) OR (SyncCnt &lt; 0 AND
+            SyncCnt = #syncCnt#))
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="clabe">
+            clabe like concat('%', #clabe#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startPayTime">
+            PayTime &gt;= #startPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endPayTime">
+            PayTime &lt;= #endPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+        order by CreateTime desc
+    </select>
+    <select id="Paylog.selectPaylog" resultClass="Paylog">
+        select *
+        from Paylog
+        where appId = #appId#
+    </select>
+    <select id="Paylog.queryAllpaylogListStatictics" parameterClass="com.lxtx.pay.dto.PayTypeStaticticsReqDTO"
+            resultClass="com.lxtx.pay.vo.PayTypeStaticticsVO">
+        SELECT
+        a.PayTypeId,
+        paytype.`Name`,
+        IFNULL(a.PayAmount,0) AS PayAmount,
+        IFNULL(a.PayFee,0) AS PayFee,
+        IFNULL(a.PayNum,0) AS PayNum,
+        IFNULL(b.WithdrawAmount,0) AS WithdrawAmount,
+        IFNULL(b.WithdrawFee,0) AS WithdrawFee,
+        IFNULL(b.WithdrawNum,0) AS WithdrawNum,
+        IFNULL(a.PayAmount,0) - IFNULL(a.PayFee,0) - IFNULL(b.WithdrawAmount,0) - IFNULL(b.WithdrawFee,0) as Remain
+        FROM
+        (
+        SELECT
+        PayTypeId,
+        SUM( Amount ) AS PayAmount,
+        SUM( PlatformFee ) AS PayFee,
+        COUNT(*) AS PayNum
+        FROM
+        paylog
+        WHERE
+        `Status` = 1
+        GROUP BY
+        PayTypeId
+        ) a
+        LEFT JOIN channelmatch ON a.PayTypeId = channelmatch.paytypeid
+        LEFT JOIN (
+        SELECT
+        WithdrawTypeId,
+        SUM( Amount ) AS WithdrawAmount,
+        SUM( PlatformFee ) AS WithdrawFee,
+        COUNT(*) AS WithdrawNum
+        FROM
+        withdrawlog
+        WHERE
+        `Status` != - 2
+        GROUP BY
+        WithdrawTypeId
+        ) b ON channelmatch.withdrawtypeid = b.WithdrawTypeId
+        LEFT JOIN paytype on a.PayTypeId = paytype.Id
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeId">
+            a.PayTypeId = #payTypeId#
+        </isNotEmpty>
+        order by a.PayTypeId desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Paylog.queryAllpaylogListStaticticsCount" parameterClass="com.lxtx.pay.dto.PayTypeStaticticsReqDTO"
+            resultClass="int">
+        SELECT
+        count(a.PayTypeId)
+        FROM
+        (
+        SELECT
+        PayTypeId,
+        SUM( Amount )/ 100 AS PayAmount,
+        SUM( PlatformFee )/ 100 AS PayFee,
+        COUNT(*) AS PayNum
+        FROM
+        paylog
+        WHERE
+        `Status` = 1
+        GROUP BY
+        PayTypeId
+        ) a
+        LEFT JOIN channelmatch ON a.PayTypeId = channelmatch.paytypeid
+        LEFT JOIN (
+        SELECT
+        WithdrawTypeId,
+        SUM( Amount )/ 100 AS WithdrawAmount,
+        SUM( PlatformFee )/ 100 AS WithdrawFee,
+        COUNT(*) AS WithdrawNum
+        FROM
+        withdrawlog
+        WHERE
+        `Status` != - 2
+        GROUP BY
+        WithdrawTypeId
+        ) b ON channelmatch.withdrawtypeid = b.WithdrawTypeId
+        LEFT JOIN paytype on a.PayTypeId = paytype.Id
+        where 1=1
+        <isNotEmpty prepend="and" property="payTypeId">
+            a.PayTypeId = #payTypeId#
+        </isNotEmpty>
+    </select>
+
+    <select id="Paylog.queryCpInfoDailyPayStatistics" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="com.lxtx.pay.vo.CpStatVO">
+        SELECT AppId as appId, SUM(Amount) * 0.01 as payAmount, SUM(PlatformFee) as payFee
+        FROM `paylog`
+        WHERE `Status` = 1
+        AND AppId != 10000
+        AND PayTime > #minPayTime#
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+        GROUP BY AppId
+    </select>
+
+    <select id="Paylog.querySucessCpinfoDailyAmountStatistics" parameterClass="com.lxtx.pay.dto.CpAmountStatDTO"
+            resultClass="com.lxtx.pay.vo.CpAmountStatVo">
+        SELECT COUNT(*) AS count,
+        CASE
+        WHEN Amount =10000   THEN 100
+        WHEN Amount =20000   THEN 200
+        WHEN Amount =30000  THEN 300
+        WHEN Amount =50000   THEN 500
+        WHEN Amount =100000  THEN 1000
+        WHEN Amount =200000    THEN 2000
+        WHEN Amount =300000   THEN 3000
+        WHEN Amount =500000  THEN 5000
+        WHEN Amount =1000000   THEN 10000
+        WHEN Amount =2000000   THEN 20000
+        ELSE 'Other'
+        END AS amount_group
+        FROM paylog
+        WHERE `Status` = 1
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        GROUP BY amount_group
+    </select>
+    <select id="Paylog.queryFailCpinfoDailyAmountStatistics" parameterClass="com.lxtx.pay.dto.CpAmountStatDTO"
+            resultClass="com.lxtx.pay.vo.CpAmountStatVo">
+        SELECT COUNT(*) AS count,
+        CASE
+        WHEN Amount =10000   THEN 100
+        WHEN Amount =20000   THEN 200
+        WHEN Amount =30000  THEN 300
+        WHEN Amount =50000   THEN 500
+        WHEN Amount =100000  THEN 1000
+        WHEN Amount =200000    THEN 2000
+        WHEN Amount =300000   THEN 3000
+        WHEN Amount =500000  THEN 5000
+        WHEN Amount =1000000   THEN 10000
+        WHEN Amount =2000000   THEN 20000
+        ELSE 'Other'
+        END AS amount_group
+        FROM paylog
+        WHERE `Status` !=1
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        GROUP BY amount_group
+    </select>
+
+
+
+
+    <select id="Paylog.queryCpInfoHour24PayStatistics" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO"
+            resultClass="com.lxtx.pay.vo.PayHourTimeStatisticsVO">
+        SELECT
+            DATE_FORMAT(PayTime, '%m-%d %H') AS time,
+            SUM(Amount) * 0.01 as payAmount
+        FROM `paylog` p
+        left join cpinfo c on p.AppId = c.AppId
+        WHERE p.`Status` = 1
+        AND PayTime > #minPayTime#
+        AND p.AppId != 10000
+        <isNotEmpty prepend="and" property="appId">
+            p.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            p.country = #country#
+        </isNotEmpty>
+        GROUP BY time
+        ORDER BY time
+    </select>
+
+    <select id="Paylog">
+        (SELECT *
+         FROM (SELECT PayTypeId, PayDay, SUM(Amount) * 0.01 AS payAmount
+               FROM `paylog`
+               WHERE `Status` = 1
+                 AND AppId != 10000
+               GROUP BY PayDay, PayTypeId
+               ORDER BY PayDay DESC) a
+                  LEFT JOIN (SELECT WithdrawTypeId, CreateDay, SUM(Amount) * 0.01 as withdrawAmount
+                             FROM withdrawlog
+                             WHERE `Status` != -2
+                               AND AppId != 10000
+                             GROUP BY CreateDay, WithdrawTypeId
+                             ORDER BY CreateDay DESC) b on a.PayTypeId = b.WithdrawTypeId AND a.PayDay = b.CreateDay)
+        UNION
+        (SELECT *
+         FROM (SELECT PayTypeId, PayDay, SUM(Amount) * 0.01 as payAmount
+               FROM `paylog`
+               WHERE `Status` = 1
+                 AND AppId != 10000
+               GROUP BY PayDay, PayTypeId
+               ORDER BY PayDay DESC) a
+                  RIGHT JOIN (SELECT WithdrawTypeId, CreateDay, SUM(Amount) * 0.01 as withdrawAmount
+                              FROM withdrawlog
+                              WHERE `Status` != -2
+                                AND AppId != 10000
+                              GROUP BY CreateDay, WithdrawTypeId
+                              ORDER BY CreateDay DESC) b on a.PayTypeId = b.WithdrawTypeId AND a.PayDay = b.CreateDay)
+    </select>
+
+    <select id="Paylog.exportExcelPayLogList" resultClass="com.lxtx.pay.vo.PaylogExportVO"
+            parameterClass="com.lxtx.pay.dto.PayLogReqDTO">
+        SELECT
+        p.id,
+        appid,
+        orderid,
+        amount,
+        p.STATUS,
+        p.createtime,
+        paytime,
+        platformfee,
+        Ip,
+        p.country
+        FROM
+        paylog p
+        left join paytype pt on p.PayTypeId = pt.Id
+        WHERE
+        1 =1
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="id">
+            p.Id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transactionNum">
+            TransactionNum like concat('%', #transactionNum#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            OrderId like concat('%', #orderId#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="amount">
+            Amount = #amount#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="type">
+            Type = #type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="payTypeId">
+            PayTypeId = #payTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncCnt">
+            ((SyncCnt >0 AND SyncCnt = #syncCnt#) OR (SyncCnt = 0 AND SyncCnt = #syncCnt#) OR (SyncCnt &lt; 0 AND
+            SyncCnt = #syncCnt#))
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            p.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="clabe">
+            clabe like concat('%', #clabe#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            p.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            p.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startPayTime">
+            p.PayTime &gt;= #startPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endPayTime">
+            p.PayTime &lt;= #endPayTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            p.country = #country#
+        </isNotEmpty>
+
+    </select>
+
+    <update id="Paylog.updateSettlement" parameterClass="java.util.HashMap">
+        update paylog set ValidStatus = 1
+        where  PayTime <![CDATA[ <= ]]> #endSettlementTime# and country = #country#
+        <isNotEmpty prepend="and" property="checkedCpInfo">
+            AppId IN
+            <iterate property="checkedCpInfo" open="(" close=")" conjunction=",">
+                #checkedCpInfo[]#
+            </iterate>
+        </isNotEmpty>
+        and ValidStatus = 0 and Status = 1
+    </update>
+
+</sqlMap>
+

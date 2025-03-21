@@ -28,9 +28,9 @@
 <!--    </bean>-->
 
     <bean id="paycenter_dataSource" class="com.alibaba.druid.pool.DruidDataSource">
-        <property name="url" value="jdbc:mysql://localhost:3306/indpay?useUnicode=true&amp;characterEncoding=GBK"/>
-        <property name="username" value="indpay"/>
-        <property name="password" value="STfjiPpL6ZFcTX4G"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/xyz?useUnicode=true&amp;characterEncoding=GBK"/>
+        <property name="username" value="xyz"/>
+        <property name="password" value="Ynz28eWxGKweNLAM"/>
 
 <!--        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>-->
 <!--        <property name="url" value="jdbc:mysql://localhost:3306/paycenter?useSSL=false&amp;serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>-->

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="agent" type="com.lxtx.pay.pojo.Agent"/>
+
+    <select id="Agent.queryOne" parameterClass="java.util.Map" resultClass="com.lxtx.pay.pojo.Agent">
+        select *
+        from agent
+        where UserName = #UserName#
+    </select>
+    <select id="Agent.getAll" resultClass="agent" parameterClass="Agent">
+        select *
+        from Agent
+    </select>
+
+    <update id="Agent.settlementAgentSuccessReduceRemain" parameterClass="java.util.HashMap">
+        UPDATE agent
+        SET FrozenRemain = FrozenRemain - #settlementAmount#
+        WHERE Id = #appId#
+    </update>
+    <update id="Agent.settlementAgentRejectIncrAmount" parameterClass="java.util.HashMap">
+        UPDATE agent
+        SET FrozenRemain = FrozenRemain - #settlementAmount#,
+            ActualRemain = ActualRemain + #settlementAmount#
+        WHERE Id = #appId#
+    </update>
+
+
+    <select id="Agent.selectagentname" resultClass="agent" parameterClass="Agent">
+        select *
+        from Agent
+        where UserName = #UserName#
+    </select>
+    <select id="Agent.queryAllagent" resultClass="Agent" parameterClass="java.util.Map">
+        select * from Agent
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="Status">
+                Status =#status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userName">
+                userName = #userName#
+            </isNotEmpty>
+        </dynamic>
+
+    </select>
+    <select id="Agent.select" resultClass="Agent" parameterClass="int">
+        select *
+        from Agent
+        where Id = #Id#
+    </select>
+    <insert id="Agent.insert" parameterClass="Agent">
+        insert into Agent(UserName, UserPass, Status, Remain, CanOver)
+        values (#userName#, #userPass#, #status#, #Remain#, #CanOver#)
+    </insert>
+    <delete id="Agent.deleteByPrimaryKey" parameterClass="int">
+        delete
+        from Agent
+        where Id = #id#
+    </delete>
+    <update id="Agent.update" parameterClass="Agent">
+        update Agent a
+        set Id=Id
+        <isNotEmpty property="userName">
+            ,a.UserName = #userName#
+        </isNotEmpty>
+        <isNotEmpty property="userPass">
+            ,a.UserPass = #userPass#
+        </isNotEmpty>
+        where Id = #id#
+    </update>
+
+
+    <update id="Agent.updateStatus" parameterClass="com.lxtx.pay.dto.AgentReqDTO">
+        update agent
+        set Status=#status#
+        where Id = #id#
+    </update>
+    <select id="Agent.agentStatistics" resultClass="com.lxtx.pay.pojo.AgentStatistics">
+        select a.Id,
+               a.UserName,
+               c.AppId,
+               c2.StatDay,
+               (select count(*) from paylog p where c2.StatDay = p.CreateDay)        as PayCrecount,
+               c2.PayAmount,
+               (select count(*) from withdrawlog w where c2.StatDay = w.CreateDay)   as WdCrecount,
+               (select count(*) from withdrawlog w where c2.StatDay = w.WithdrawDay) as WdSuscount,
+               c2.WithdrawAmount
+        from agent a
+                 left join cpinfo c on a.Id = c.AgentId
+                 left join cpstat c2 on c.AppId = c2.AppId
+        order by StatDay desc
+    </select>
+    <select id="Agent.agentStatisticsByPage" resultClass="com.lxtx.pay.pojo.AgentStatistics"
+            parameterClass="java.util.Map">
+        select * from (select agent.*,cpstat.StatDay,SUM(cpstat.PayAmount) as PayAmount,sum(cpstat.PayFee)as
+        PayFee,sum(cpstat.WithdrawAmount) as WithdrawAmount,sum(cpstat.WithdrawFee) as WithdrawFee,SUM(cpstat.PayNum) as
+        PayNum
+        from agent,cpinfo,cpstat where agent.Id=cpinfo.AgentId and cpstat.AppId=cpinfo.AppId
+        and cpstat.AppId >= 10001
+        <isNotEmpty prepend="and" property="id">
+            agent.Id=#id#
+        </isNotEmpty>
+        group by cpinfo.AgentId,cpstat.StatDay
+        ORDER BY cpstat.StatDay desc) a
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Agent.agentStatisticsCountTotal" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+        select count(*) from (select agent.*,cpstat.StatDay,SUM(cpstat.PayAmount) as PayAmount,sum(cpstat.PayFee)as
+        PayFee,sum(cpstat.WithdrawAmount) as WithdrawAmount,sum(cpstat.WithdrawFee) as WithdrawFee,SUM(cpstat.PayNum) as
+        PayNum
+        from agent,cpinfo,cpstat where agent.Id=cpinfo.AgentId and cpstat.AppId=cpinfo.AppId
+        and cpstat.AppId >= 10001
+        <isNotEmpty prepend="and" property="id">
+            agent.Id=#id#
+        </isNotEmpty>
+        group by cpinfo.AgentId,cpstat.StatDay
+        ) a
+
+    </select>
+    <select id="Agent.selectByName" parameterClass="String" resultClass="Agent">
+        select userName
+        from Agent
+        where UserName = #UserName#
+    </select>
+    <update id="Agent.updateAmo" parameterClass="java.util.Map">
+        update agent
+        set TotalWithdraw    = TotalWithdraw - #amount#,
+            TotalWithdrawFee = TotalWithdrawFee - #fee#,
+            Remain           = Remain + #remain#
+        where agent.Id = #appid#
+    </update>
+
+    <update id="Agent.addAgentRemain" parameterClass="com.lxtx.pay.dto.AgentUpdateRemainReqDTO">
+        update agent
+        set Remain = Remain + #remain#
+        where agent.Id = #id#
+    </update>
+    <update id="Agent.subtractAgentRemain" parameterClass="com.lxtx.pay.dto.AgentUpdateRemainReqDTO">
+        update agent
+        set Remain = Remain - #remain#
+        where agent.Id = #id#
+          and Remain >= #remain#
+    </update>
+    <select id="Agent.countTotal" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+        select count(*)
+        from agent
+    </select>
+
+    <select id="Agent.queryAgentSelectList" parameterClass="com.lxtx.pay.dto.AgentReqDTO"
+            resultClass="com.lxtx.pay.vo.AgentSelectVO">
+        select id, username as name
+        from agent
+    </select>
+
+    <select id="Agent.queryAgentPageList" parameterClass="com.lxtx.pay.dto.AgentReqDTO"
+            resultClass="com.lxtx.pay.vo.AgentVO">
+        select *
+        from agent a
+        where 1 = 1
+        <isNotEmpty property="userName" prepend="and">
+            (a.UserName like concat('%',#userName#,'%') or a.Id like concat('%',#userName#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            a.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="canOver" prepend="and">
+            a.CanOver = #canOver#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            a.Country = #country#
+        </isNotEmpty>
+        order by a.Id asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Agent.queryAgentPageListCount" parameterClass="com.lxtx.pay.dto.AgentReqDTO"
+            resultClass="int">
+        select count(*)
+        from agent a
+        where 1 = 1
+        <isNotEmpty property="userName" prepend="and">
+            (a.UserName like concat('%',#userName#,'%') or a.Id like concat('%',#userName#,'%'))
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            a.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="canOver" prepend="and">
+            a.CanOver = #canOver#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            a.Country = #country#
+        </isNotEmpty>
+    </select>
+
+
+</sqlMap>

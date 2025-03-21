@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="dictionary" type="com.lxtx.pay.pojo.Dictionary"/>
+
+    <insert id="Dictionary.insert" parameterClass="dictionary">
+        INSERT INTO dictionary(`name`, `value`, typeid) VALUES(#name#, #value#, #typeid#)
+    </insert>
+
+    <update id="Dictionary.update" parameterClass="dictionary">
+        UPDATE dictionary SET `name`= #name#, `value` = #value#,typeid = #typeid# WHERE id = #id#
+    </update>
+
+    <select id="Dictionary.allDictionaryByType" parameterClass="com.lxtx.pay.dto.DictionaryReqDTO" resultClass="dictionary">
+        SELECT
+            d.id,
+            d.name,
+            d.value,
+            dt.name AS typeName
+        FROM
+            dictionary d
+        LEFT JOIN dictionarytype dt ON d.typeid = dt.id
+        WHERE 1=1
+        <isNotEmpty prepend="and" property="type">
+            dt.NAME = #type#
+        </isNotEmpty>
+    </select>
+
+    <select id="Dictionary.findByPage" parameterClass="java.util.Map" resultClass="dictionary">
+        SELECT
+        id,
+        `name`,
+        `value`,
+        typeid
+        FROM
+        dictionary
+        WHERE
+        1 = 1
+        <isNotEmpty prepend="and" property="type">
+            type=#type#
+        </isNotEmpty>
+        ORDER BY id, type DESC
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Dictionary.countTotal" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        SELECT
+        COUNT( 1 )
+        FROM
+        dictionary
+        WHERE
+        1 = 1
+        <isNotEmpty prepend="and" property="type">
+            type=#type#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

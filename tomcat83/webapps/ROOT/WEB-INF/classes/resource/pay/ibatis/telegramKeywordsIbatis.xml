@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="telegramKeywords" type="com.lxtx.pay.pojo.TelegramKeywords"/>
+
+    <select id="TelegramKeywords.getAllByPage" resultClass="TelegramKeywords"
+            parameterClass="com.lxtx.pay.dto.TelegramKeywordsReqDTO">
+        SELECT  id, botid, keywords, response, operator, create_time as createTime
+        from telegram_keywords
+        where 1= 1
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="botid" prepend="and">
+            botid = #botid#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+        order by create_time desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="TelegramKeywords.getPageCount" parameterClass="com.lxtx.pay.dto.TelegramKeywordsReqDTO"
+            resultClass="int">
+        select count(id) from telegram_keywords where 1= 1
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="botid" prepend="and">
+            botid = #botid#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+    </select>
+
+    <insert id="TelegramKeywords.insert" parameterClass="TelegramKeywords">
+        insert into telegram_keywords(botid, keywords, response, operator, create_time)
+        values (#botid#, #keywords#, #response#, #operator#, #createTime#)
+    </insert>
+
+
+    <update id="TelegramKeywords.updateById" parameterClass="TelegramKeywords">
+        update telegram_keywords
+        set operator = #operator#
+        <isNotEmpty property="keywords" prepend=",">
+            keywords = #keywords#
+        </isNotEmpty>
+        <isNotEmpty property="response" prepend=",">
+            response = #response#
+        </isNotEmpty>
+        where id = #id#
+    </update>
+
+    <update id="TelegramKeywords.deleteKeywords">
+        delete from telegram_keywords
+        where id in
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+    </update>
+
+    <select id="TelegramKeywords.getResponse" parameterClass="java.lang.String" resultClass="java.lang.String">
+        select response from telegram_keywords where #keywords# like concat('%',keywords,'%') limit 1
+    </select>
+
+</sqlMap>

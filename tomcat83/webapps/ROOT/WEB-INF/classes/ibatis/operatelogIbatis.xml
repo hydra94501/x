@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="OperateLog" type="com.lxtx.pay.pojo.OperateLog"/>
+
+    <insert id="OperateLog.insert" parameterClass="OperateLog">
+        insert into operatelog (id, userId, userName, ip, startTime, endTime, module, functions, clazz,
+        method,operation, result, useTime, createTime)
+        VALUES (#id#, #userId#, #userName#, #ip#, #startTime#, #endTime#, #module#, #function#, #clazz#,
+        #method#,#operation#, #result#, #useTime#, #createTime#)
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <select id="OperateLog.queryOperateLogPageList" parameterClass="com.lxtx.pay.dto.OperateLogReqDTO"
+            resultClass="com.lxtx.pay.vo.OperateLogVO">
+        select id, userName, ip, module, functions, method, operation, result, useTime, createTime
+        from operatelog
+        where 1=1
+        <isNotEmpty prepend="and" property="id">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="userName">
+            UserName like concat('%', #userName#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="operation">
+            operation like concat('%', #operation#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        order by CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="OperateLog.queryOperateLogPageListCount" parameterClass="com.lxtx.pay.dto.OperateLogReqDTO"
+            resultClass="int">
+        select count(id)
+        from operatelog
+        where 1=1
+        <isNotEmpty prepend="and" property="id">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="userName">
+            UserName like concat('%', #userName#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="operation">
+            operation like concat('%', #operation#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+    </select>
+</sqlMap>

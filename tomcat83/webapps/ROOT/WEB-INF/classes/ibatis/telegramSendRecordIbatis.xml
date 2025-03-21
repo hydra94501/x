@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="telegramSendRecord" type="com.lxtx.pay.pojo.TelegramSendRecord"/>
+
+    <insert id="TelegramSendRecord.insert" parameterClass="TelegramSendRecord">
+        insert into telegram_send_record(user_id, content, group_id, group_name, bot_id, bot_name, status, msg,
+                                         create_time, batch_no, user_name)
+        values (#userId#, #content#, #groupId#, #groupName#, #botId#, #botName#, #status#, #msg#, #createTime#, #batchNo#, #userName#)
+        <selectKey keyProperty="id" resultClass="int">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <select id="TelegramSendRecord.getAllByPage" resultClass="TelegramSendRecord"
+            parameterClass="com.lxtx.pay.dto.TelegramSendRecordDTO">
+        SELECT tr.batch_no as batchNo, tr.content, tr.status, GROUP_CONCAT(tr.user_id) as userId, tr.user_name as userName, tr.msg, bd.id as id
+        from telegram_send_record tr left join telegram_batch_id bd on tr.batch_no = bd.batch_no
+        where 1= 1 and tr.user_id is not null
+        <isNotEmpty property="id" prepend="and">
+            bd.id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            tr.status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            tr.batch_no &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            tr.batch_no &lt;= #endDate#
+        </isNotEmpty>
+        GROUP BY tr.batch_no, tr.status, tr.content, tr.user_name, tr.msg, bd.id
+        order by tr.batch_no desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="TelegramSendRecord.getPageCount" parameterClass="com.lxtx.pay.dto.TelegramSendRecordDTO"
+            resultClass="int">
+        select count(s.batch_no) from
+        (SELECT tr.batch_no
+        from telegram_send_record tr left join telegram_batch_id bd on tr.batch_no = bd.batch_no
+        where 1= 1 and tr.user_id is not null
+        <isNotEmpty property="id" prepend="and">
+            bd.id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            tr.status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            tr.batch_no &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            tr.batch_no &lt;= #endDate#
+        </isNotEmpty>
+        GROUP BY tr.batch_no, tr.status, tr.content
+        ) s
+    </select>
+
+    <insert id="TelegramSendRecord.insertBatchId" parameterClass="TelegramSendRecord">
+        insert into telegram_batch_id(batch_no)
+        values (#batchNo#)
+    </insert>
+
+    <select id="TelegramSendRecord.getAllByPageWithOutUser" resultClass="TelegramSendRecord"
+            parameterClass="com.lxtx.pay.dto.TelegramSendRecordDTO">
+        SELECT tr.batch_no as batchNo, tr.content, tr.status, GROUP_CONCAT(tr.group_name) as groupName, tr.user_name as userName, tr.msg, bd.id as id
+        from telegram_send_record tr left join telegram_batch_id bd on tr.batch_no = bd.batch_no
+        where 1= 1 and tr.user_id is null
+        <isNotEmpty property="id" prepend="and">
+            bd.id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            tr.status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            tr.batch_no &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            tr.batch_no &lt;= #endDate#
+        </isNotEmpty>
+        GROUP BY tr.batch_no, tr.status, tr.content, tr.user_name, tr.msg, bd.id
+        order by tr.batch_no desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="TelegramSendRecord.getPageCountWithOutUser" parameterClass="com.lxtx.pay.dto.TelegramSendRecordDTO"
+            resultClass="int">
+        select count(s.batch_no) from
+        (SELECT tr.batch_no
+        from telegram_send_record tr left join telegram_batch_id bd on tr.batch_no = bd.batch_no
+        where 1= 1 and tr.user_id is null
+        <isNotEmpty property="id" prepend="and">
+            bd.id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            tr.status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            tr.batch_no &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            tr.batch_no &lt;= #endDate#
+        </isNotEmpty>
+        GROUP BY tr.batch_no, tr.status, tr.content
+        ) s
+    </select>
+
+</sqlMap>

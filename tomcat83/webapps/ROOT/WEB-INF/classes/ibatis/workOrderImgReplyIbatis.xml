@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="db">
+    <typeAlias alias="workOrderImgReply" type="com.lxtx.pay.pojo.WorkOrderImgReply"/>
+
+    <!--新增所有列-->
+    <insert id="WorkOrderImgReply.insert" parameterClass="WorkOrderImgReply">
+        insert into work_order_img_reply(work_order_id, img, username, create_time, group_id, message_id, order_text)
+        values (#workOrderId#, #img#, #username#, #createTime#, #groupId#, #messageId#, #orderText#)
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <select id="WorkOrderImgReply.getReplyImg" parameterClass="java.lang.Integer" resultClass="WorkOrderImgReply">
+        select img from work_order_img_reply where id = #id#
+    </select>
+
+</sqlMap>
+
+

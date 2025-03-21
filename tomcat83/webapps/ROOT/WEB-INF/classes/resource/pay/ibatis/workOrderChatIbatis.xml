@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="db">
+    <typeAlias alias="workOrderChat" type="com.lxtx.pay.pojo.WorkOrderChat"/>
+
+    <!--新增所有列-->
+    <insert id="WorkOrderChat.insert" parameterClass="WorkOrderChat">
+        insert into work_order_chat(type, group_id, group_name, message_id, nickname, order_text, create_time, content)
+        values (#type#, #groupId#, #groupName#, #messageId#, #nickname#, #orderText#, #createTime#, #content#)
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+
+</sqlMap>
+
+

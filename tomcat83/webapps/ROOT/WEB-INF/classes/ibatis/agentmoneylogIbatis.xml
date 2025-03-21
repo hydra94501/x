@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="AgentMoneylog" type="com.lxtx.pay.pojo.AgentMoneylog"/>
+
+    <insert id="AgentMoneylog.insert" parameterClass="AgentMoneylog">
+        insert into  agentmoneylog values (null,#Type#,#SceneInfo#,#FrontMoney#,#Money#,#QueenMoney#,#Details#,#CreateTime#,#AgentId#,#Notes#)
+    </insert>
+    <select id="AgentMoneylog.getAll" resultClass="AgentMoneylog">
+         select * from agentmoneylog
+    </select>
+
+
+
+    <select id="AgentMoneylog.queryAllAgentmoneylog"  resultClass="AgentMoneylog" parameterClass="java.util.Map">
+        select * from agentmoneylog m
+        where AgentId = #appId#
+        <isNotEmpty property="Type" prepend="and">
+            Type=#Type#
+        </isNotEmpty>
+        <isNotEmpty property="SceneInfo" prepend="and">
+            SceneInfo=#SceneInfo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startTime">
+            m.CreateTime &gt;= #startTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endTime">
+            m.CreateTime &lt;= #endTime#
+        </isNotEmpty>
+        order by CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select >
+    <select id="AgentMoneylog.queryAllAgentmoneylogcount"  resultClass="int" parameterClass="java.util.Map">
+        select count(Id) from agentmoneylog m
+        where AgentId = #appId#
+        <isNotEmpty property="Type" prepend="and">
+            Type=#Type#
+        </isNotEmpty>
+        <isNotEmpty property="SceneInfo" prepend="and">
+            SceneInfo=#SceneInfo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startTime">
+            m.CreateTime &gt;= #startTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endTime">
+            m.CreateTime &lt;= #endTime#
+        </isNotEmpty>
+
+    </select>
+    <select id="AgentMoneylog.moneylogcount" parameterClass="java.util.Map" resultClass="int">
+        select count(*) from agentmoneylog
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="and" property="appId">
+                AgentId = #appId#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="Type">
+                Type = #Type#
+            </isNotEmpty>
+
+            <isNotEmpty prepend="and" property="SceneInfo">
+                SceneInfo = #SceneInfo#
+            </isNotEmpty>
+
+            <isNotEmpty prepend="and" property="startTime">
+                CreateTime &gt;= #startTime#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endTime">
+                CreateTime &lt;= #endTime#
+            </isNotEmpty>
+        </dynamic>
+
+    </select>
+    <select id="AgentMoneylog.queryalllist" resultClass="AgentMoneylog" parameterClass="java.util.Map" >
+        select  * from agentmoneylog
+        <dynamic prepend="WHERE">
+            <isNotEmpty prepend="and" property="appId">
+                AgentId = #appId#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="Type">
+                Type = #Type#
+            </isNotEmpty>
+
+            <isNotEmpty prepend="and" property="SceneInfo">
+                SceneInfo = #SceneInfo#
+            </isNotEmpty>
+
+            <isNotEmpty prepend="and" property="startTime">
+                CreateTime &gt;= #startTime#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endTime">
+                CreateTime &lt;= #endTime#
+            </isNotEmpty>
+        </dynamic>
+
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+
+    </select>
+</sqlMap>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="excpinfo" type="com.lxtx.pay.pojo.ExCpInfo"/>
+
+	<insert id="ExCpInfo.insert" parameterClass="excpinfo">
+		insert into excpinfo(AppId,PlatformId,CreateTime) 
+		values(#appId#,#platformId#,now())
+	</insert>
+	<delete id="ExCpInfo.deleteByPrimaryKey" parameterClass="int">
+		delete from excpinfo where AppId = #id#
+	</delete>
+	<delete id="ExCpInfo.deleteByPlatformId">
+		delete from excpinfo where PlatformId = #id#
+	</delete>
+	<update id="ExCpInfo.update" parameterClass="excpinfo">
+		update excpinfo
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="platformId">
+				PlatformId = #platformId#
+			</isNotEmpty>
+		</dynamic>
+		where AppId = #appId#
+	</update>
+	<select id="ExCpInfo.fetchByAppId" resultClass="excpinfo" parameterClass="int">
+		select * from excpinfo where AppId = #appId#
+	</select>
+</sqlMap>

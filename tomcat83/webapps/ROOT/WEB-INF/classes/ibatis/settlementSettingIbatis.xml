@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="settlementSetting" type="com.lxtx.pay.pojo.SettlementSetting"/>
+
+    <insert id="SettlementSetting.insert" parameterClass="settlementSetting">
+        INSERT INTO settlement_setting(`country`, `auto_flag`) VALUES(#country#, #autoFlag#)
+    </insert>
+
+    <select id="SettlementSetting.getAllList" resultClass="settlementSetting">
+        SELECT
+            id,
+            country,
+            auto_flag as autoFlag,
+            last_settlement_time as lastSettlementTime
+        FROM settlement_setting ORDER BY id ASC
+    </select>
+
+    <update id="SettlementSetting.updateAutoFlag" parameterClass="settlementSetting">
+        UPDATE settlement_setting SET auto_flag = #autoFlag# WHERE id = #id#
+    </update>
+
+    <update id="SettlementSetting.updateLastSettlementTime" parameterClass="java.util.Map">
+        UPDATE settlement_setting SET last_settlement_time = #lastSettlementTime# WHERE id = #id#
+    </update>
+
+    <select id="SettlementSetting.select" parameterClass="java.lang.Integer" resultClass="settlementSetting">
+         SELECT
+            id,
+            country
+        FROM settlement_setting WHERE id = #id#
+    </select>
+</sqlMap>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+
+    <typeAlias alias="cpstat" type="com.lxtx.pay.pojo.Cpstat"/>
+
+    <select id="Cpstat.queryAllDate" parameterClass="com.lxtx.pay.dto.HomeStatisticsReqDTO" resultClass="Cpstat">
+        SELECT
+        sum( cs.PayAmount ) AS PayAmount,
+        sum( cs.PayFee ) AS PayFee,
+        sum( cs.WithdrawAmount ) AS WithdrawAmount,
+        sum( cs.WithdrawFee ) AS WithdrawFee
+        FROM
+        cpstat cs left join cpinfo cp on cs.AppId = cp.AppId
+        WHERE
+        cs.AppId >= 10001
+        AND cs.StatDay = #statDay#
+        <isNotEmpty prepend="and" property="appId">
+            cs.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            cp.country = #country#
+        </isNotEmpty>
+    </select>
+
+    <select id="Cpstat.queryCpStatPageList" parameterClass="com.lxtx.pay.dto.CpStatReqDTO"
+            resultClass="com.lxtx.pay.vo.CpStatVO">
+        select id, appid, statday, payrequest, payamount, payfee, paynum, withdrawamount, withdrawfee, withdrawnum
+        from cpstat
+        where !(PayAmount = 0 and WithdrawAmount =0)
+        <isNotEmpty prepend="and" property="appIds">
+            AppId in
+            <iterate  property="appIds" conjunction="," close=")" open="(" >
+                #appIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+        order by StatDay desc , AppId desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Cpstat.queryCpStatPageListCount" parameterClass="com.lxtx.pay.dto.CpStatReqDTO" resultClass="int">
+        select count(Id)
+        from cpstat
+        where !(PayAmount = 0 and WithdrawAmount =0)
+        <isNotEmpty prepend="and" property="appIds">
+            AppId in
+            <iterate  property="appIds" conjunction="," close=")" open="(" >
+                #appIds[]#
+            </iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="statDays">
+            StatDay in
+            <iterate  property="statDays" conjunction="," close=")" open="(" >
+                #statDays[]#
+            </iterate>
+        </isNotEmpty>
+    </select>
+</sqlMap>

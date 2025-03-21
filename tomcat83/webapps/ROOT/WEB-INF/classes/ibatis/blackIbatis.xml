@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="black" type="com.lxtx.pay.pojo.Black"/>
+
+    <insert id="Black.insert" parameterClass="black">
+        insert into black_list (`country`,type,txt)
+        values (#country#,#type#,#txt#)
+        <selectKey keyProperty="id" resultClass="int">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <delete id="Black.deleteByPrimaryKey" parameterClass="int">
+        delete from black_list where id = #id#
+    </delete>
+
+    <update id="Black.updateBlack" parameterClass="black">
+        update black_list
+        set country = #country#, type = #type#, txt = #txt#
+        where id = #id#
+    </update>
+
+    <select id="Black.queryBlackPageList" parameterClass="com.lxtx.pay.dto.BlackPageReqDTO" resultClass="com.lxtx.pay.vo.BlackVO">
+        SELECT * FROM black_list
+        WHERE 1 =1
+        <isNotEmpty property="country" prepend="and">
+            country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            type = #type#
+        </isNotEmpty>
+        <isNotEmpty property="txt" prepend="and">
+            txt = #txt#
+        </isNotEmpty>
+        order by id desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Black.queryBlackPageListCount" parameterClass="com.lxtx.pay.dto.BlackPageReqDTO" resultClass="int">
+        SELECT count(1) FROM black_list
+        WHERE 1 =1
+        <isNotEmpty property="country" prepend="and">
+            country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            type = #type#
+        </isNotEmpty>
+        <isNotEmpty property="txt" prepend="and">
+            txt = #txt#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="channellog" type="com.lxtx.pay.pojo.ChannelLog"/>
+
+    <insert id="ChannelLog.insert" parameterClass="channellog">
+        insert into channellog(TypeId,TranType,Amount,Notes,CreateTime,OperationUser)
+        values(#typeId#,#tranType#,#amount#,#notes#,now(),#operationUser#)
+    </insert>
+    <delete id="ChannelLog.deleteByPrimaryKey" parameterClass="int" >
+        delete from channellog where Id = #id#
+    </delete>
+    <update id="ChannelLog.update" parameterClass="channellog">
+        update channellog
+        <dynamic prepend="set">
+            <isNotEmpty prepend="," property="typeId">
+                TypeId=#typeId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="tranType">
+                TranType=#tranType#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="amount">
+                Amount=#amount#
+            </isNotEmpty>
+        </dynamic>
+    </update>
+    <select id="ChannelLog.findByPage" parameterClass="java.util.Map" resultClass="role">
+        select * from role where 1=1
+        <isNotEmpty prepend="and" property="roleName">
+            RoleName=#roleName#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="roleNo" >
+            RoleNo=#roleNo#
+        </isNotEmpty>
+        order by RoleNo asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="ChannelLog.countTotal" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        select count(*) from role where 1=1
+        <isNotEmpty prepend="and" property="roleName">
+            RoleName=#roleName#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="roleNo" >
+            RoleNo=#roleNo#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

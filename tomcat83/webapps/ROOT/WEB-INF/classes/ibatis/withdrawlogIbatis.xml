@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="withdrawlog" type="com.lxtx.pay.pojo.Withdrawlog"/>
+
+    <insert id="Withdrawlog.insert" parameterClass="withdrawlog">
+        insert into withdrawlog (AppId, OrderId, Amount, Type, BankCardNo, BankCode, BankAccountName, BranchCode, Email, Mobile, Status, CreateTime, ConfirmStatus, TransactionNum,   WithdrawTypeId, PlatformFee, ThirdFee, CreateDay, Ip, NotifyUrl,SyncCnt, Currency, AgentFee, AgentId, SyncCp, AccountType, AccountDigit, DocumentType, DocumentId, PixType, PixKey, country)
+        values (#AppId#, #OrderId#, #Amount#, #Type#, #BankCardNo#, #BankCode#, #BankAccountName#, #BranchCode#, #Email#, #Mobile#, 0, #CreateTime#, #ConfirmStatus#,  '', 0, #PlatformFee#, 0, #CreateDay#, #Ip#,#NotifyUrl#, 0,  #Currency#, 0, 0, 0, #accountType#, #accountDigit#, #documentType#, #documentId#, #pixType#, #pixKey#, #country#)
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <update id="Withdrawlog.changeStatus" parameterClass="Long">
+        update withdrawlog
+        set Status = 2
+        where Id = #id#
+    </update>
+
+    <update id="Withdrawlog.changeStatusManual" parameterClass="Long">
+        update withdrawlog
+        set Status = 2, ConfirmStatus = 1, ConfirmTime= now(), WithdrawTime = now(), ConfirmDay = DATE_FORMAT(now(),'%Y%m%d'), WithdrawDay = DATE_FORMAT(now(),'%Y%m%d')
+        where Id = #id# AND Status = 0 AND ConfirmStatus = 0
+    </update>
+
+    <update id="Withdrawlog.changeNotifyStatus" parameterClass="Long">
+        update withdrawlog
+        set SyncCnt = 0
+        where Id = #id#
+    </update>
+
+
+    <select id="Withdrawlog.queryWithdrawlogByOrder" parameterClass="String" resultClass="Withdrawlog">
+        select *
+        from withdrawlog
+        where OrderId = #orderId#
+        order by Id desc
+        limit 1
+    </select>
+
+    <update id="Withdrawlog.changeConfirmStatusPass">
+        update withdrawlog
+        set ConfirmStatus = 1,
+            ConfirmTime = date_add(now(),interval +150 minute )
+        where Id in
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        and ConfirmStatus = 0
+    </update>
+
+    <update id="Withdrawlog.changeConfirmStatusReject">
+        update withdrawlog
+        set ConfirmStatus = -1,
+        ConfirmTime = date_add(now(),interval +150 minute )
+        where Id in
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+        and ConfirmStatus = 0
+    </update>
+
+    <select id="Withdrawlog.select" resultClass="Withdrawlog">
+        select *
+        from withdrawlog
+        where Id = #id#
+    </select>
+
+    <select id="Withdrawlog.selectCheckManual" resultClass="Withdrawlog">
+        select Amount, Status, ConfirmStatus, Currency
+        from withdrawlog
+        where Id = #id#
+    </select>
+
+    <select id="Withdrawlog.queryWithdrawLogPageList" parameterClass="com.lxtx.pay.dto.WithdrawLogReqDTO"
+            resultClass="com.lxtx.pay.vo.WithdrawLogVo">
+        SELECT w.id,
+        appid,
+        orderid,
+        amount,
+        type,
+        bankcardno,
+        bankcode,
+        bankaccountname,
+        branchcode,
+        email,
+        mobile,
+        w.STATUS,
+        w.createtime,
+        confirmstatus,
+        transactionnum,
+        withdrawtime,
+        confirmtime,
+        confirmuserid,
+        withdrawtypeid,
+        platformfee,
+        thirdfee,
+        createday,
+        notifydata,
+        ip,
+        synccnt,
+        nextsynctime,
+        notifyurl,
+        w.currency,
+        documentid,
+        pixtype,
+        pixkey,
+        failReason,
+        w.country,
+        wt.`Name` as name
+        FROM withdrawlog w
+        LEFT JOIN withdrawtype wt ON w.WithdrawTypeId = wt.Id
+        WHERE
+        1=1
+        <isNotEmpty prepend="and" property="id">
+            w.Id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="appId">
+            w.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            OrderId like concat('%', #orderId#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transactionNum">
+            TransactionNum like concat('%', #transactionNum#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            w.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="confirmStatus">
+            (w.ConfirmStatus = -1 and w.ConfirmStatus = #confirmStatus# ) or (w.ConfirmStatus = 1 and w.ConfirmStatus = #confirmStatus# ) or (w.ConfirmStatus = 0 and w.ConfirmStatus = #confirmStatus# and w.status != 2)
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncCnt">
+            ((SyncCnt >0 AND SyncCnt = #syncCnt#) OR (SyncCnt = 0 AND SyncCnt = #syncCnt#) OR (SyncCnt &lt; 0 AND
+            SyncCnt = #syncCnt#))
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="withdrawTypeId">
+            w.WithdrawTypeId = #withdrawTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            w.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            w.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startWithdrawTime">
+            WithdrawTime &gt;= #startWithdrawTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endWithdrawTime">
+            WithdrawTime &lt;= #endWithdrawTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            w.country = #country#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="bankCardNo">
+            BankCardNo = #bankCardNo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="cpf">
+            DocumentId = #cpf#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="pixKey">
+            PixKey = #pixKey#
+        </isNotEmpty>
+        order by w.CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Withdrawlog.queryWithdrawLogStatictics" parameterClass="com.lxtx.pay.dto.WithdrawLogReqDTO"
+            resultClass="com.lxtx.pay.vo.WithdrawLogStaticticsVO">
+        SELECT
+        sum(Amount) as totalWithdrawAmount,
+        count(w.Id) as totalWithdrawNum,
+        sum(if(w.Status = 2, Amount , 0) ) as totalWithdrawSuccessAmount,
+        sum(if(w.Status = 2 , PlatformFee , 0)) as totalWithdrawSuccessFee,
+        count(if(w.Status = 2 , w.Id , null) ) as totalWithdrawSuccessNum,
+        sum(if(w.Status >= -1 AND w.Status &lt;= 1 , Amount , 0) ) totalWithdrawProcessAmount,
+        sum(if(w.Status = -2 , Amount , 0) ) as totalWithdrawFailAmount
+        FROM withdrawlog w
+        LEFT JOIN withdrawtype wt ON w.WithdrawTypeId = wt.Id
+        WHERE
+        1=1
+        <isNotEmpty prepend="and" property="id">
+            w.Id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="appId">
+            w.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            OrderId like concat('%', #orderId#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            w.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="confirmStatus">
+            (w.ConfirmStatus = -1 and w.ConfirmStatus = #confirmStatus# ) or (w.ConfirmStatus = 1 and w.ConfirmStatus = #confirmStatus# ) or (w.ConfirmStatus = 0 and w.ConfirmStatus = #confirmStatus# and w.status != 2)
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncCnt">
+            ((SyncCnt >0 AND SyncCnt = #syncCnt#) OR (SyncCnt = 0 AND SyncCnt = #syncCnt#) OR (SyncCnt &lt; 0 AND
+            SyncCnt = #syncCnt#))
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="withdrawTypeId">
+            w.WithdrawTypeId = #withdrawTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="transactionNum">
+            TransactionNum like concat('%', #transactionNum#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            w.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            w.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startWithdrawTime">
+            WithdrawTime &gt;= #startWithdrawTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endWithdrawTime">
+            WithdrawTime &lt;= #endWithdrawTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            w.country = #country#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="bankCardNo">
+            BankCardNo = #bankCardNo#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="cpf">
+            DocumentId = #cpf#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="pixKey">
+            PixKey = #pixKey#
+        </isNotEmpty>
+    </select>
+
+    <select id="Withdrawlog.queryCpInfoDailyWithdrawStatistics" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO" resultClass="com.lxtx.pay.vo.CpStatVO">
+        SELECT AppId as appId, SUM(Amount) * 0.01 AS withdrawAmount, SUM(PlatformFee) as withdrawFee
+        FROM withdrawlog
+        WHERE `Status` != -2
+        AND AppId != 10000
+        AND WithdrawTime >= #minPayTime#
+        <isNotEmpty prepend="and" property="appId">
+            AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+        GROUP BY AppId
+    </select>
+
+    <select id="Withdrawlog.queryCpInfoHour24WithdrawStatistics" parameterClass="com.lxtx.pay.dto.CpInfoReqDTO" resultClass="com.lxtx.pay.vo.WithdrawHourTimeStatisticsVO" >
+        SELECT DATE_FORMAT(WithdrawTime, '%m-%d %H') AS time,
+        SUM(Amount) * 0.01               as withdrawAmount
+        FROM `withdrawlog` w left join cpinfo c on w.AppId = c.AppId
+        WHERE w.`Status` != -2
+        AND WithdrawTime > #minPayTime#
+        AND w.AppId != 10000
+        <isNotEmpty prepend="and" property="appId">
+            w.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            w.country = #country#
+        </isNotEmpty>
+        GROUP BY time
+        ORDER BY time
+    </select>
+
+    <select id="Withdrawlog.exportExcelWithdrawLogList" parameterClass="com.lxtx.pay.dto.WithdrawLogReqDTO"
+            resultClass="com.lxtx.pay.vo.WithdrawLogExportVO">
+        SELECT
+        Withdrawlog.Id,
+        Withdrawlog.AppId,
+        Withdrawlog.OrderId,
+        Withdrawlog.Amount,
+        Withdrawlog.PlatformFee,
+        Withdrawlog.BankCardNo,
+        Withdrawlog.BankCode,
+        Withdrawlog.BankAccountName,
+        Withdrawlog.Email,
+        Withdrawlog.Mobile,
+        Withdrawlog.`Status`,
+        Withdrawlog.CreateTime,
+        Withdrawlog.WithdrawTime,
+        Withdrawlog.DocumentId,
+        Withdrawlog.PixType,
+        Withdrawlog.PixKey
+        FROM
+        Withdrawlog
+        WHERE
+        1=1
+        <isNotEmpty prepend="and" property="id">
+            Withdrawlog.Id = #id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="appId">
+            Withdrawlog.AppId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            Withdrawlog.OrderId like concat('%', #orderId#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            Withdrawlog.Status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            Withdrawlog.CreateTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            Withdrawlog.CreateTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startWithdrawTime">
+            Withdrawlog.WithdrawTime &gt;= #startWithdrawTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endWithdrawTime">
+            Withdrawlog.WithdrawTime &lt;= #endWithdrawTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="bankCardNo">
+            Withdrawlog.BankCardNo like concat('%', #bankCardNo#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="pix_key">
+            Withdrawlog.PixKey like concat('%', #pix_key#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="cpf">
+            Withdrawlog.DoucunmentId like concat('%', #cpf#, '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncCnt">
+            ((SyncCnt >0 AND SyncCnt = #syncCnt#) OR (SyncCnt = 0 AND SyncCnt = #syncCnt#) OR (SyncCnt &lt; 0 AND
+            SyncCnt = #syncCnt#))
+        </isNotEmpty>
+    </select>
+
+    <select id="Withdrawlog.queryRecordByYesManual" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+        select id from withdrawlog
+        where Amount = #amount#
+        and BankCardNo like concat('%', #bankCardNo#)
+        and CreateDay = #createDay#
+        and BankAccountName = #bankAccountName#
+        limit 1
+    </select>
+
+</sqlMap>

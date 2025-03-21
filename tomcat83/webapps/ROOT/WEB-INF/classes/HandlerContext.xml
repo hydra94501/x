@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="pay_SqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation" value="classpath:resource/pay/sqlMapConfig.xml"/>
+        <property name="dataSource" ref="pay_dataSource"/>
+    </bean>
+
+    <bean id="pay_SqlMapClientTemplate" class="com.qlzf.commons.factory.SqlMapClientTemplate">
+        <property name="sqlMapClient" ref="pay_SqlMapClient"/>
+    </bean>
+
+    <bean id="userHandler" class="com.lxtx.pay.handler.UserHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="payTypeHandler" class="com.lxtx.pay.handler.PayTypeHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="withdrawTypeHandler" class="com.lxtx.pay.handler.WithdrawTypeHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="withdraworderHandler" class="com.lxtx.pay.handler.WithdrawOrderHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="withdrawAgentHandler" class="com.lxtx.pay.handler.WithdrawAgentHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="paylogHandler" class="com.lxtx.pay.handler.PaylogHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="withdrawlogHandler" class="com.lxtx.pay.handler.WithdrawlogHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="cpInfoHandler" class="com.lxtx.pay.handler.CpInfoHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="paystatHandler" class="com.lxtx.pay.handler.PaystatHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="withdrawstatHandler" class="com.lxtx.pay.handler.WithdrawstatHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="cpstatHandler" class="com.lxtx.pay.handler.CpstatHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="agentHandler" class="com.lxtx.pay.handler.AgentHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="moneylogHandler" class="com.lxtx.pay.handler.MoneylogHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="agentMoneylogHandler" class="com.lxtx.pay.handler.AgentMoneylogHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="withdrawlogAdminHandler" class="com.lxtx.pay.handler.WithdrawlogAdminHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="withdrawlogTypeHandler" class="com.lxtx.pay.handler.WithdrawlogTypeHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="verifycodeHandler" class="com.lxtx.pay.handler.VerifycodeHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="permissionHandler" class="com.lxtx.pay.handler.PermissionHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="roleHandler" class="com.lxtx.pay.handler.RoleHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="rolePermissionHandler" class="com.lxtx.pay.handler.RolePermissionHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="platformHandler" class="com.lxtx.pay.handler.PlatformHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+    <bean id="excpinfoHandler" class="com.lxtx.pay.handler.ExCpInfoHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="dictionaryHandler" class="com.lxtx.pay.handler.DictionaryHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="channelMatchHandler" class="com.lxtx.pay.handler.ChannelMatchHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="operatelogHandler" class="com.lxtx.pay.handler.OperatelogHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="settingsHandler" class="com.lxtx.pay.handler.SettingsHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="icIcBankRecordHandler" class="com.lxtx.pay.handler.IcIcBankRecordHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="channelHandler" class="com.lxtx.pay.handler.ChannelHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="channelCpInfoHandler" class="com.lxtx.pay.handler.ChannelCpInfoHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="channelPayTypeHandler" class="com.lxtx.pay.handler.ChannelPayTypeHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="settlementLogHandler" class="com.lxtx.pay.handler.SettlementLogHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="rechargeHandler" class="com.lxtx.pay.handler.RechargeHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="telegramGroupHandler" class="com.lxtx.pay.handler.TelegramGroupHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="telegramSendRecordHandler" class="com.lxtx.pay.handler.TelegramSendRecordHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="telegramBatchIdHandler" class="com.lxtx.pay.handler.TelegramBatchIdHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="telegramImgRecordHandler" class="com.lxtx.pay.handler.TelegramImgRecordHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="questionRecordHandler" class="com.lxtx.pay.handler.QuestionRecordHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="telegramCommandHandler" class="com.lxtx.pay.handler.TelegramCommandHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="telegramKeywordsHandler" class="com.lxtx.pay.handler.TelegramKeywordsHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="bankRecordHandler" class="com.lxtx.pay.handler.BankRecordHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="workOrderHandler" class="com.lxtx.pay.handler.WorkOrderHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="workOrderReplyHandler" class="com.lxtx.pay.handler.WorkOrderReplyHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="workOrderImgReplyHandler" class="com.lxtx.pay.handler.WorkOrderImgReplyHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="workOrderChatHandler" class="com.lxtx.pay.handler.WorkOrderChatHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="settlementSettingHandler" class="com.lxtx.pay.handler.SettlementSettingHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+    <bean id="blackHandler" class="com.lxtx.pay.handler.BlackHandler">
+        <property name="sqlMapClientTemplate" ref="pay_SqlMapClientTemplate"/>
+    </bean>
+
+</beans>

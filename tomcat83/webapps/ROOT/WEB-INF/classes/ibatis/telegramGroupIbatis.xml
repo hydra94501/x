@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="telegramGroup" type="com.lxtx.pay.pojo.TelegramGroup"/>
+
+    <select id="TelegramGroup.getAll" resultClass="TelegramGroup">
+        select id, group_id as groupId, group_name as groupName, bot_id as botId, bot_Name as botName, status, creat_time as creatTime
+        from telegram_group
+    </select>
+
+    <insert id="TelegramGroup.insert" parameterClass="TelegramGroup">
+        insert into telegram_group(group_id, group_name, bot_id, bot_name, status, creat_time)
+        values (#groupId#, #groupName#, #botId#, #botName#, #status#, #creatTime# )
+    </insert>
+
+    <update id="TelegramGroup.updateByChatId" parameterClass="TelegramGroup">
+        update telegram_group set group_name = #groupName# where group_id = #groupId#
+    </update>
+
+    <delete id="TelegramGroup.deleteByGroupId" parameterClass="java.lang.String">
+        delete from telegram_group where group_id = #groupId#
+    </delete>
+</sqlMap>

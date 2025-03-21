@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="questionRecord" type="com.lxtx.pay.pojo.QuestionRecord"/>
+
+    <select id="QuestionRecord.getAllByPage" resultClass="QuestionRecord">
+        select id, name, email, phone, telegram, question, option1, option2, option3, create_time as createTime, status, username, update_time as updateTime
+        from question_record where 1 = 1
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+        order by create_time desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="QuestionRecord.getPageCount" parameterClass="com.lxtx.pay.dto.QuestionRecordDTO"
+            resultClass="int">
+        select count(id) from question_record where 1 = 1
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+    </select>
+
+    <insert id="QuestionRecord.insert" parameterClass="QuestionRecord">
+        insert into question_record(name, email, phone, telegram, question, option1, option2, option3, create_time, status, username, update_time)
+        values (#name#, #email#, #phone#, #telegram#, #question#, #option1#, #option2#, #option3#, #createTime#, #status#, #username#, #updateTime#)
+    </insert>
+
+    <update id="QuestionRecord.updateStatusById" parameterClass="QuestionRecord">
+        update question_record set status = #status#, update_time = #updateTime# where id = #id#
+    </update>
+
+</sqlMap>

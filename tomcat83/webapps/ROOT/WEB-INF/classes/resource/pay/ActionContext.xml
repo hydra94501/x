@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="userAction" class="com.lxtx.pay.action.UserAction" scope="prototype">
+        <property name="userHandler" ref="userHandler"/>
+        <property name="verifycodeHandler" ref="verifycodeHandler"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="agentHandler" ref="agentHandler"/>
+
+
+    </bean>
+
+    <bean id="paytypeAction" class="com.lxtx.pay.action.PayTypeAction" scope="prototype">
+        <property name="payTypeHandler" ref="payTypeHandler"/>
+    </bean>
+    <bean id="withdrawtypeAction" class="com.lxtx.pay.action.WithdrawTypeAction" scope="prototype">
+        <property name="withdrawTypeHandler" ref="withdrawTypeHandler"/>
+    </bean>
+
+    <bean id="paylogAction" class="com.lxtx.pay.action.PaylogAction" scope="prototype">
+        <property name="paylogHandler" ref="paylogHandler"/>
+        <property name="paylogHelper" ref="paylogHelper"/>
+    </bean>
+    <bean id="withdrawlogAction" class="com.lxtx.pay.action.WithdrawlogAction" scope="prototype">
+        <property name="withdrawlogHandler" ref="withdrawlogHandler"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+    </bean>
+    <bean id="withdraworderAction" class="com.lxtx.pay.action.WithdrawOrderAction" scope="prototype">
+        <property name="withdraworderHandler" ref="withdraworderHandler"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="withdrawTypeHandler" ref="withdrawTypeHandler"/>
+
+    </bean>
+    <bean id="cpInfoAction" class="com.lxtx.pay.action.CpInfoAction" scope="prototype">
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="verifycodeHandler" ref="verifycodeHandler"/>
+    </bean>
+    <bean id="cpstatAction" class="com.lxtx.pay.action.CpstatAction" scope="prototype">
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+    </bean>
+    <bean id="paystatAction" class="com.lxtx.pay.action.PaystatAction" scope="prototype">
+        <property name="paystatHandler" ref="paystatHandler"/>
+    </bean>
+    <bean id="withdrawstatAction" class="com.lxtx.pay.action.WithdrawstatAction" scope="prototype">
+        <property name="withdrawstatHandler" ref="withdrawstatHandler"/>
+    </bean>
+    <bean id="agentAction" class="com.lxtx.pay.action.AgentAction" scope="prototype">
+        <property name="agentHandler" ref="agentHandler"/>
+        <property name="verifycodeHandler" ref="verifycodeHandler"/>
+    </bean>
+    <bean id="moneylogAction" class="com.lxtx.pay.action.MoneylogAction" scope="prototype">
+        <property name="moneylogHandler" ref="moneylogHandler"/>
+    </bean>
+    <bean id="loginAction" class="com.lxtx.pay.action.LoginAction" scope="prototype">
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="userHandler" ref="userHandler"/>
+        <property name="agentHandler" ref="agentHandler"/>
+    </bean>
+    <bean id="agentMoneylogAction" class="com.lxtx.pay.action.AgentMoneylogAction" scope="prototype">
+        <property name="agentMoneylogHandler" ref="agentMoneylogHandler"/>
+    </bean>
+    <bean id="withdrawlogAdminAction" class="com.lxtx.pay.action.WithdrawlogAdminAction" scope="prototype">
+        <property name="withdrawlogAdminHandler" ref="withdrawlogAdminHandler"/>
+        <property name="withdrawTypeHandler" ref="withdrawTypeHandler"/>
+        <property name="verifycodeHandler" ref="verifycodeHandler"/>
+        <property name="cpInfoHandler" ref="cpInfoHandler"/>
+        <property name="moneylogHandler" ref="moneylogHandler"/>
+    </bean>
+    <bean id="withdrawlogTypeAction" class="com.lxtx.pay.action.WithdrawlogTypeAction" scope="prototype">
+        <property name="withdrawlogTypeHandler" ref="withdrawlogTypeHandler"/>
+        <property name="withdrawTypeHandler" ref="withdrawTypeHandler"/>
+        <property name="verifycodeHandler" ref="verifycodeHandler"/>
+    </bean>
+    <bean id="errorAction" class="com.lxtx.pay.action.ErrorAction" scope="prototype"></bean>
+    <bean id="permissionAction" class="com.lxtx.pay.action.PermissionAction" scope="prototype">
+        <property name="permissionHandler" ref="permissionHandler"/>
+    </bean>
+    <bean id="roleAction" class="com.lxtx.pay.action.RoleAction" scope="prototype">
+        <property name="roleHandler" ref="roleHandler"/>
+        <property name="userHandler" ref="userHandler"/>
+    </bean>
+    <bean id="rolepermissionAction" class="com.lxtx.pay.action.RolePermissionAction" scope="prototype">
+        <property name="rolePermissionHandler" ref="rolePermissionHandler"/>
+    </bean>
+
+    <bean id="dictionaryAction" class="com.lxtx.pay.action.DictionaryAction" scope="prototype">
+        <property name="dictionaryHandler" ref="dictionaryHandler"/>
+    </bean>
+
+    <bean id="operateLogAction" class="com.lxtx.pay.action.OperateLogAction" scope="prototype">
+        <property name="operatelogHandler" ref="operatelogHandler"/>
+    </bean>
+</beans>

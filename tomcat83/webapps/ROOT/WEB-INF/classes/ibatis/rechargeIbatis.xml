@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="recharge" type="com.lxtx.pay.pojo.Recharge"/>
+
+    <select id="Recharge.select" parameterClass="long" resultClass="recharge">
+        select *
+        from recharge
+        where id = #id#
+    </select>
+
+    <insert id="Recharge.insert" parameterClass="recharge">
+        insert into recharge (appid, uamount, faitamount, paylogid, createtime, finishtime, rate, proof, operator,
+        comment)
+        values (#appId#, #uAmount#, #faitAmount#, #payLogId#, #createTime#, #finishTime#, #rate#, #proof#, #operator#,
+        #comment#)
+
+        <selectKey keyProperty="id" resultClass="long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <update id="Recharge.rechargeSuccess" parameterClass="com.lxtx.pay.dto.RechargeConfirmReqDTO">
+        update recharge
+        set status     = 1,
+            uamount    = #uAmount#,
+            faitamount = #faitAmount#,
+            rate       = #rate#,
+            finishtime = now(),
+            operator   = #operator#,
+            comment    = #comment#
+        where id = #id#
+    </update>
+
+    <update id="Recharge.rechargeReject" parameterClass="com.lxtx.pay.dto.RechargeConfirmReqDTO">
+        update recharge
+        set status   = -1,
+            operator = #operator#,
+            comment  = #comment#
+        where id = #id#
+    </update>
+
+    <update id="Recharge.financeSuccess" parameterClass="com.lxtx.pay.dto.RechargeReqDTO">
+        update recharge
+        set financestatus = 1
+        where id = #id#
+    </update>
+
+    <select id="Recharge.queryRechargePageList" parameterClass="com.lxtx.pay.dto.RechargeReqDTO"
+            resultClass="com.lxtx.pay.vo.RechargeVO">
+        select
+        r.id, r.appid as appId, uamount, r.status,r.financestatus as financeStatus, faitamount, paylogid, createtime,
+        finishtime, rate, proof,d.name as country
+        from recharge r left join cpinfo c on r.appId = c.AppId left join dictionary d on c.country = d.value
+        where 1=1
+        <isNotEmpty prepend="and" property="appId">
+            r.appId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            r.status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="financeStatus">
+            r.financestatus = #financeStatus#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            r.createTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            r.createTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startFinishTime">
+            finishTime &gt;= #startFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endFinishTime">
+            finishTime &lt;= #endFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+        order by r.CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Recharge.queryRechargePageListStatistics" parameterClass="com.lxtx.pay.dto.RechargeReqDTO"
+            resultClass="com.lxtx.pay.vo.RechargeStatisticsVO">
+        select
+        count(*) as totalAllNum
+        from recharge r left join cpinfo c on r.appId = c.AppId left join dictionary d on c.country = d.value
+        where 1=1
+        <isNotEmpty prepend="and" property="appId">
+            appId = #appId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="status">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startCreateTime">
+            createTime &gt;= #startCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endCreateTime">
+            createTime &lt;= #endCreateTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startFinishTime">
+            finishTime &gt;= #startFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endFinishTime">
+            finishTime &lt;= #endFinishTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="country">
+            country = #country#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

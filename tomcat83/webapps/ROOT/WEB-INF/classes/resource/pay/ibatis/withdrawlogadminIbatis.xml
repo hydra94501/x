@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="withdrawlogAdmin" type="com.lxtx.pay.pojo.WithdrawlogAdmin"/>
+
+
+    <update id="WithdrawlogAdmin.updateStatus" parameterClass="int">
+        update withdrawlogadmin set Status=-2 where Status=-1 and Id=#Id#
+    </update>
+
+
+
+
+
+    <insert id="WithdrawlogAdmin.insert" parameterClass="WithdrawlogAdmin">
+        insert into withdrawlogadmin
+            (Id,AppId,PlatformFee, Amount, Type, BankCardNo,
+             BankCode, BankAccountName, BranchCode, Email,
+             Mobile, Status, CreateTime, TransactionNum,
+             WithdrawTime, WithdrawTypeId, ThirdFee, CreateDay,
+             WithdrawDay, Currency)
+            values (null,#AppId#,#PlatformFee#,#Amount#,#Type#,#BankCardNo#,
+                    #BankCode#,#BankAccountName#,#BranchCode#,#Email#,
+                    #Mobile#,#Status#,#CreateTime#,#TransactionNum#,
+                    #WithdrawTime#,#WithdrawTypeId#,#ThirdFee#,#CreateDay#,
+                    #WithdrawDay#,#Currency#)
+    </insert>
+
+
+    <select id="WithdrawlogAdmin.Allwithdrawlogadmin" resultClass="WithdrawlogAdmin" parameterClass="java.util.Map">
+        SELECT *,wd.Name as Name FROM withdrawlogadmin w  left join withdrawtype wd on w.WithdrawTypeId=wd.Id
+        where 1=1
+        <isNotEmpty prepend="and" property="Id">
+            w.Id = #Id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="TransactionNum">
+            w.TransactionNum = #TransactionNum#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="Amount">
+            w.Amount = #Amount#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="Type">
+            w.Type = #Type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="WithdrawTypeId">
+            w.WithdrawTypeId = #WithdrawTypeId#
+        </isNotEmpty>
+
+        <isNotEmpty prepend="and" property="Status">
+            w.Status = #Status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startTime">
+            w.CreateTime &gt;= #startTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endTime">
+            w.CreateTime &lt;= #endTime#
+        </isNotEmpty>
+        order by w.CreateTime desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="WithdrawlogAdmin.Allwithdrawlogadmincount" resultClass="int" parameterClass="java.util.Map" >
+        SELECT count(w.Id) FROM withdrawlogadmin w  left join withdrawtype wd on w.WithdrawTypeId=wd.Id
+        where 1=1
+        <isNotEmpty prepend="and" property="Id">
+            w.Id = #Id#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="TransactionNum">
+            w.TransactionNum = #TransactionNum#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="Type">
+            w.Type = #Type#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="WithdrawTypeId">
+            w.WithdrawTypeId = #WithdrawTypeId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="Status">
+            w.Status = #Status#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="startTime">
+            w.CreateTime &gt;= #startTime#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="endTime">
+            w.CreateTime &lt;= #endTime#
+        </isNotEmpty>
+    </select>
+
+
+
+
+
+
+
+</sqlMap>

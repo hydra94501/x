@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="db">
+    <typeAlias alias="workOrder" type="com.lxtx.pay.pojo.WorkOrder"/>
+
+    <!-- 查询对应群组的工单及回复信息   -->
+    <select id="WorkOrder.getOrderDetailByGroupId" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+        SELECT id as orderId, group_id as groupId, message_id as messageId, nickname, order_text as orderText, '' as reply,
+               date_format(create_time, '%Y-%m-%d %H:%i:%s') as createTime, status, '0' as mine from work_order where group_id = #groupId#
+        UNION all
+        SELECT '' as orderId, group_id as groupId, message_id as messageId, 'TsPay 露娜' as nickname, order_text as orderText, content as reply,
+               date_format(create_time, '%Y-%m-%d %H:%i:%s') as createTime, '' as status, '1' as mine from work_order_reply where group_id = #groupId#
+        UNION all
+        SELECT 'reply_img' as orderId, group_id as groupId, message_id as messageId, 'TsPay 露娜' as nickname, order_text as orderText, id as reply,
+               date_format(create_time, '%Y-%m-%d %H:%i:%s') as createTime, '' as status, '1' as mine from work_order_img_reply where group_id = #groupId#
+        UNION all
+        SELECT 'chat' as orderId, group_id as groupId, message_id as messageId, nickname, type as orderText, content as reply,
+               date_format(create_time, '%Y-%m-%d %H:%i:%s') as createTime, '' as status, '0' as mine from work_order_chat where group_id = #groupId#
+        ORDER BY  createTime ASC
+    </select>
+
+    <!-- 查询待处理工单列表 按群分组  -->
+    <select id="WorkOrder.getUndealOrder" resultClass="java.util.HashMap">
+        select t.* from
+        (select
+            count(id) as readNum, group_id as id, group_name as name, '' as img, max(create_time) as maxCt
+        from work_order where status != '2'  group by group_id, group_name) t
+        ORDER BY t.maxCt desc
+    </select>
+
+    <select id="WorkOrder.getAllWorkOrderByPage" parameterClass="WorkOrder" resultClass="WorkOrder">
+        select
+            id, type, country, appid, group_id as groupId, group_name as groupName, message_id as messageId, nickname, order_text as orderText,
+            create_time as createTime, status, handler, update_time as updateTime, comment, order_id as orderId, rastreo, reply_cnt as replyCnt
+        from work_order where 1= 1
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            type = #type#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="appid" prepend="and">
+            appid = #appid#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="orderId" prepend="and">
+            order_id = #orderId#
+        </isNotEmpty>
+        <isNotEmpty property="rastreo" prepend="and">
+            rastreo = #rastreo#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+        order by create_time desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+
+    </select>
+
+    <select id="WorkOrder.getPageCount" parameterClass="WorkOrder"
+            resultClass="int">
+        select count(id) from work_order where 1= 1
+        <isNotEmpty property="id" prepend="and">
+            id = #id#
+        </isNotEmpty>
+        <isNotEmpty property="type" prepend="and">
+            type = #type#
+        </isNotEmpty>
+        <isNotEmpty property="country" prepend="and">
+            country = #country#
+        </isNotEmpty>
+        <isNotEmpty property="appid" prepend="and">
+            appid = #appid#
+        </isNotEmpty>
+        <isNotEmpty property="status" prepend="and">
+            status = #status#
+        </isNotEmpty>
+        <isNotEmpty property="orderId" prepend="and">
+            order_id = #orderId#
+        </isNotEmpty>
+        <isNotEmpty property="rastreo" prepend="and">
+            rastreo = #rastreo#
+        </isNotEmpty>
+        <isNotEmpty property="startDate" prepend="and">
+            create_time &gt;= #startDate#
+        </isNotEmpty>
+        <isNotEmpty property="endDate" prepend="and">
+            create_time &lt;= #endDate#
+        </isNotEmpty>
+    </select>
+
+    <!--查询未处理的工单-->
+    <select id="WorkOrder.listUndeal" resultClass="WorkOrder">
+        select * from work_order where status = '0' order by create_time asc
+    </select>
+
+    <!--新增所有列-->
+<!--
+     create_time = values(create_time),
+     status = values(status),
+  -->
+    <insert id="WorkOrder.insert" parameterClass="WorkOrder">
+        insert into work_order(type, country, appid, group_id, group_name, message_id, nickname, order_text, create_time, status, handler, update_time, comment, order_id, rastreo, reply_cnt)
+        values (#type#, #country#, #appid#, #groupId#, #groupName#, #messageId#, #nickname#, #orderText#, #createTime#, #status#, #handler#, #updateTime#, #comment#, #orderId#, #rastreo#, #replyCnt#)
+        on duplicate key update
+         type = values(type),
+         country = values(country),
+         appid = values(appid),
+         group_id = values(group_id),
+         group_name = values(group_name),
+         message_id = values(message_id),
+         nickname = values(nickname),
+         order_text = values(order_text),
+         create_time = values(create_time),
+         status = values(status),
+         handler = values(handler),
+         update_time = values(update_time),
+         comment = values(comment),
+         order_id = values(order_id),
+         rastreo = values(rastreo),
+         reply_cnt = values(reply_cnt)
+    </insert>
+
+    <update id="updateById" parameterClass="WorkOrder">
+        update work_order set status = #status#, update_time = #updateTime#, handler = #handler#, comment = #comment#
+        where id = #id#
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="WorkOrder.deleteById">
+        delete from work_order where id = #id#
+    </delete>
+
+</sqlMap>
+
+

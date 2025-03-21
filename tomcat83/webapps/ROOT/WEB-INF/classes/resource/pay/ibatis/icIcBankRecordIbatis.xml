@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="netpay">
+    <typeAlias alias="icIcBankRecord" type="com.jxt.paycenter.pojo.IcIcBankRecord"/>
+
+    <update id="IcIcBankRecord.matchUtrToSuccess" parameterClass="com.lxtx.pay.pojo.IcIcBankRecord">
+        update icicbankrecord
+        set description = #description#,
+            syncStatus  = 1
+        where id = #id#
+    </update>
+
+    <select id="IcIcBankRecord.queryIcIcBankRecordByUtr" parameterClass="String"
+            resultClass="com.lxtx.pay.pojo.IcIcBankRecord">
+        select id, valueDate, creditAmount, transactionDate, accountBalance, description, instrumentsId, debitAmount, syncStatus, account
+        from icicbankrecord
+        where description like concat('%',#utr#,'%')
+    </select>
+
+    <select id="IcIcBankRecord.getAll" resultClass="com.lxtx.pay.pojo.IcIcBankRecord">
+        select *
+        from icicbankrecord
+    </select>
+
+    <select id="IcIcBankRecord.queryIcIcBankRecordPageList" parameterClass="com.lxtx.pay.dto.IcIcBankRecordReqDTO"
+            resultClass="com.lxtx.pay.pojo.IcIcBankRecord">
+        select id, valueDate, creditAmount, transactionDate, accountBalance, description, instrumentsId,
+        debitAmount,syncStatus,account
+        from icicbankrecord
+        where 1=1
+        <isNotEmpty prepend="and" property="utr">
+            description like CONCAT('%',#utr#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            description like CONCAT('%',#orderId#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="payAccount">
+            description like CONCAT('%',#payAccount#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncStatus">
+            syncStatus  = #syncStatus#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="amount">
+            (creditAmount = #amount# or debitAmount = #amount#)
+        </isNotEmpty>
+        order by id desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="IcIcBankRecord.queryIcIcBankRecordPageListStatistics"
+            parameterClass="com.lxtx.pay.dto.IcIcBankRecordReqDTO"
+            resultClass="com.lxtx.pay.vo.IcIcBankRecordStatisticsVO">
+        select count(*) as count
+        from icicbankrecord
+        where 1=1
+        <isNotEmpty prepend="and" property="utr">
+            description like CONCAT('%',#utr#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="orderId">
+            description like CONCAT('%',#orderId#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="payAccount">
+            description like CONCAT('%',#payAccount#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="syncStatus">
+            description like CONCAT('%',#syncStatus#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="amount">
+            (creditAmount = #amount# or debitAmount = #amount#)
+        </isNotEmpty>
+    </select>
+</sqlMap>

@@ -1,0 +1,349 @@
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+    
+<struts>
+
+
+	<!-- 配置全局拦截器 -->
+
+	<package name="all" extends="struts-default">
+		<interceptors>
+			<!-- 定义权限控制拦截器 -->
+			<interceptor name="authority" class="com.lxtx.pay.Interceptor.AuthInterceptor" />
+			<!-- 定义一个包含权限控制的拦截器栈 -->
+			<interceptor-stack name="mydefault">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authority" />
+			</interceptor-stack>
+		</interceptors>
+		<!-- 定义默认拦截器 -->
+		<default-interceptor-ref name="mydefault" />
+		<!-- 定义全局处理结果 -->
+		<global-results>
+			<!-- 逻辑名为login的结果，映射到/login.jsp页面 -->
+			<result name="login">/login.jsp</result>
+			<result name="forbidden" type="redirect">/common/forbidden.action</result>
+			<result name="error" type="redirect">/common/error.action</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.Exception"
+							   result="error" />
+		</global-exception-mappings>
+	</package>
+
+
+	<!--	<package name="pay" namespace="/api" extends="struts-default">-->
+	<package name="test"  namespace="/test" extends="all">
+		<action name="queryAll" class="com.lxtx.pay.action.UserAction"  method="queryAll">
+		</action>
+
+		<action name="test1" class="com.lxtx.pay.action.UserAction">
+			<result name="user">/user.jsp</result>
+		</action>
+	</package>
+	<package name="paytype"  namespace="/paytype" extends="all">
+		<action name="getxmselectdata" class="com.lxtx.pay.action.PayTypeAction"  method="getxmselectdata">
+		</action>
+		<action name="queryAll" class="com.lxtx.pay.action.PayTypeAction"  method="queryAll">
+		</action>
+		<action name="selectOne" class="com.lxtx.pay.action.PayTypeAction"  method="selectOne">
+		</action>
+		<action name="addPayType" class="com.lxtx.pay.action.PayTypeAction"  method="addPayType">
+		</action>
+		<action name="delete" class="com.lxtx.pay.action.PayTypeAction"  method="delete">
+		</action>
+		<action name="editPayType" class="com.lxtx.pay.action.PayTypeAction"  method="update">
+		</action>
+		<action name="findByPage" class="com.lxtx.pay.action.PayTypeAction"  method="findByPage">
+		</action>
+		<action name="testPay" class="com.lxtx.pay.action.PayTypeAction"  method="testPay">
+		</action>
+	</package>
+	<package name="WithdrawOrder" namespace="/wdorder" extends="all">
+		<action name="addOne" class="com.lxtx.pay.action.WithdrawOrderAction"  method="addOne">
+		</action>
+
+		<action name="updatetg" class="com.lxtx.pay.action.WithdrawOrderAction"  method="updatetg">
+		</action>
+		<action name="updatebh" class="com.lxtx.pay.action.WithdrawOrderAction"  method="updatebh">
+		</action>
+		<action name="queryAll" class="com.lxtx.pay.action.WithdrawOrderAction"  method="queryAll">
+		</action>
+		<action name="querywdorder" class="com.lxtx.pay.action.WithdrawOrderAction"  method="queryAllByPageAndLimit">
+		</action>
+		<action name="Allwithdraworder" class="com.lxtx.pay.action.WithdrawOrderAction"  method="Allwithdraworder">
+		</action>
+		<action name="querycondition" class="com.lxtx.pay.action.WithdrawOrderAction"  method="querycondition">
+		</action>
+		<action name="withdrawordertoday" class="com.lxtx.pay.action.WithdrawOrderAction"  method="withdrawordertoday">
+		</action>
+		<action name="withdraworderaweek" class="com.lxtx.pay.action.WithdrawOrderAction"  method="withdraworderaweek">
+		</action>
+		<action name="withdraworderyesterday" class="com.lxtx.pay.action.WithdrawOrderAction"  method="withdraworderyesterday">
+		</action>
+
+	</package>
+	<package name="WithdrawAgent" namespace="/wdagent" extends="all">
+		<action name="addOne" class="com.lxtx.pay.action.WithdrawAgentAction"  method="addOne">
+		</action>
+
+		<action name="updatetg" class="com.lxtx.pay.action.WithdrawAgentAction"  method="updatetg">
+		</action>
+		<action name="updatebh" class="com.lxtx.pay.action.WithdrawAgentAction"  method="updatebh">
+		</action>
+		<action name="queryAll" class="com.lxtx.pay.action.WithdrawAgentAction"  method="queryAll">
+		</action>
+		<action name="querywdorder" class="com.lxtx.pay.action.WithdrawAgentAction"  method="queryAllByPageAndLimit">
+		</action>
+		<action name="Allwithdraworder" class="com.lxtx.pay.action.WithdrawAgentAction"  method="Allwithdraworder">
+		</action>
+		<action name="querycondition" class="com.lxtx.pay.action.WithdrawAgentAction"  method="querycondition">
+		</action>
+		<action name="withdrawordertoday" class="com.lxtx.pay.action.WithdrawAgentAction"  method="withdrawordertoday">
+		</action>
+		<action name="withdraworderaweek" class="com.lxtx.pay.action.WithdrawAgentAction"  method="withdraworderaweek">
+		</action>
+		<action name="withdraworderyesterday" class="com.lxtx.pay.action.WithdrawAgentAction"  method="withdraworderyesterday">
+		</action>
+	</package>
+	<package name="withdrawtype"  namespace="/withdrawtype" extends="all">
+		<action name="getxmselectdata" class="com.lxtx.pay.action.WithdrawTypeAction"  method="getxmselectdata">
+		</action>
+		<action name="queryAll" class="com.lxtx.pay.action.WithdrawTypeAction"  method="queryAll">
+		</action>
+		<action name="select" class="com.lxtx.pay.action.WithdrawTypeAction"  method="select">
+		</action>
+		<action name="addWithdrawType" class="com.lxtx.pay.action.WithdrawTypeAction"  method="addWithdrawType">
+		</action>
+		<action name="delete" class="com.lxtx.pay.action.WithdrawTypeAction"  method="delete">
+		</action>
+		<action name="editWithdrawType" class="com.lxtx.pay.action.WithdrawTypeAction"  method="update">
+		</action>
+		<action name="findByPage" class="com.lxtx.pay.action.WithdrawTypeAction"  method="findByPage">
+		</action>
+	</package>
+	<package name="paylog" namespace="/paylog" extends="all">
+		<action name="changeStatus" class="com.lxtx.pay.action.PaylogAction" method="changeStatus"/>
+		<action name="queryAllpaylog" class="com.lxtx.pay.action.PaylogAction"  method="queryAllpaylog">
+		</action>
+		<action name="queryAll" class="com.lxtx.pay.action.PaylogAction"  method="queryAll">
+		</action>
+		<action name="queryAllByPageAndLimit" class="com.lxtx.pay.action.PaylogAction"  method="queryAllByPageAndLimit">
+		</action>
+		<action name="querypaylog" class="com.lxtx.pay.action.PaylogAction"  method="querypaylog">
+		</action>
+		<action name="querycondition" class="com.lxtx.pay.action.PaylogAction" method="querycondition">
+
+		</action>
+		<action name="paylogmonth" class="com.lxtx.pay.action.PaylogAction" method="paylogmonth">
+
+		</action>
+		<action name="paylogtoday" class="com.lxtx.pay.action.PaylogAction" method="paylogtoday">
+
+		</action>
+		<action name="queryAllPayLogList" class="com.lxtx.pay.action.PaylogAction" method="queryAllPayLogList">
+
+		</action>
+		<action name="sendNotifyMsg" class="com.lxtx.pay.action.PaylogAction" method="sendNotifyMsg ">
+
+		</action>
+	</package>
+	<package name="Withdrawlog" namespace="/wdlog" extends="all">
+		<action name="queryAll" class="com.lxtx.pay.action.WithdrawlogAction"  method="queryAll">
+		</action>
+		<action name="querywdlog" class="com.lxtx.pay.action.WithdrawlogAction"  method="queryAllByPageAndLimit">
+		</action>
+		<action name="querycondition" class="com.lxtx.pay.action.WithdrawlogAction"  method="querycondition">
+		</action>
+		<action name="withdrawlogtoday" class="com.lxtx.pay.action.WithdrawlogAction"  method="withdrawlogtoday">
+		</action>
+		<action name="withdrawlogaweek" class="com.lxtx.pay.action.WithdrawlogAction"  method="withdrawlogaweek">
+		</action>
+		<action name="withdrawlogyesterday" class="com.lxtx.pay.action.WithdrawlogAction"  method="withdrawlogyesterday">
+		</action>
+		<action name="queryAllWithdrawLogList" class="com.lxtx.pay.action.WithdrawlogAction"  method="queryAllWithdrawLogList">
+		</action>
+		<action name="changeStatus" class="com.lxtx.pay.action.WithdrawlogAction"  method="changeStatus">
+		</action>
+		<action name="sendNotifyMsg" class="com.lxtx.pay.action.WithdrawlogAction"  method="sendNotifyMsg">
+		</action>
+	</package>
+
+	<package name="cpInfo" namespace="/cpinfo" extends="all">
+		<action name="select" class="com.lxtx.pay.action.CpInfoAction" method="select">	</action>
+		<action name="updatePaytype" class="com.lxtx.pay.action.CpInfoAction" method="updatePaytype">
+		</action>
+		<action name="updateWdtype" class="com.lxtx.pay.action.CpInfoAction" method="updateWdtype">
+		</action>
+		<action name="selectByName" class="com.lxtx.pay.action.CpInfoAction" method="selectByName">
+		</action>
+		<action name="queryAll" class="com.lxtx.pay.action.CpInfoAction" method="queryAll">
+		</action>
+		<action name="update" class="com.lxtx.pay.action.CpInfoAction" method="update">
+		</action>
+		<action name="updateAll" class="com.lxtx.pay.action.CpInfoAction" method="updateAll">
+		</action>
+		<action name="login" class="com.lxtx.pay.action.CpInfoAction" method="login">
+		</action>
+		<action name="queryOne" class="com.lxtx.pay.action.CpInfoAction" method="queryOne">
+		</action>
+		<action name="delete" class="com.lxtx.pay.action.CpInfoAction" method="delete">
+		</action>
+		<action name="insert" class="com.lxtx.pay.action.CpInfoAction" method="add">
+		</action>
+		<action name="updateyue" class="com.lxtx.pay.action.CpInfoAction" method="updateyue">
+		</action>
+		<action name="updatekc" class="com.lxtx.pay.action.CpInfoAction" method="updatekc">
+		</action>
+		<action name="bdagent" class="com.lxtx.pay.action.CpInfoAction" method="bdagent">
+		</action>
+		<action name="resetPassword" class="com.lxtx.pay.action.CpInfoAction" method="resetPassword">
+		</action>
+		<action name="updateCanWithdraw" class="com.lxtx.pay.action.CpInfoAction" method="updateCanWithdraw">
+		</action>
+		<action name="setCredit" class="com.lxtx.pay.action.CpInfoAction" method="setCredit"/>
+		<action name="updateCanOver" class="com.lxtx.pay.action.CpInfoAction" method="updateCanOver"/>
+		<action name="updateType" class="com.lxtx.pay.action.CpInfoAction" method="updateType"/>
+	</package>
+	<package name="paystat" namespace="/paystat" extends="all">
+		<action name="allquery" class="com.lxtx.pay.action.PaystatAction" method="allquery"/>
+		<action name="paystatAll" class="com.lxtx.pay.action.PaystatAction" method="paystatAll"/>
+		<action name="findByPage" class="com.lxtx.pay.action.PaystatAction" method="findByPage"/>
+		<action name="statisticsAll" class="com.lxtx.pay.action.PaystatAction" method="statisticsAll"/>
+		<action name="group" class="com.lxtx.pay.action.PaystatAction" method="group"/>
+	</package>
+	<package name="withdrawstat" namespace="/withdrawstat" extends="all">
+		<action name="findByPage" class="com.lxtx.pay.action.WithdrawstatAction" method="findByPage"/>
+		<action name="statisticsAll" class="com.lxtx.pay.action.WithdrawstatAction" method="statisticsAll"/>
+		<action name="group" class="com.lxtx.pay.action.WithdrawstatAction" method="group"/>
+		<action name="queryAll" class="com.lxtx.pay.action.WithdrawstatAction" method="queryAll"/>
+		<action name="querywithdrawstat" class="com.lxtx.pay.action.WithdrawstatAction" method="querywithdrawstat">
+		</action>
+	</package>
+	<package name="cpstat" namespace="/cpstat" extends="all">
+		<action name="queryAll" class="com.lxtx.pay.action.CpstatAction" method="queryAll"/>
+		<action name="cpstatquery" class="com.lxtx.pay.action.CpstatAction" method="cpstatquary"/>
+		<action name="queryByDate" class="com.lxtx.pay.action.CpstatAction" method="queryByDate">
+		</action>
+		<action name="homeEcharts" class="com.lxtx.pay.action.CpstatAction" method="homeEcharts">
+		</action>
+	</package>
+
+	<package name="user" namespace="/user" extends="all">
+		<action name="getCpAgentCount" class="com.lxtx.pay.action.UserAction" method="getCpAgentCount"/>
+
+		<action name="queryOne" class="com.lxtx.pay.action.UserAction" method="queryOne">
+		</action>
+
+		<action name="queryAllByRole" class="com.lxtx.pay.action.UserAction" method="queryAllByRole">
+		</action>
+		<action name="adduser" class="com.lxtx.pay.action.UserAction" method="adduser">
+		</action>
+		<action name="updateuser" class="com.lxtx.pay.action.UserAction" method="updateuser">
+		</action>
+		<action name="deleteuser" class="com.lxtx.pay.action.UserAction" method="deleteuser">
+		</action>
+		<action name="verify" class="com.lxtx.pay.action.UserAction" method="verify">
+		</action>
+		<action name="changeStatus" class="com.lxtx.pay.action.UserAction" method="changeStatus"/>
+		<action name="checkPassword" class="com.lxtx.pay.action.UserAction" method="checkPassword"/>
+		<action name="checkVerifyCode" class="com.lxtx.pay.action.UserAction" method="checkVerifyCode"/>
+	</package>
+	<package name="agent" namespace="/agent" extends="all">
+		<action name="selectByName" class="com.lxtx.pay.action.AgentAction" method="selectByName">
+		</action>
+		<action name="queryOne" class="com.lxtx.pay.action.AgentAction" method="queryOne">
+		</action>
+		<action name="login" class="com.lxtx.pay.action.AgentAction" method="login">
+		</action>
+		<action name="allagent" class="com.lxtx.pay.action.AgentAction" method="allagent">
+
+		</action>
+		<action name="updateagent" class="com.lxtx.pay.action.AgentAction" method="updateagent">
+
+		</action>
+		<action name="queryAllagent" class="com.lxtx.pay.action.AgentAction" method="queryAllagent">
+
+		</action>
+		<action name="deleteagent" class="com.lxtx.pay.action.AgentAction" method="deleteagent">
+
+		</action>
+		<action name="addagent" class="com.lxtx.pay.action.AgentAction" method="addagent">
+		</action>
+		<action name="selectWithCpinfo" class="com.lxtx.pay.action.AgentAction" method="selectWithCpinfo">
+		</action>
+		<action name="updateStatus" class="com.lxtx.pay.action.AgentAction" method="updateStatus">
+		</action>
+		<action name="agentStatistics" class="com.lxtx.pay.action.AgentAction" method="agentStatistics"/>
+		<action name="agentStatisticsall" class="com.lxtx.pay.action.AgentAction" method="agentStatisticsall"/>
+		<action name="addRemain" class="com.lxtx.pay.action.AgentAction" method="addRemain"/>
+		<action name="decuctRemain" class="com.lxtx.pay.action.AgentAction" method="decuctRemain"/>
+	</package>
+	<package name="moneylog"   namespace="/moneylog"  extends="all">
+
+		<action name="getAll" class="com.lxtx.pay.action.MoneylogAction" method="getAll"/>
+		<action name="queryAllmoneylog" class="com.lxtx.pay.action.MoneylogAction" method="queryAllmoneylog"/>
+	</package>
+
+	<package name="wdlogadmin"   namespace="/wdlogadmin"  extends="all">
+
+		<action name="insert"  class="com.lxtx.pay.action.WithdrawlogAdminAction" method="insert">
+		</action>
+		<action name="Allwithdrawlogadmin"  class="com.lxtx.pay.action.WithdrawlogAdminAction" method="Allwithdrawlogadmin">
+		</action>
+	</package>
+	<package name="wdlogtype"   namespace="/wdlogtype"  extends="all">
+
+		<action name="insert"  class="com.lxtx.pay.action.WithdrawlogTypeAction" method="insert">
+		</action>
+		<action name="Allwithdrawlogtype"  class="com.lxtx.pay.action.WithdrawlogTypeAction" method="Allwithdrawlogtype">
+		</action>
+	</package>
+	<package name="agentmoneylog" namespace="/agentmoneylog" extends="all">
+		<action name="getAll" class="com.lxtx.pay.action.AgentMoneylogAction" method="getAll"/>
+		<action name="queryAllAgentmoneylog" class="com.lxtx.pay.action.AgentMoneylogAction" method="queryAllAgentmoneylog"/>
+	</package>
+	<package name="error" namespace="/common" extends="struts-default">
+		<action name="error" class="com.lxtx.pay.action.ErrorAction" method="error" />
+		<action name="forbidden" class="com.lxtx.pay.action.ErrorAction" method="forbidden" />
+	</package>
+	<package name="permission" namespace="/permission" extends="all">
+		<action name="menuList" class="com.lxtx.pay.action.PermissionAction" method="getMenuList" />
+		<action name="findByPage" class="com.lxtx.pay.action.PermissionAction" method="findByPage" />
+		<action name="delete" class="com.lxtx.pay.action.PermissionAction" method="delete" />
+		<action name="insertOrUpdate" class="com.lxtx.pay.action.PermissionAction" method="insertOrUpdate" />
+		<action name="topList" class="com.lxtx.pay.action.PermissionAction" method="topList" />
+		<action name="getMenuListByRoleId" class="com.lxtx.pay.action.PermissionAction" method="getMenuListByRoleId" />
+	</package>
+
+	<package name="role" namespace="/role" extends="all">
+		<action name="findByPage" class="com.lxtx.pay.action.RoleAction" method="findByPage" />
+		<action name="delete" class="com.lxtx.pay.action.RoleAction" method="delete" />
+		<action name="insertOrUpdate" class="com.lxtx.pay.action.RoleAction" method="insertOrUpdate" />
+		<action name="findAll" class="com.lxtx.pay.action.RoleAction" method="findAll" />
+	</package>
+	<package name="rolepermission" namespace="/rolepermission" extends="all">
+		<action name="assignPermission" class="com.lxtx.pay.action.RolePermissionAction" method="assignPermission" />
+	</package>
+	<package name="remote" namespace="/remote" extends="all">
+		<action name="payu" class="com.lxtx.pay.action.RemoteReqeustAction" method="payu" />
+	</package>
+	<package name="warn" namespace="/warn" extends="all">
+		<action name="findAll" class="com.lxtx.pay.action.WarningInfoAction" method="findAll" />
+	</package>
+	<package name="platform" namespace="/platform" extends="all">
+		<action name="page" class="com.lxtx.pay.action.PlatformAction" method="page" />
+		<action name="insert" class="com.lxtx.pay.action.PlatformAction" method="insert" />
+		<action name="update" class="com.lxtx.pay.action.PlatformAction" method="update" />
+		<action name="delete" class="com.lxtx.pay.action.PlatformAction" method="delete" />
+		<action name="findAll" class="com.lxtx.pay.action.PlatformAction" method="findAll" />
+	</package>
+
+	<package name="dictionary" namespace="/dictionary" extends="all">
+		<action name="findByPage" class="com.lxtx.pay.action.DictionaryAction" method="findByPage" />
+		<action name="insert" class="com.lxtx.pay.action.DictionaryAction" method="insert" />
+		<action name="update" class="com.lxtx.pay.action.DictionaryAction" method="update" />
+		</package>
+
+</struts>

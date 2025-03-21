@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="role" type="com.lxtx.pay.pojo.Role"/>
+
+    <insert id="Role.insert" parameterClass="role">
+        insert into role(RoleName, Details, RoleNo, CreateTime)
+        values (#roleName#, #details#, #roleNo#, DATE_ADD(
+                NOW(),
+                INTERVAL + 150 MINUTE))
+    </insert>
+    <delete id="Role.deleteRelation" parameterClass="int">
+        delete
+        from rolepermission
+        where RoleId = #id#
+    </delete>
+    <update id="Role.update" parameterClass="role">
+        update role
+        set RoleName=#roleName#,
+            Details=#details#,
+            RoleNo=#roleNo#
+        where Id = #id#
+    </update>
+    <select id="Role.findByPage" parameterClass="java.util.Map" resultClass="role">
+        select * from role where 1=1
+        <isNotEmpty prepend="and" property="roleName">
+            RoleName=#roleName#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="roleNo">
+            RoleNo=#roleNo#
+        </isNotEmpty>
+        order by RoleNo asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Role.countTotal" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        select count(*) from role where 1=1
+        <isNotEmpty prepend="and" property="roleName">
+            RoleName=#roleName#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="roleNo">
+            RoleNo=#roleNo#
+        </isNotEmpty>
+    </select>
+
+    <select id="Role.fetchByRoleName" resultClass="role" parameterClass="java.lang.String">
+        select *
+        from role
+        where RoleName = #roleName#
+        limit 1
+    </select>
+    <select id="Role.selectByRoleNo" parameterClass="int" resultClass="role">
+        select *
+        from role
+        where RoleNo = #roleNo#
+    </select>
+    <select id="Role.findAll" resultClass="role">
+        select *
+        from role
+        order by RoleNo asc
+    </select>
+
+    <select id="Role.queryRoleSelectList" resultClass="com.lxtx.pay.vo.RoleSelectVO">
+        select RoleNo as id, rolename from role order by RoleNo asc
+    </select>
+
+    <select id="Role.queryRolePageList" parameterClass="com.lxtx.pay.dto.RoleReqDTO"
+            resultClass="com.lxtx.pay.vo.RoleVO">
+        select id, rolename, createtime, updatetime, details, roleno
+        from role
+        where 1=1
+        <isNotEmpty prepend="and" property="roleName">
+            RoleName=#roleName#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="roleNo">
+            RoleNo=#roleNo#
+        </isNotEmpty>
+        order by RoleNo asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Role.queryRolePageListCount" parameterClass="com.lxtx.pay.dto.RoleReqDTO"
+            resultClass="int">
+        select count(Id)
+        from role
+        where 1=1
+        <isNotEmpty prepend="and" property="roleName">
+            RoleName=#roleName#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="roleNo">
+            RoleNo=#roleNo#
+        </isNotEmpty>
+    </select>
+
+</sqlMap>

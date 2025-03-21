@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="withdrawType" type="com.lxtx.pay.pojo.WithdrawType"/>
+    <typeAlias alias="withdrawstat" type="com.lxtx.pay.pojo.Withdrawstat"/>
+
+    <resultMap id="WithdrawstatList" class="Withdrawstat">
+        <result property="Id" column="Id" />
+        <result property="WithdrawTypeId" column="WithdrawTypeId" />
+        <result property="StatDay" column="StatDay" />
+        <result property="WithdrawAmount" column="WithdrawAmount" />
+        <result property="ThirdFee" column="ThirdFee" />
+        <result property="name" column="name" />
+<!--        <result property="feefix" column="feefix" />-->
+<!--        <result property="feerate" column="feerate" />-->
+
+    </resultMap>
+    <select id="Withdrawstat.group" parameterClass="java.util.Map" resultClass="withdrawstat">
+        select a.*,b.Name as name from withdrawstat a left join withdrawtype  b on a.WithdrawTypeId=b.Id
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="ids">
+                b.Id in $ids$
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="startDay">
+                a.StatDay &gt;= #startDay#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endDay">
+                a.StatDay &lt;= #endDay#
+            </isNotEmpty>
+        </dynamic>
+
+        order by a.StatDay  desc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="Withdrawstat.groupcount" parameterClass="java.util.Map" resultClass="int">
+        select count(a.Id) from withdrawstat a left join paytype  b on a.WithdrawTypeId=b.Id
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="ids">
+                b.Id in $ids$
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="startDay">
+                a.StatDay &gt;= #startDay#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endDay">
+                a.StatDay &lt;= #endDay#
+            </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="Withdrawstat.totalCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        select count(a.Id) from withdrawstat a left join withdrawtype  b on a.WithdrawTypeId=b.Id
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="id">
+                a.WithdrawTypeId = #id#
+            </isNotEmpty>
+            <isNotEmpty property="StatDay" prepend="and">
+                a.StatDay = #StatDay#
+            </isNotEmpty>
+        </dynamic>
+    </select>
+
+    <select id="Withdrawstat.statisticsAll" resultClass="Withdrawstat">
+        select a.WithdrawTypeId, b.Name as name, sum(WithdrawAmount) as WithdrawAmount,sum(ThirdFee) as ThirdFee   from withdrawstat a
+            left join withdrawtype b on a.WithdrawTypeId=b.Id group by WithdrawTypeId
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+
+    <select id="Withdrawstat.statisticsAllcount" resultClass="int" parameterClass="java.util.Map">
+        select count(a.Id) from (select a.Id  from withdrawstat a
+                                                       left join withdrawtype b on a.WithdrawTypeId=b.Id where WithdrawTypeId>0 group by WithdrawTypeId) as a
+
+    </select>
+</sqlMap>

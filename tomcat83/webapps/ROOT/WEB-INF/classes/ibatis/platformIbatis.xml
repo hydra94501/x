@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="platform" type="com.lxtx.pay.pojo.Platform"/>
+
+	<select id="Platform.findAll" resultClass="platform">
+		select * from platform order by Id asc
+	</select>
+    <select id="Platform.findByPage" resultClass="platform" parameterClass="java.util.Map">
+        select * from platform
+        <dynamic prepend="where">
+	        <isNotEmpty prepend="and" property="platformName">
+	        	PlatformName like concat('%',#platformName#,'%')
+	        </isNotEmpty>
+	        <isNotEmpty prepend="and" property="domainName">
+	        	DomainName like concat('%',#domainName#,'%')
+	        </isNotEmpty>
+        </dynamic>
+        order by Id asc
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+	<select id="Platform.totalCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+		select count(*) from platform 
+		<dynamic prepend="where">
+		 	<isNotEmpty prepend="and" property="platformName">
+        		PlatformName like concat('%',#platformName#,'%')
+	        </isNotEmpty>
+	        <isNotEmpty prepend="and" property="domainName">
+	        	DomainName like concat('%',#domainName#,'%')
+	        </isNotEmpty>
+		</dynamic>
+       
+	</select>
+	<delete id="Platform.deleteByPrimaryKey" parameterClass="int">
+		delete from platform where id = #id#
+	</delete>
+	<insert id="Platform.insert" parameterClass="platform">
+		insert into platform (DomainName,Notes,PlatformName,CreateTime) values(#domainName#,#notes#,#platformName#,now())
+	</insert>
+	<update id="Platform.update" parameterClass="platform">
+		update platform
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="platformName">
+				PlatformName=#platformName#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="domainName">
+				DomainName=#domainName#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="notes">
+				Notes=#notes#
+			</isNotEmpty>
+		</dynamic>
+		where id = #id#
+	</update>
+</sqlMap>

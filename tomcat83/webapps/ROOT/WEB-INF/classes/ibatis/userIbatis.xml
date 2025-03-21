@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="user" type="com.lxtx.pay.pojo.User"/>
+
+    <update id="User.updateUserToken" parameterClass="user">
+        update user
+        set token = #token#,
+            loginTime = #logintime#
+        where userId = #userId#
+    </update>
+
+    <select id="User.login" resultClass="User" parameterClass="com.lxtx.pay.dto.UserReqDTO">
+        select *
+        from user
+        where user.userName = #userName#
+    </select>
+    <select id="User.select" resultClass="User" parameterClass="int">
+        select *
+        from user、
+        、
+        
+        where user.userId = #userId#
+    </select>
+    <select id="User.queryAllByRole" resultClass="User" parameterClass="int">
+        select a.*
+        from user a,
+             role b
+        where a.role = b.RoleNo
+          and b.id = #role#
+    </select>
+
+    <select id="User.selectUserByUserName" parameterClass="String" resultClass="com.lxtx.pay.pojo.User">
+        select *
+        from user
+        where userName = #userName#
+    </select>
+
+    <select id="User.queryUserPageList" parameterClass="com.lxtx.pay.dto.UserReqDTO"
+            resultClass="com.lxtx.pay.vo.UserVo">
+        select a.userId, userName, password,a.role,a.roles,  loginTime, status, a.createTime, googleSecret, token,b.RoleName from user a,role b where a.role=b.RoleNo
+        <isNotEmpty property="userName" prepend="and">
+            a.userName like concat('%',#userName#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="role">
+            a.role = #role#
+        </isNotEmpty>
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+    </select>
+    <select id="User.queryUserPageListCount" parameterClass="com.lxtx.pay.dto.UserReqDTO" resultClass="int">
+        select count(*) from user a,role b where a.role=b.RoleNo
+        <isNotEmpty property="userName" prepend="and">
+            a.userName like concat('%',#userName#,'%')
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="role">
+            a.role = #role#
+        </isNotEmpty>
+    </select>
+    <insert id="User.insert" parameterClass="User">
+        insert into user(userName, password, role, status, createTime, roles)
+        values (#username#, #password#, #role#, #status#, #createtime#, #roles#)
+    </insert>
+    <delete id="User.deleteByPrimaryKey" parameterClass="int">
+        delete
+        from user
+        where userId = #userId#
+    </delete>
+    <update id="User.update" parameterClass="User">
+        update user u
+        set u.userName = #username#,
+            u.password = #password#,
+            u.role     = #role#,
+            u.roles    = #roles#
+        where userId = #userId#
+    </update>
+    <update id="User.refreshLoginTime" parameterClass="User">
+        update user
+        set loginTime = now()
+        where userId = #userId#
+    </update>
+    <update id="User.changeStatus" parameterClass="com.lxtx.pay.dto.UserReqDTO">
+        update user
+        set status = #status#
+        where userId = #id#
+    </update>
+</sqlMap>

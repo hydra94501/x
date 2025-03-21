@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMapConfig
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+
+    <sqlMap resource="resource/pay/ibatis/userIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/paytypeIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/withdrawtypeIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/paylogIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/withdrawlogIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/withdraworderIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/withdrawagentIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/cpInfoIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/paystatIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/withdrawstatIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/cpstatIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/agentIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/moneylogIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/agentmoneylogIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/withdrawlogadminIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/verifycodeIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/permissionIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/roleIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/rolepermissionIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/platformIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/excpInfoIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/dictionaryIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/operatelogIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/settingsIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/icIcBankRecordIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/channelIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/channelCpInfoIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/channelPayTypeIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/settlementlogIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/settlementSettingIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/rechargeIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/telegramGroupIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/telegramSendRecordIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/telegramBatchIdIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/telegramImgRecordIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/questionRecordIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/telegramCommand.xml"/>
+    <sqlMap resource="resource/pay/ibatis/telegramKeywordsIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/bankRecordIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/workOrderIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/workOrderReplyIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/workOrderImgReplyIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/workOrderChatIbatis.xml"/>
+    <sqlMap resource="resource/pay/ibatis/blackIbatis.xml"/>
+</sqlMapConfig>

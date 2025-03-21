@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="db">
+    <typeAlias alias="permission" type="com.lxtx.pay.pojo.Permission"/>
+
+    <select id="Permission.findAllByRoleNo" parameterClass="com.lxtx.pay.dto.PermissionReqDTO"
+            resultClass="com.lxtx.pay.vo.PermissionVo">
+        select a.*
+        from permission a,
+        rolepermission b
+        where a.Id = b.PermissionId
+        <isNotEmpty property="roles" prepend="and">
+            roleNo in
+            <iterate property="roles" conjunction="," close=")" open="(">
+                #roles[]#
+            </iterate>
+        </isNotEmpty>
+        group by id
+        order by a.Sort asc
+    </select>
+    <select id="Permission.findAll" resultClass="com.lxtx.pay.vo.PermissionVo">
+        select *
+        from permission
+        order by UpId asc, PLevel asc, Sort asc
+    </select>
+    <select id="Permission.countTotal" resultClass="int" parameterClass="java.util.Map">
+        select count(*) from permission where 1=1
+        <isNotEmpty property="permissName" prepend="and">
+            PermissName=#permissName#
+        </isNotEmpty>
+        <isNotEmpty property="UpId" prepend="and">
+            UpId=#upId#
+        </isNotEmpty>
+    </select>
+    <delete id="Permission.deleteByPrimaryKey" parameterClass="int">
+        delete
+        from permission
+        where Id = #id#
+    </delete>
+    <delete id="Permission.deleteRelation" parameterClass="int">
+        delete
+        from rolepermission
+        where PermissionId = #id#
+    </delete>
+    <insert id="Permission.insert" parameterClass="permission">
+        insert into Permission(Id,PermissName, CreateTime, PType, PValue, PLevel, UpId, Sort, PIcon)
+        values (#id#,#permissName#, #createTime#, #pType#, #pValue#, #pLevel#, #upId#, #sort#, #pIcon#)
+        <selectKey keyProperty="id" resultClass="int">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+    <update id="Permission.update" parameterClass="permission">
+        update Permission
+        set PermissName=#permissName#,
+            PType=#pType#,
+            PValue=#pValue#,
+            PLevel=#pLevel#,
+            UpId=#upId#,
+            Sort=#sort#,
+            UpdateTime = #updateTime#
+        where Id = #id#
+    </update>
+    <select id="Permission.findAllParents" resultClass="permission">
+        select *
+        from permission
+        where UpId = 0
+        order by Sort asc
+    </select>
+    <delete id="Permission.deleteRelationByRoleNo" parameterClass="int">
+        delete
+        from rolepermission
+        where RoleNo = #roleNo#
+    </delete>
+
+    <select id="Permission.queryPermissionSelectList" parameterClass="java.lang.String" resultClass="long">
+        SELECT p.Id
+        FROM permission p
+                 LEFT JOIN rolepermission rp ON p.Id = rp.PermissionId
+        WHERE RoleNo = #role#
+        ORDER BY UpId ASC,
+                 Sort ASC
+    </select>
+
+    <select id="Permission.queryPermissionTreeList" resultClass="com.lxtx.pay.vo.PermissionVo">
+        select id,
+               permissname,
+               createtime,
+               updatetime,
+               ptype,
+               pvalue,
+               plevel,
+               upid,
+               sort,
+               picon
+        from permission p
+        order by UpId ASC,
+                 Sort ASC
+    </select>
+
+    <select id="Permission.queryPermissionTreePageList" parameterClass="com.lxtx.pay.dto.PermissionReqDTO"
+            resultClass="com.lxtx.pay.vo.PermissionVo">
+        select p.id, p.permissname, createtime, updatetime, ptype, pvalue, plevel, upid,b.PermissName as upname, sort,
+        picon
+        from permission p left join (select id,PermissName from permission) b on p.UpId = b.Id
+        <isNotEmpty property="rowIndex">
+            limit $rowIndex$,$limit$
+        </isNotEmpty>
+        order by sort
+    </select>
+
+    <select id="Permission.queryPermissionTreePageListStatistics" parameterClass="com.lxtx.pay.dto.PermissionReqDTO"
+            resultClass="com.lxtx.pay.vo.PermissionStatisticsVO">
+        select count(*) as totalAllNum
+        from permission
+    </select>
+</sqlMap>
