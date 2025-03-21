@@ -1,0 +1,5 @@
+21-Mar-2025 14:37:13.277 信息 [main] org.apache.catalina.core.ApplicationContext.log No Spring WebApplicationInitializer types detected on classpath
+21-Mar-2025 14:37:13.430 信息 [main] org.apache.catalina.core.ApplicationContext.log Initializing Spring root WebApplicationContext
+21-Mar-2025 14:37:40.679 信息 [main] org.apache.catalina.core.ApplicationContext.log No Spring WebApplicationInitializer types detected on classpath
+21-Mar-2025 14:37:40.748 信息 [main] org.apache.catalina.core.ApplicationContext.log Initializing Spring root WebApplicationContext
+21-Mar-2025 14:48:43.592 信息 [main] org.apache.catalina.core.ApplicationContext.log Initializing Spring FrameworkServlet 'springmvcservlet'
