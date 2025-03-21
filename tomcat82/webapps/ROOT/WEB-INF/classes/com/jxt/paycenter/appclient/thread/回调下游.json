@@ -1,0 +1,14 @@
+{
+  "msg" : "succ",
+  "code" : 0,
+  "data" : {
+    "order_no" : "17189439",
+    "amount" : "10000",
+    "out_trade_no" : "ORDER202503200001",
+    "appid" : "100591",
+    "fee" : "200",
+    "sign" : "3F9F210739A1840037F1039B5D0A9FC5",
+    "currency" : "INR",
+    "type" : "1"
+  }
+}
